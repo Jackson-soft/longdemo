@@ -1,9 +1,9 @@
 #include <iostream>
+#include "./src/ThreadPool.h"
 
 
 int main(int argc, char *argv[])
 {
-    auto a{"ddd"};
-    std::cout << a << std::endl;
+    ThreadPool th();
     return 0;
 }

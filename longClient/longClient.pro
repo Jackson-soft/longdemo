@@ -1,6 +1,9 @@
 QT += qml quick
 
-CONFIG += c++11
+QMAKE_CXX = clang++
+QMAKE_CC = clang
+
+CONFIG += c++14
 
 SOURCES += main.cpp
 

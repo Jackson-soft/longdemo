@@ -22,4 +22,4 @@ add_subdirectory(src)
 add_executable(${PROJECT_NAME} ${DIR_SRCS})
 
 #添加链接库
-target_link_libraries(${PROJECT_NAME} longlib)
+target_link_libraries(${PROJECT_NAME} pthread longlib)

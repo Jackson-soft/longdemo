@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(CMAKE_C_COMPILER "clang")
-set(CMAKE_CXX_COMPILER "clang++")
-
 add_definitions(-std=c++14)
 
 set(CMAKE_BUILD_TYPE "Debug")

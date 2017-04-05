@@ -20,20 +20,15 @@ ThreadPool::~ThreadPool()
 }
 
 template<class F, class... Args>
-auto ThreadPool::Commit(F&& f, Args&&... args) ->std::future<decltype (f(args...))>
+auto ThreadPool::Commit(F& f, Args... args) ->std::future<decltype (f(args...))>
 {
-    /*
-    if(bRunning.load()){
-        throw std::runtime_error("task executor have closed commit.");
-    }
-    */
     using ResType = decltype (f(args...));
     std::unique_lock<std::mutex> tLock{tMutex};
     auto task = std::make_shared<std::packaged_task<ResType()>>(std::bind(std::forward<F>(f), std::forward<Args>(args)...));
     tTasks.emplace([task](){(*task)();});
     tCondition.notify_one();
-    std::future<ResType> fFuture = task.get_future();
-    return fFuture;
+    std::future<ResType> ret = task.get_future();
+    return ret;
 }
 
 
@@ -51,7 +46,7 @@ void ThreadPool::ThreadWork()
 bool ThreadPool::Stop()
 {
     if(bRunning.load()){
-        bRunning.store(false);
+        bRunning.store(false, std::memory_order_release);
         tCondition.notify_all();
         for(auto &it : tThreads){
             //it.get()->join(); //线程自行消亡

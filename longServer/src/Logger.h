@@ -1,27 +1,29 @@
 #pragma once
 
 
-//日志等级枚举
-enum class LogLevel{
-    LOGSTDERR,
-    LOGEMERG,
-    LOGALERT,
-    LOGCRIT,
-    LOGERR,
-    LOGWARN,
-    LOGNOTICE,
-    LOGINFO,
-    LOGDEBUG,
-};
-
 class Logger
 {
-private:
-    int nLogLevel; //日志等级
-
 public:
+    //日志等级枚举
+    enum class LogLevel
+    {
+        TRACE,
+        DEBUG,
+        INFO,
+        WARN,
+        ERROR,
+        FATAL,
+        NUM_LOG_LEVELS,
+    };
+
     Logger();
     ~Logger();
 
-    bool SetLevel();
+    bool SetLevel(LogLevel logLevel);
+    LogLevel GetLevel();
+
+
+
+private:
+    LogLevel nLogLevel; //日志等级
 };

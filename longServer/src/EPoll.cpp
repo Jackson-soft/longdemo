@@ -10,7 +10,7 @@ EPoll::EPoll()
     }
     event.events = EPOLLIN | EPOLLET; //边沿触发
     //const int MAXEVENTS = 512;
-    events = new epoll_event[512];
+    //events = new epoll_event[512];
 }
 
 EPoll::~EPoll()
@@ -31,5 +31,8 @@ void EPoll::DelEpoll(int socketfd)
 
 void EPoll::EpollWait()
 {
-    int nRead = epoll_wait(epollfd, )
+    int nRead = epoll_wait(epollfd, events, 512, 10);
+    if(nRead < 0){
+
+    }
 }

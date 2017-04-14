@@ -4,8 +4,8 @@
 
 EPoll::EPoll()
 {
-    epollfd = epoll_create1(EPOLL_CLOEXEC);
-    if(epollfd == -1){
+    epfd = epoll_create1(EPOLL_CLOEXEC);
+    if(epfd == -1){
         //...
     }
     event.events = EPOLLIN | EPOLLET; //边沿触发
@@ -15,24 +15,36 @@ EPoll::EPoll()
 
 EPoll::~EPoll()
 {
-    ::close(epollfd);
+    ::close(epfd);
 }
 
 void EPoll::AddEpoll(int socketfd)
 {
-    epoll_ctl(epollfd, EPOLL_CTL_ADD, socketfd, &event);
+    epoll_ctl(epfd, EPOLL_CTL_ADD, socketfd, &event);
 }
 
 
 void EPoll::DelEpoll(int socketfd)
 {
-    epoll_ctl(epollfd, EPOLL_CTL_DEL, socketfd, &event);
+    epoll_ctl(epfd, EPOLL_CTL_DEL, socketfd, &event);
 }
 
 void EPoll::EpollWait()
 {
-    int nRead = epoll_wait(epollfd, events, 512, 10);
-    if(nRead < 0){
-
+    while(true) {
+        //timeout：-1永久阻塞，0立即返回，非阻塞，>0指定微秒数
+        int activeCnt = epoll_wait(epfd, events, 512, 0);
+        if(activeCnt <= 0) {
+            //这里做点啥呢
+            continue;
+        }
+        for(int i = 0; i < activeCnt; ++i) {
+            //if(events[i].data.fd == listenFd)
+            if(events[i].events & EPOLLIN) {
+                //read
+            }else if(events[i].events & EPOLLOUT) {
+                //write
+            }
+        }
     }
 }

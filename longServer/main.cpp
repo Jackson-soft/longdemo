@@ -11,13 +11,19 @@
 
 #include <string>
 
-int fun(int x, int y)
+#include "src/ThreadPool.h"
+
+auto fun(int x, int y)
 {
     return x + y;
 }
 
 int main()
 {
+    ThreadPool pool{5};
+    auto f = pool.Commit(fun, 3, 5);
+    std::cout << f.get() << std::endl;
+    pool.Stop();
     int socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if(socketfd < 0) {
         std::exit(EXIT_FAILURE);
@@ -43,7 +49,7 @@ int main()
     epollfd = epoll_create1(EPOLL_CLOEXEC);
     while (true) {
         //int ret = epoll_wait(epollfd, events, 1024, -1);
-        connectfd = accept(socketfd, (struct sockaddr*)nullptr, nullptr);
+        connectfd = accept4(socketfd, (struct sockaddr*)nullptr, nullptr, SOCK_NONBLOCK);
         if(connectfd < 0) {
             std::cout << std::strerror(errno) << std::endl;
             continue;

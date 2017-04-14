@@ -20,7 +20,7 @@ ThreadPool::~ThreadPool()
 }
 
 template<class F, class... Args>
-auto ThreadPool::Commit(F& f, Args... args) ->std::future<decltype (f(args...))>
+auto ThreadPool::Commit(F&& f, Args&&... args) ->std::future<decltype (f(args...))>
 {
     using ResType = decltype (f(args...));
     std::unique_lock<std::mutex> tLock{tMutex};

@@ -6,7 +6,7 @@
 class EPoll
 {
 private:
-    int epollfd; //epoll文件描述符
+    int epfd; //epoll文件描述符
     struct epoll_event event;
     struct epoll_event events[512];
 

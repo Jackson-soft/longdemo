@@ -5,6 +5,7 @@
 class Timer
 {
 private:
+    int x{3};
 public:
     Timer();
     ~Timer();

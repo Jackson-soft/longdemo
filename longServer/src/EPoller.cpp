@@ -1,8 +1,8 @@
-#include "EPoll.h"
+#include "EPoller.h"
 #include <unistd.h>
 
 
-EPoll::EPoll()
+EPoller::EPoller()
 {
     epfd = epoll_create1(EPOLL_CLOEXEC);
     if(epfd == -1){
@@ -13,23 +13,23 @@ EPoll::EPoll()
     //events = new epoll_event[512];
 }
 
-EPoll::~EPoll()
+EPoller::~EPoller()
 {
     ::close(epfd);
 }
 
-void EPoll::AddEpoll(int socketfd)
+void EPoller::AddEpoll(int socketfd)
 {
     epoll_ctl(epfd, EPOLL_CTL_ADD, socketfd, &event);
 }
 
 
-void EPoll::DelEpoll(int socketfd)
+void EPoller::DelEpoll(int socketfd)
 {
     epoll_ctl(epfd, EPOLL_CTL_DEL, socketfd, &event);
 }
 
-void EPoll::EpollWait()
+void EPoller::EpollWait()
 {
     while(true) {
         //timeout：-1永久阻塞，0立即返回，非阻塞，>0指定微秒数

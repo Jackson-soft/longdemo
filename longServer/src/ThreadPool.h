@@ -7,6 +7,7 @@
 #include <atomic>
 #include <vector>
 #include <future>
+#include <functional>
 
 
 class ThreadPool
@@ -28,6 +29,7 @@ public:
     ~ThreadPool();
 
     bool Stop(); //结束线程池
+
     template<class F, class... Args>
     auto Commit(F&& f, Args&&... args) ->std::future<decltype (f(args...))>; //提交任务到队列
 };

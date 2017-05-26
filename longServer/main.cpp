@@ -24,7 +24,7 @@ int main()
     auto f = pool.Commit(fun, 3, 5);
     std::cout << f.get() << std::endl;
     pool.Stop();
-    int socketfd = socket(AF_INET, SOCK_STREAM, 0);
+    int socketfd = ::socket(AF_INET, SOCK_STREAM, 0);
     if(socketfd < 0) {
         std::exit(EXIT_FAILURE);
     }
@@ -34,7 +34,7 @@ int main()
     servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servAddr.sin_port = htons(8088);
 
-    if(bind(socketfd, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0){
+    if(::bind(socketfd, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0){
         std::cout << std::strerror(errno) << std::endl;
         std::exit(EXIT_FAILURE);
     }

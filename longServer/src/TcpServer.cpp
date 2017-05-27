@@ -12,7 +12,7 @@ TcpServer::~TcpServer()
 
 }
 
-TcpServer::run()
+void TcpServer::run()
 {
     while (true) {
 

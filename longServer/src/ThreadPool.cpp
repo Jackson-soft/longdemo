@@ -20,14 +20,14 @@ ThreadPool::~ThreadPool()
 }
 
 template<class F, class... Args>
-auto ThreadPool::Commit(F&& f, Args&&... args) ->std::future<decltype (f(args...))>
+auto Commit(F&& f, Args&&... args) ->std::future<typename std::result_of<F(Args...)>::type>
 {
-    using ResType = decltype (f(args...));
-    std::unique_lock<std::mutex> tLock{tMutex};
+    using resType = typename std::result_of<F(Args...)>::type;
+    std::unique_lock<std::mutex> tLock(tMutex);
     auto task = std::make_shared<std::packaged_task<ResType()>>(std::bind(std::forward<F>(f), std::forward<Args>(args)...));
     tTasks.emplace([task](){(*task)();});
     tCondition.notify_one();
-    std::future<ResType> ret = task.get_future();
+    std::future<resType> ret = task.get_future();
     return ret;
 }
 

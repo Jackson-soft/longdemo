@@ -3,16 +3,16 @@
 
 #include "src/ThreadPool.h"
 
-auto fun(int x, int y)
+int fun(int x, int y)
 {
     return x + y;
 }
 
 int main()
 {
-    ThreadPool pool{5};
-    auto f = pool.Commit(fun, 3, 5);
+    ThreadPool pool(5);
+    //auto f = pool.AddTask(fun, 3, 5);
+    auto f = pool.AddTask([](int answer) { return answer; }, 42);
     std::cout << f.get() << std::endl;
-    pool.Stop();
     return 0;
 }

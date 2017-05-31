@@ -30,8 +30,7 @@ public:
     ThreadPool(unsigned int num);
     ~ThreadPool();
 
-    bool Stop(); //结束线程池
-
+    //提交任务到队列
     template<class F, class... Args>
-    auto Commit(F&& f, Args&&... args) ->std::future<typename std::result_of<F(Args...)>::type>; //提交任务到队列
+    auto AddTask(F&& f, Args&&... args) ->std::future<typename std::result_of<F(Args...)>::type>;
 };

@@ -21,23 +21,7 @@ ThreadPool::~ThreadPool()
             //it.get()->join(); //线程自行消亡
             it.get()->detach();
         }
-        bRunning = false;
     }
-}
-
-template<class F, class... Args>
-auto ThreadPool::AddTask(F&& f, Args&&... args) ->std::future<typename std::result_of<F(Args...)>::type>
-{
-    if(!bRunning.load()){
-        throw std::runtime_error("task executor have closed commit.");
-    }
-    using resType = typename std::result_of<F(Args...)>::type;
-    std::unique_lock<std::mutex> tLock(tMutex);
-    auto task = std::make_shared<std::packaged_task<resType()>>(std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-    tTasks.emplace([task](){(*task)();});
-    tCondition.notify_one();
-    std::future<resType> ret = task.get_future();
-    return ret;
 }
 
 
@@ -51,4 +35,6 @@ void ThreadPool::ThreadWork()
         task();
     }
 }
+
+
 

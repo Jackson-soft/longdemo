@@ -12,7 +12,7 @@
 
 int main()
 {
-    int socketfd,confd;
+    int socketfd;
     socketfd = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     struct sockaddr_in servAddr;
@@ -50,7 +50,7 @@ int main()
             events.resize(events.size() * 2);
         }
 
-        for(int i; i < nReady; ++i) {
+        for(int i = 0; i < nReady; ++i) {
             if(events[i].data.fd == socketfd) {
                 peerLen = sizeof(peerAddr);
                 conn = ::accept4(socketfd, (struct sockaddr *)&peerAddr, &peerLen, SOCK_NONBLOCK);
@@ -77,7 +77,7 @@ int main()
                     ::epoll_ctl(epollfd, EPOLL_CTL_DEL, conn, &epEvent);
                     clients.erase(std::remove(clients.begin(), clients.end(), conn), clients.end());
                 }
-                
+
                 ::write(conn, recvBuf, std::strlen(recvBuf));
             }
         }

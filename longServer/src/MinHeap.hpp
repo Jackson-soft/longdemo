@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 
 //最小堆
@@ -6,12 +7,9 @@ template<typename T>
 class MinHeap
 {
 public:
-    MinHeap();
+    explicit MinHeap(int heapSize);
 
     ~MinHeap();
-
-    //创建一个空堆
-    void Build();
 
     //插入新元素
     void Insert(const T& elem);
@@ -27,4 +25,18 @@ public:
 
     //使删除堆顶元素的堆再次成为堆
     void heapify();
+private:
+    int currentSize, maxSize;
+    std::vector<T> heap;
 };
+
+template<typename T>
+MinHeap<T>::MinHeap(int heapSize):currentSize(0), maxSize(heapSize)
+{
+}
+
+template<typename T>
+MinHeap<T>::~MinHeap()
+{
+    delete []heap;
+}

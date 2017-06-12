@@ -1,10 +1,11 @@
 #pragma once
+#include <vector>
 
 template <typename T>
 class MaxHeap
 {
 private:
-	T *mHeap;
+	std::vector<T> mArray;
 	int nCapacity; //总容量
 	int nSize;	 //实际大小
 
@@ -22,23 +23,22 @@ public:
 };
 
 template <typename T>
-MaxHeap<T>::MaxHeap()
+MaxHeap<T>::MaxHeap() : MaxHeap(10)
 {
 }
 
 template <typename T>
-MaxHeap<T>::MaxHeap(int capacity) : nCapacity(capacity)
+MaxHeap<T>::MaxHeap(int capacity) : nCapacity(capacity), nSize(0)
 {
-	nSize = 0;
-	mHeap = new T[nCapacity];
+	mArray.reserve(nCapacity); //给vector预分配存储空间
 }
 
 template <typename T>
-MaxHeap<T>::~MaxHeap() : MaxHeap(10)
+MaxHeap<T>::~MaxHeap()
 {
 	nSize	 = 0;
 	nCapacity = 0;
-	delete[] mHeap;
+	mArray.shrink_to_fit(); //释放vector内存
 }
 
 template <typename T>

@@ -6,19 +6,15 @@ template <typename T>
 class BinaryHeap
 {
 public:
-    BinaryHeap();
-    ~BinaryHeap();
+	BinaryHeap();
+	explicit BinaryHeap(int nSize);
+	~BinaryHeap();
 
-    bool isEmpty();
-    void insert(const T& x);
-    void deleteMin();
-    void makeEmpty();
-
+	bool Empty() { return mArray.empty(); }
+	void Insert(const T &x);
+	void DeleteMin();
+	void MakeEmpty();
 
 private:
-    int currentSize;
-    std::vector<T> array;
-
-    void buidlHeap();
-    void percolateDown(int hole);
+	std::vector<T> mArray;
 };

@@ -7,5 +7,5 @@ public:
     ~TcpServer();
 
     //
-    void run();
+    void Run();
 };

@@ -9,10 +9,10 @@ template <typename T>
 class MinHeap
 {
 public:
-	MinHeap();
-	explicit MinHeap(int capacity);
+	MinHeap() : MinHeap(30) {}
+	explicit MinHeap(int capacity) { mArray.reserve(capacity); }
 
-	~MinHeap();
+	~MinHeap() { mArray.shrink_to_fit(); }
 
 	//插入新元素
 	bool Insert(const T &elem);
@@ -29,23 +29,6 @@ public:
 private:
 	std::vector<T> mArray;
 };
-
-template <typename T>
-MinHeap<T>::MinHeap(int capacity)
-{
-	mArray.reserve(capacity);
-}
-
-template <typename T>
-MinHeap<T>::MinHeap() : MinHeap(10)
-{
-}
-
-template <typename T>
-MinHeap<T>::~MinHeap()
-{
-	mArray.shrink_to_fit();
-}
 
 template <typename T>
 bool MinHeap<T>::Insert(const T &elem)
@@ -70,7 +53,7 @@ T MinHeap<T>::Remove()
 		mArray.pop_back();
 		int nCurrent = 0;
 		while (nCurrent < mArray.size() && 2 * nCurrent + 2 < mArray.size()) {
-			if (mArray[nCurrent] > mArray[2 * nCurrent + 2]) {
+			if (mArray[nCurrent] > mArray[2 * nCurrent + 1]) {
 				std::swap(mArray[nCurrent], mArray[2 * nCurrent + 1]);
 				nCurrent = 2 * nCurrent + 1;
 				if (mArray[nCurrent] > mArray[nCurrent + 1]) {
@@ -81,4 +64,6 @@ T MinHeap<T>::Remove()
 		}
 		return std::move(mMin);
 	}
+	//这里有一个警告，目前还没想到怎么去除
+	// return xxx;
 }

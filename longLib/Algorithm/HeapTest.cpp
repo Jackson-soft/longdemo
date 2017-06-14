@@ -22,6 +22,11 @@ int main()
 	for (int i = 0; i < mh.Size(); ++i) {
 		std::cout << mh[i] << std::endl;
 	}
+	std::cout << mh.Remove() << std::endl;
+	for (int i = 0; i < mh.Size(); ++i) {
+		std::cout << mh[i] << " ";
+	}
+	std::cout << std::endl;
 	std::cout << "==========" << std::endl;
 	MinHeap<int> minH;
 	minH.Insert(3);

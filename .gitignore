@@ -1,3 +1,4 @@
 *.user
 build-*/
-a.out
+*.out
+*.o

@@ -1,5 +1,5 @@
 #pragma once
-
+//二叉堆
 #include <vector>
 
 template <typename T>
@@ -11,7 +11,7 @@ public:
 	~BinaryHeap();
 
 	bool Empty() { return mArray.empty(); }
-	void Insert(const T &x);
+	void Push(const T &x);
 	void DeleteMin();
 	void MakeEmpty();
 

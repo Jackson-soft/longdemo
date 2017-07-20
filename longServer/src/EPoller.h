@@ -1,20 +1,19 @@
 #pragma once
 
-
 #include <sys/epoll.h>
+#include <vector>
 
 class EPoller
 {
-private:
-    int epfd; //epoll文件描述符
-    struct epoll_event event;
-    struct epoll_event events[512];
-
 public:
-    EPoller();
-    ~EPoller();
+	EPoller();
+	~EPoller();
 
-    void AddEpoll(int socketfd);
-    void DelEpoll(int socketfd);
-    void EpollWait();
+	void AddEpoll(int socketfd);
+	void DelEpoll(int socketfd);
+	void EpollWait();
+
+private:
+	int fEpoll; // epoll文件描述符
+	std::vector<struct epoll_event> mEvents;
 };

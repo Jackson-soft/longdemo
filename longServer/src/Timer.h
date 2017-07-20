@@ -11,7 +11,7 @@ private:
     Timer(std::chrono::microseconds tick);
 
     //定时器循环
-    void TimerExec();
+    void timerExec();
 public:
     ~Timer();
 
@@ -21,10 +21,10 @@ public:
     }
 
     //开始
-    unsigned int StartTimer(double interval);
+    unsigned int SetTimer(double interval);
 
     //取消定时器
-    void DeleteTimer(unsigned int timeId);
+    void StopTimer(unsigned int timeId);
 
     //异步等待
     void AsyncWait();

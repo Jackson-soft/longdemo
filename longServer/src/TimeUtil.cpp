@@ -1,27 +1,27 @@
-#include "TimeUtility.h"
+#include "TimeUtil.h"
 
 #include <boost/format.hpp>
 #include <chrono>
 #include <iomanip>
 
 /*
-TimeUtility::TimeUtility() {}
-TimeUtility::~TimeUtility() {}
+TimeUtil::TimeUtil() {}
+TimeUtil::~TimeUtil() {}
 */
 
-std::string TimeUtility::GetCurrentDay()
+std::string TimeUtil::GetCurrentDay()
 {
-	std::tm NowTime = getNowTime();
+	auto NowTime = GetNowTime();
 	return boost::str(boost::format("%s") % std::put_time(&NowTime, "%F"));
 }
 
-std::string TimeUtility::GetCurrentTime()
+std::string TimeUtil::GetCurrentTime()
 {
-	std::tm NowTime = getNowTime();
+	auto NowTime = GetNowTime();
 	return boost::str(boost::format("%s") % std::put_time(&NowTime, "%F %T"));
 }
 
-std::tm TimeUtility::getNowTime()
+std::tm TimeUtil::GetNowTime()
 {
 	std::chrono::system_clock::time_point now =
 		std::chrono::system_clock::now();

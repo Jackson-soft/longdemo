@@ -1,17 +1,17 @@
 #pragma once
 
-#include <string>
 #include <ctime>
+#include <string>
 
 //时间操作
-class TimeUtility
+class TimeUtil
 {
 public:
-	TimeUtility() = default;
-	~TimeUtility() = default;
+	TimeUtil()  = default;
+	~TimeUtil() = default;
 
 	static std::string GetCurrentTime();
 	static std::string GetCurrentDay();
 
-    static std::tm getNowTime();
+	static std::tm GetNowTime();
 };

@@ -14,31 +14,33 @@ T re(T x, T y)
 int main()
 {
 	MaxHeap<int> mh;
-	mh.Insert(3);
-	mh.Insert(4);
-	mh.Insert(8);
-	mh.Insert(1);
-	mh.Insert(9);
+	mh.Push(3);
+	mh.Push(4);
+	mh.Push(8);
+	mh.Push(1);
+	mh.Push(9);
 	for (int i = 0; i < mh.Size(); ++i) {
-		std::cout << mh[i] << std::endl;
+		std::cout << mh[i] << " ";
 	}
-	std::cout << mh.Remove() << std::endl;
+	std::cout << std::endl;
+	std::cout << "==========" << std::endl;
+	std::cout << mh.Pop() << std::endl;
 	for (int i = 0; i < mh.Size(); ++i) {
 		std::cout << mh[i] << " ";
 	}
 	std::cout << std::endl;
 	std::cout << "==========" << std::endl;
 	MinHeap<int> minH;
-	minH.Insert(3);
-	minH.Insert(4);
-	minH.Insert(8);
-	minH.Insert(1);
-	minH.Insert(9);
+	minH.Push(3);
+	minH.Push(4);
+	minH.Push(8);
+	minH.Push(1);
+	minH.Push(9);
 	for (int i = 0; i < minH.Size(); ++i) {
 		std::cout << minH[i] << " ";
 	}
 	std::cout << std::endl;
-	std::cout << minH.Remove() << std::endl;
+	std::cout << minH.Pop() << std::endl;
 	for (int i = 0; i < minH.Size(); ++i) {
 		std::cout << minH[i] << " ";
 	}

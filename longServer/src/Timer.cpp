@@ -1,35 +1,18 @@
 #include "Timer.h"
 
+Timer::Timer(std::chrono::microseconds tick) : nTick(tick) {}
 
-Timer::Timer(std::chrono::microseconds tick) : nTick(tick)
-{
+Timer::~Timer() {}
 
-}
+unsigned int Timer::SetTimer(double interval) { return 0; }
 
-Timer::~Timer()
-{
+void Timer::StopTimer(unsigned int timeId) {}
 
-}
-
-unsigned int Timer::StartTimer(double interval)
-{
-
-}
-
-void Timer::DeleteTimer(unsigned int timeId)
-{
-
-}
-
-void Timer::TimerExec()
-{
-
-}
-
+void Timer::timerExec() {}
 
 void Timer::AsyncWait()
 {
-    while (true) {
-        this->TimerExec();
-    }
+	while (true) {
+		this->timerExec();
+	}
 }

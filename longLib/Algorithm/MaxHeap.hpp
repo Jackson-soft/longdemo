@@ -1,19 +1,17 @@
 #pragma once
+//最大堆
 #include <algorithm>
+#include <mutex>
+#include <shared_mutex>
 #include <vector>
 
 template <typename T>
 class MaxHeap
 {
-private:
-	std::vector<T> mArray;
-
 public:
 	MaxHeap() : MaxHeap(30) {}
-
 	//向量的预分配空间
 	explicit MaxHeap(int capacity) { mArray.reserve(capacity); }
-
 	//释放向量的空间
 	~MaxHeap() { mArray.shrink_to_fit(); }
 
@@ -23,47 +21,82 @@ public:
 
 	T &operator[](int i) { return mArray[i]; }
 
-	bool Insert(const T &elem);
+	bool Push(const T &elem);
 
 	//移除最顶堆元素
-	bool Remove();
+	T Pop();
+
+private:
+	//上浮
+	void up(int index);
+	//下沉
+	void down(int index);
+
+private:
+	std::vector<T> mArray;
+	mutable std::shared_mutex mMutex;
 };
 
 template <typename T>
-bool MaxHeap<T>::Insert(const T &elem)
+bool MaxHeap<T>::Push(const T &elem)
 {
+	std::unique_lock<std::shared_mutex> lock(mMutex);
 	mArray.emplace_back(elem);
-	//保存添加元素前的向量容量
-	auto nCurrent = mArray.size() - 1;
-	while (nCurrent != 0 && elem > mArray[(nCurrent - 1) / 2]) {
-		std::swap(mArray[nCurrent], mArray[(nCurrent - 1) / 2]);
-		nCurrent = (nCurrent - 1) / 2;
-	}
-
+	up(mArray.size() - 1);
 	return true;
 }
 
 template <typename T>
-bool MaxHeap<T>::Remove()
+void MaxHeap<T>::up(int index)
 {
+	int n, p;
+	while (index > 0) {
+		n = index % 2;
+		if (n == 0) {
+			p = (index - 2) / 2;
+		} else {
+			p = (index - 1) / 2;
+		}
+		if (mArray[index] > mArray[p]) {
+			std::swap(mArray[index], mArray[p]);
+			index = p;
+		} else {
+			break;
+		}
+	}
+}
+
+template <typename T>
+T MaxHeap<T>::Pop()
+{
+	//共享读锁
+	std::shared_lock<std::shared_mutex> lock(mMutex);
 	if (!mArray.empty()) {
 		//出堆的数据
-		// T mMin = mArray.front();
+		T mMin = mArray.front();
 		//最后一个数据放到第一个根上面
 		std::swap(mArray.front(), mArray.back());
 		mArray.pop_back();
-		int nCurrent = 0;
-		while (nCurrent < mArray.size() && 2 * nCurrent + 2 < mArray.size()) {
-			if (mArray[nCurrent] < mArray[2 * nCurrent + 1]) {
-				std::swap(mArray[nCurrent], mArray[2 * nCurrent + 1]);
-				nCurrent = 2 * nCurrent + 1;
-				if (mArray[nCurrent] < mArray[nCurrent + 1]) {
-					std::swap(mArray[nCurrent], mArray[nCurrent + 1]);
-					nCurrent += 1;
-				}
-			}
-		}
-		return true;
+		down(0);
+		return std::move(mMin);
 	}
-	return false;
+	// return false;
+}
+
+template <typename T>
+void MaxHeap<T>::down(int index)
+{
+	int size = mArray.size();
+	while (2 * index + 1 <= size - 1) {
+		if (mArray[index] < mArray[2 * index + 1]) {
+			std::swap(mArray[index], mArray[2 * index + 1]);
+			if (2 * index + 2 <= size - 1 &&
+				mArray[index] < mArray[2 * index + 2]) {
+				std::swap(mArray[index], mArray[2 * index + 2]);
+			}
+			index = 2 * index + 1;
+		} else {
+			break;
+		}
+	}
 }

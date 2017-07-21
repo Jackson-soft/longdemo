@@ -27,7 +27,7 @@ bool TcpServer::initServer()
 			break;
 		case 0:
 			//子进程
-			Run();
+			workerRun();
 			break;
 		default:
 			//父进程
@@ -37,9 +37,18 @@ bool TcpServer::initServer()
 	return true;
 }
 
+void TcpServer::workerRun()
+{
+	while (1) {
+		/* code */
+	}
+}
+
+//子进程循环
 void TcpServer::Run()
 {
-	while (bRunning) {
+	initServer();
+	while (1) {
 	}
 }
 

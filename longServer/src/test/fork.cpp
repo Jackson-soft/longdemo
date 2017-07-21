@@ -1,25 +1,43 @@
-#include <array>
-#include <iostream>
-#include <sys/socket.h>
-#include <sys/types.h> /* See NOTES */
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+#include <iostream>
+
+void run()
 {
-	struct Workor {
-		pid_t pid;
-	};
-	std::array<Workor, 2> mName;
+	while (1) {
+		/* code */
+		std::cout << "child--" << std::endl;
+		sleep(5);
+	}
+}
+/*
+ * 创建指定数目的子进程
+ */
+void createsubprocess(int num)
+{
 	pid_t pid;
-	for (int i = 0; i < 4; ++i) {
+	int i;
+	for (i = 0; i < num; i++) {
 		pid = fork();
-		if (pid == 0 || pid == -1) {
+		switch (pid) {
+		case 0:
+			run();
 			break;
-		} else {
-			std::cout << "ccc: " << i << std::endl;
+		default:
+			/* code */
+			break;
 		}
 	}
+}
 
-	std::cout << "dadfsdf: " << pid << std::endl;
+int main()
+{
+	int num = 3;
+	createsubprocess(num);
+	while (1) {
+		/* code */
+		std::cout << "dady=====" << std::endl;
+		sleep(6);
+	}
 	return 0;
 }

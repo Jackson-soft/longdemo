@@ -19,6 +19,10 @@ private:
 	//初始化master,worker进程
 	bool initServer();
 
+	//worker
+	void workerRun();
+
+
 private:
 	bool bRunning;
 	std::string sIp;

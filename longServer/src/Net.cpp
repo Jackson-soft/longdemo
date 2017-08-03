@@ -4,6 +4,7 @@
 #include <cstring>
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <string_view>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -12,7 +13,7 @@ Net::Net() {}
 
 Net::~Net() { Close(); }
 
-bool Net::Listen(const char *ip, unsigned short port)
+bool Net::Listen(std::string_view ip, unsigned short port)
 {
 	fSocket = ::socket(
 		AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);

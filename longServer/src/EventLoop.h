@@ -1,11 +1,8 @@
 #pragma once
 
-
 class EventLoop
 {
 private:
-
-
 public:
     EventLoop();
     ~EventLoop();

@@ -1,25 +1,9 @@
 #include "EventLoop.h"
 
+EventLoop::EventLoop() {}
 
+EventLoop::~EventLoop() {}
 
-EventLoop::EventLoop()
-{
+void EventLoop::AddEvent() {}
 
-}
-
-EventLoop::~EventLoop()
-{
-
-}
-
-
-void EventLoop::AddEvent()
-{
-
-}
-
-
-void EventLoop::DelEvent()
-{
-
-}
+void EventLoop::DelEvent() {}

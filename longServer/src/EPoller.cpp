@@ -5,20 +5,20 @@ EPoller::EPoller()
 {
 	fEpoll = epoll_create1(EPOLL_CLOEXEC);
 	if (fEpoll == -1) {
-		//...
+		//
 	}
 }
 
-EPoller::~EPoller() { ::close(epfd); }
+EPoller::~EPoller() { ::close(fEpoll); }
 
 void EPoller::AddEpoll(int socketfd)
 {
-	epoll_ctl(epfd, EPOLL_CTL_ADD, socketfd, &event);
+	::epoll_ctl(fEpoll, EPOLL_CTL_ADD, socketfd, &mEvents);
 }
 
 void EPoller::DelEpoll(int socketfd)
 {
-	epoll_ctl(epfd, EPOLL_CTL_DEL, socketfd, &event);
+	::epoll_ctl(fEpoll, EPOLL_CTL_DEL, socketfd, &mEvents);
 }
 
 void EPoller::EpollWait()

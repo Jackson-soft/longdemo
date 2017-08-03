@@ -1,25 +1,24 @@
 #pragma once
 
-#include <unistd.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-
+#include <sys/types.h>
+#include <unistd.h>
 
 class Net
 {
 public:
-    Net();
-    ~Net();
+	Net();
+	~Net();
 
-    bool InitNet();
+	bool Listen(const char *ip, unsigned short port);
 
-    int Accept();
+	int Accept();
 
-    //优雅关闭
-    int ShutDown();
+	//优雅关闭
+	int ShutDown();
 
-    int Close();
+	int Close();
 
 private:
-    int fSocket; //
+	int fSocket; //
 };

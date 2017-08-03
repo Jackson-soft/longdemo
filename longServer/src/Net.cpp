@@ -1,5 +1,6 @@
 #include "Net.h"
 
+#include <arpa/inet.h>
 #include <cstring>
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -11,7 +12,7 @@ Net::Net() {}
 
 Net::~Net() { Close(); }
 
-bool Net::InitNet()
+bool Net::Listen(const char *ip, unsigned short port)
 {
 	fSocket = ::socket(
 		AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
@@ -25,28 +26,44 @@ bool Net::InitNet()
 			fSocket, SOL_SOCKET, SO_REUSEPORT, &opt_val, sizeof(opt_val))) {
 		return false;
 	}
-	struct sockaddr_in service;
-	std::memset(&service, 0, sizeof(service));
-	service.sin_family		= AF_INET;
-	service.sin_addr.s_addr = htonl(INADDR_ANY);
-	service.sin_port		= htons(8080);
+	struct sockaddr_in addr;
+	std::memset(&addr, 0, sizeof(addr));
+	addr.sin_family		 = AF_INET;
+	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin_port		 = htons(port);
 
-	if (::bind(fSocket, (struct sockaddr *)&service, sizeof(service))) {
-		return false;
+	bool bRet = true;
+	if ('\0' != *ip) {
+		addr.sin_addr.s_addr = ::inet_addr(ip);
+		if (INADDR_NONE == addr.sin_addr.s_addr) {
+			bRet = false;
+		}
+	}
+	if (bRet) {
+		if (::bind(fSocket, (struct sockaddr *)&addr, sizeof(addr))) {
+			bRet = false;
+		}
+	}
+	if (bRet) {
+		if (::listen(fSocket, SOMAXCONN)) {
+			bRet = false;
+		}
 	}
 
-	if (::listen(fSocket, SOMAXCONN)) {
-		return false;
+	//防止内存泄漏
+	if (!bRet && fSocket >= 0) {
+		::close(fSocket);
 	}
-
-	return true;
+	return bRet;
 }
 
 int Net::Accept()
 {
+	struct sockaddr_in addr;
+	socklen_t socklen = sizeof(addr);
 	return ::accept4(fSocket,
-					 (struct sockaddr *)nullptr,
-					 NULL,
+					 (struct sockaddr *)&addr,
+					 &socklen,
 					 SOCK_NONBLOCK | SOCK_CLOEXEC);
 }
 

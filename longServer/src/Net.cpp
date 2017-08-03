@@ -4,7 +4,6 @@
 #include <cstring>
 #include <fcntl.h>
 #include <netinet/in.h>
-#include <string_view>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -34,7 +33,7 @@ bool Net::Listen(std::string_view ip, unsigned short port)
 	addr.sin_port		 = htons(port);
 
 	bool bRet = true;
-	if ('\0' != *ip) {
+	if (!ip.empty()) {
 		addr.sin_addr.s_addr = ::inet_addr(ip);
 		if (INADDR_NONE == addr.sin_addr.s_addr) {
 			bRet = false;

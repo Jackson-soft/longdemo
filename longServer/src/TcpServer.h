@@ -1,13 +1,13 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 
 // Tcp 服务器
 class TcpServer
 {
 public:
 	TcpServer();
-	TcpServer(std::string ip, int port, unsigned int workNum = 0);
+	TcpServer(std::string_view ip, int port, unsigned int workNum = 0);
 	~TcpServer();
 
 	// 主循环
@@ -25,7 +25,7 @@ private:
 
 private:
 	bool bRunning;
-	std::string sIp;
-	int nPort;
-	unsigned int nWorkers; //工作进程数量
+	std::string_view sIp;
+	unsigned short nPort;
+	unsigned short nWorkers; //工作进程数量
 };

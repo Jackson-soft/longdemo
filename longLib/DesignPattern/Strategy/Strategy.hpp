@@ -4,8 +4,8 @@
 class Strategy
 {
 public:
-	Strategy(){};
-	virtual ~Strategy(){};
+	Strategy();
+	virtual ~Strategy();
 
 	virtual void algorithm() = 0;
 };

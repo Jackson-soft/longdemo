@@ -7,7 +7,9 @@
 
 TcpServer::TcpServer() {}
 
-TcpServer::TcpServer(std::string ip, int port, unsigned int workNum)
+TcpServer::TcpServer(std::string_view ip,
+					 unsigned short port,
+					 unsigned short workNum)
 	: bRunning(true), sIp(ip), nPort(port), nWorkers(workNum)
 {
 	if (nWorkers == 0) {
@@ -19,7 +21,7 @@ TcpServer::~TcpServer() { Stop(); }
 
 bool TcpServer::initServer()
 {
-	for (unsigned int i = 0; i < nWorkers; ++i) {
+	for (unsigned short i = 0; i < nWorkers; ++i) {
 		auto pid = fork();
 		switch (pid) {
 		case -1:

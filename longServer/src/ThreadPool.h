@@ -20,14 +20,14 @@ private:
 
     std::queue<Task> tTasks; //任务队列
     std::vector<std::shared_ptr<std::thread>> tThreads; //线程对象
-    unsigned int nThreadNum; //线程数
+    unsigned short nThreadNum; //线程数
 
     std::mutex tMutex; //锁
     std::condition_variable tCondition; //条件变量
     std::atomic_bool bRunning; //是否在运行
 
 public:
-    ThreadPool(unsigned int num);
+    ThreadPool(unsigned short num);
     ~ThreadPool();
 
     //提交任务到队列

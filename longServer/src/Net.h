@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string_view>
 
 class Net
 {
@@ -10,7 +11,7 @@ public:
 	Net();
 	~Net();
 
-	bool Listen(const char *ip, unsigned short port);
+	bool Listen(std::string_view ip, unsigned short port);
 
 	int Accept();
 

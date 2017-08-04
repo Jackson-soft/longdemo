@@ -1,10 +1,11 @@
 #include "ThreadPool.h"
 
-ThreadPool::ThreadPool(unsigned short num) : nThreadNum(num), bRunning(true)
+ThreadPool::ThreadPool(unsigned short num) : nThreadNum(num)
 {
 	if (nThreadNum == 0) {
-		nThreadNum = std::thread::hardware_concurrency();
+        nThreadNum = std::thread::hardware_concurrency();
 	}
+    tThreads.reserve(nThreadNum);
 	for (unsigned short i = 0; i < nThreadNum; ++i) {
 		tThreads.emplace_back(std::make_shared<std::thread>(
 			std::bind(&ThreadPool::ThreadWork, this)));
@@ -20,6 +21,7 @@ ThreadPool::~ThreadPool()
 			// it.get()->join(); //线程自行消亡
 			it.get()->detach();
 		}
+        tThreads.clear();
 	}
 }
 

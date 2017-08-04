@@ -10,7 +10,7 @@ TcpServer::TcpServer() {}
 TcpServer::TcpServer(std::string_view ip,
 					 unsigned short port,
 					 unsigned short workNum)
-	: bRunning(true), sIp(ip), nPort(port), nWorkers(workNum)
+    : sIp(ip), nPort(port), nWorkers(workNum), bRunning(true)
 {
 	if (nWorkers == 0) {
 		nWorkers = std::thread::hardware_concurrency();

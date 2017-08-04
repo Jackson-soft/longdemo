@@ -7,7 +7,9 @@ class TcpServer
 {
 public:
 	TcpServer();
-	TcpServer(std::string_view ip, int port, unsigned int workNum = 0);
+    TcpServer(std::string_view ip,
+              unsigned short port,
+              unsigned short workNum = 0);
 	~TcpServer();
 
 	// 主循环
@@ -16,16 +18,15 @@ public:
 	void Stop();
 
 private:
-	//初始化master,worker进程
+    // 初始化master,worker进程
 	bool initServer();
 
-	//worker
+    // worker
 	void workerRun();
-
 
 private:
 	bool bRunning;
 	std::string_view sIp;
 	unsigned short nPort;
-	unsigned short nWorkers; //工作进程数量
+    unsigned short nWorkers; // 工作进程数量
 };

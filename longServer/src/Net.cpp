@@ -34,7 +34,7 @@ bool Net::Listen(std::string_view ip, unsigned short port)
 
 	bool bRet = true;
 	if (!ip.empty()) {
-		addr.sin_addr.s_addr = ::inet_addr(ip);
+        addr.sin_addr.s_addr = ::inet_addr(ip.data());
 		if (INADDR_NONE == addr.sin_addr.s_addr) {
 			bRet = false;
 		}

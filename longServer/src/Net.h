@@ -1,25 +1,26 @@
 #pragma once
 
+#include <string_view>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <string_view>
 
 class Net
 {
 public:
-	Net();
-	~Net();
+    Net();
+    ~Net();
 
-	bool Listen(std::string_view ip, unsigned short port);
+    bool Listen(std::string_view ip, unsigned short port);
 
-	int Accept();
+    // 返回接收的socket文件描述符
+    int Accept();
 
-	//优雅关闭
-	int ShutDown();
+    //优雅关闭
+    int ShutDown();
 
-	int Close();
+    int Close();
 
 private:
-	int fSocket; //
+    int fSocket; //
 };

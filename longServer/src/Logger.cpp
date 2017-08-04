@@ -42,10 +42,10 @@ void Logger::checkFile()
 
 	if (nFileSize >= nMaxFileSize * 1024 * 1024) {
 		nLogBlockid++;
-		if (sCurrentDay != TimeUtility::GetCurrentDay()) {
+        if (sCurrentDay != TimeUtil::GetCurrentDay()) {
 			//序列重置为0
 			nLogBlockid = 0;
-			sCurrentDay = TimeUtility::GetCurrentDay();
+            sCurrentDay = TimeUtil::GetCurrentDay();
 		}
 
 		sLogLocation = boost::str(boost::format("%s/log_%s%d.log") % sLogPath %
@@ -62,7 +62,7 @@ void Logger::checkFile()
 
 bool Logger::openFile()
 {
-	sCurrentDay  = TimeUtility::GetCurrentDay();
+    sCurrentDay  = TimeUtil::GetCurrentDay();
 	sLogLocation = boost::str(boost::format("%s/log_%s%d.log") % sLogPath %
 							  sCurrentDay % nLogBlockid);
 
@@ -82,7 +82,7 @@ int Logger::getLogHead(char *buffer, Logger::LogLevel level)
 	return std::snprintf(buffer,
 						 DEFAULT_BUFFER_SIZE,
 						 "[%s] [%s] [%s:%d] [%s] ",
-						 TimeUtility::GetCurrentTime().c_str(),
+                         TimeUtil::GetCurrentTime().c_str(),
 						 logLevelToString(level),
 						 __FILE__,
 						 __LINE__,

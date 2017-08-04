@@ -11,30 +11,35 @@ EPoller::EPoller()
 
 EPoller::~EPoller() { ::close(fEpoll); }
 
-void EPoller::AddEpoll(int socketfd)
+void EPoller::AddEvent(int socketfd)
 {
-	::epoll_ctl(fEpoll, EPOLL_CTL_ADD, socketfd, &mEvents);
+    struct epoll_event event;
+    ::epoll_ctl(fEpoll, EPOLL_CTL_ADD, socketfd, &event);
 }
 
-void EPoller::DelEpoll(int socketfd)
+void EPoller::DelEvent(int socketfd)
 {
-	::epoll_ctl(fEpoll, EPOLL_CTL_DEL, socketfd, &mEvents);
+    struct epoll_event event;
+    ::epoll_ctl(fEpoll, EPOLL_CTL_DEL, socketfd, &event);
 }
 
-void EPoller::EpollWait()
+void EPoller::EventWait(int timeout)
 {
 	while (true) {
 		// timeout：-1永久阻塞，0立即返回，非阻塞，>0指定微秒数
-		int activeCnt = epoll_wait(epfd, events, 512, 0);
+        int activeCnt = ::epoll_wait(fEpoll,
+                                     &*mEvents.begin(),
+                                     static_cast<int>(mEvents.size()),
+                                     timeout);
 		if (activeCnt <= 0) {
 			//这里做点啥呢
 			continue;
 		}
 		for (int i = 0; i < activeCnt; ++i) {
 			// if(events[i].data.fd == listenFd)
-			if (events[i].events & EPOLLIN) {
+            if (mEvents[i].events & EPOLLIN) {
 				// read
-			} else if (events[i].events & EPOLLOUT) {
+            } else if (mEvents[i].events & EPOLLOUT) {
 				// write
 			}
 		}

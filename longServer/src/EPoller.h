@@ -1,17 +1,19 @@
 #pragma once
 
+#include "EventLoop.hpp"
 #include <sys/epoll.h>
 #include <vector>
 
-class EPoller
+// 消息循环的epoll实现
+class EPoller : public EventLoop
 {
 public:
 	EPoller();
 	~EPoller();
 
-	void AddEpoll(int socketfd);
-	void DelEpoll(int socketfd);
-	void EpollWait();
+    void AddEvent(int socketfd) override;
+    void DelEvent(int socketfd) override;
+    void EventWait(int timeout = 0) override;
 
 private:
 	int fEpoll; // epoll文件描述符

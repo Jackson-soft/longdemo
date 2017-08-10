@@ -1,3 +1,4 @@
+#include <future>
 #include <iostream>
 #include <string>
 
@@ -16,5 +17,7 @@ int main()
     */
     std::cout << TimeUtil::GetCurrentDay() << std::endl;
     std::cout << TimeUtil::GetCurrentTime() << std::endl;
+    auto f1 = std::async(std::launch::async, []() { return 9; });
+    std::cout << f1.get() << std::endl;
     return 0;
 }

@@ -29,9 +29,9 @@ void ThreadPool::ThreadWork()
 {
 	while (bRunning.load()) {
 		std::unique_lock<std::mutex> tLock(tMutex);
-		tCondition.wait(tLock, [this]() { return !tTasks.empty(); });
-		Task task{std::move(tTasks.front())};
-		tTasks.pop(); //删掉队列的头元素
+        tCondition.wait(tLock, [this]() { return !tTasks.Empty(); });
+        Task task{std::move(tTasks.Front())};
+        tTasks.Pop(); //删掉队列的头元素
 		task();
 	}
 }

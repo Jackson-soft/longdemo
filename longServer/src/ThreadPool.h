@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SyncQueue.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <functional>
@@ -18,7 +19,7 @@ class ThreadPool
 private:
     void ThreadWork(); //任务执行体
 
-    std::queue<Task> tTasks;							//任务队列
+    SyncQueue<Task> tTasks;								//任务队列
     std::vector<std::shared_ptr<std::thread>> tThreads; //线程对象
     unsigned short nThreadNum;							//线程数
 
@@ -47,7 +48,7 @@ auto ThreadPool::AddTask(F &&f, Args &&... args)
     std::unique_lock<std::mutex> tLock(tMutex);
     auto task = std::make_shared<std::packaged_task<resType()>>(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-    tTasks.emplace([task]() { (*task)(); });
+    tTasks.Emplace([task]() { (*task)(); });
     tCondition.notify_one();
     std::future<resType> ret = task.get()->get_future();
     return ret;

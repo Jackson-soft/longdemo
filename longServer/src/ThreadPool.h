@@ -34,22 +34,18 @@ public:
     //提交任务到队列
     template <typename F, typename... Args>
     auto AddTask(F &&f, Args &&... args)
-        -> std::future<typename std::result_of<F(Args...)>::type>;
-};
-
-template <typename F, typename... Args>
-auto ThreadPool::AddTask(F &&f, Args &&... args)
-    -> std::future<typename std::result_of<F(Args...)>::type>
-{
-    if (!bRunning.load()) {
-        throw std::runtime_error("task executor have closed commit.");
+        -> std::future<std::result_of_t<F(Args...)>>
+    {
+        if (!bRunning.load()) {
+            throw std::runtime_error("task executor have closed commit.");
+        }
+        using resType = std::result_of_t<F(Args...)>;
+        std::unique_lock<std::mutex> tLock(tMutex);
+        auto task = std::make_shared<std::packaged_task<resType()>>(
+            std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+        tTasks.Emplace([task]() { (*task)(); });
+        tCondition.notify_one();
+        std::future<resType> ret = task.get()->get_future();
+        return ret;
     }
-    using resType = typename std::result_of<F(Args...)>::type;
-    std::unique_lock<std::mutex> tLock(tMutex);
-    auto task = std::make_shared<std::packaged_task<resType()>>(
-        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-    tTasks.Emplace([task]() { (*task)(); });
-    tCondition.notify_one();
-    std::future<resType> ret = task.get()->get_future();
-    return ret;
-}
+};

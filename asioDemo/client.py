@@ -10,6 +10,8 @@ nPort = 8088
 
 cSocket.connect((sHost, nPort))
 
+cSocket.send("dasdfas")
+
 sMsg = cSocket.recv(1024)
 
 cSocket.close()

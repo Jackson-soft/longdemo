@@ -4,12 +4,12 @@ project(asioDemo)
 
 set(CMAKE_CXX_STANDARD 17)
 
-FIND_PACKAGE(Boost 1.63.0 COMPONENTS system REQUIRED)
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+find_package(Protobuf REQUIRED)
 
-add_definitions(-DBOOST_ALL_NO_LIB)
-add_definitions(-DBOOST_ALL_DYN_LINK)
+find_package(Boost COMPONENTS system REQUIRED)
 
-add_executable(${PROJECT_NAME} "main.cpp")
+aux_source_directory(. DIR_SRCS)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
+add_executable(${PROJECT_NAME} ${DIR_SRCS})
+
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARY})

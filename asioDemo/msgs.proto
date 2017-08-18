@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package tutorial;
+
+message Login {
+    string name = 1;
+    string password = 2;
+}
+
+message RetData {
+    int32 code = 1;
+    string msg = 2;
+}

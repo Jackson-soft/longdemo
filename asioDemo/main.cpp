@@ -1,9 +1,13 @@
 #include "msgs.pb.h"
 #include <boost/asio.hpp>
+#include <future>
 #include <iostream>
 
 int main(int argc, char *argv[])
 {
+    auto fu = std::async(std::launch::async,
+                         []() { std::cout << "dfsdfa" << std::endl; });
+    fu.get();
     GOOGLE_PROTOBUF_VERIFY_VERSION;
     tutorial::Login loginMsg;
     loginMsg.set_name("fusu");

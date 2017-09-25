@@ -10,7 +10,7 @@ nPort = 8088
 
 cSocket.connect((sHost, nPort))
 
-cSocket.send("dasdfas")
+cSocket.send(b'hello, this is a python3 client')
 
 sMsg = cSocket.recv(1024)
 

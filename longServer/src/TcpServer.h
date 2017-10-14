@@ -1,9 +1,10 @@
 #pragma once
 
+#include <boost/noncopyable.hpp>
 #include <string_view>
 
 // Tcp 服务器
-class TcpServer
+class TcpServer : boost::noncopyable
 {
 public:
 	TcpServer();

@@ -8,11 +8,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-Net::Net() {}
+Socket::Socket() {}
 
-Net::~Net() { Close(); }
+Socket::~Socket() { Close(); }
 
-bool Net::Listen(std::string_view ip, unsigned short port)
+bool Socket::Listen(std::string_view ip, unsigned short port)
 {
 	fSocket = ::socket(
 		AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
@@ -34,7 +34,7 @@ bool Net::Listen(std::string_view ip, unsigned short port)
 
 	bool bRet = true;
 	if (!ip.empty()) {
-        addr.sin_addr.s_addr = ::inet_addr(ip.data());
+		addr.sin_addr.s_addr = ::inet_addr(ip.data());
 		if (INADDR_NONE == addr.sin_addr.s_addr) {
 			bRet = false;
 		}
@@ -57,7 +57,7 @@ bool Net::Listen(std::string_view ip, unsigned short port)
 	return bRet;
 }
 
-int Net::Accept()
+int Socket::Accept()
 {
 	struct sockaddr_in addr;
 	socklen_t socklen = sizeof(addr);
@@ -67,6 +67,6 @@ int Net::Accept()
 					 SOCK_NONBLOCK | SOCK_CLOEXEC);
 }
 
-int Net::ShutDown() { return ::shutdown(fSocket, SHUT_WR); }
+int Socket::ShutDown() { return ::shutdown(fSocket, SHUT_WR); }
 
-int Net::Close() { return ::close(fSocket); }
+int Socket::Close() { return ::close(fSocket); }

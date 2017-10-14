@@ -5,11 +5,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-class Net
+class Socket
 {
 public:
-    Net();
-    ~Net();
+    Socket();
+    ~Socket();
 
     bool Listen(std::string_view ip, unsigned short port);
 
@@ -22,5 +22,5 @@ public:
     int Close();
 
 private:
-    int fSocket; //
+    int mSocket; //
 };

@@ -10,7 +10,7 @@ public:
 	TcpServer();
     TcpServer(std::string_view ip,
               unsigned short port,
-              unsigned short workNum = 0);
+              unsigned int workNum = 0);
 	~TcpServer();
 
 	// 主循环
@@ -26,8 +26,8 @@ private:
 	void workerRun();
 
 private:
-	bool bRunning;
-	std::string_view sIp;
-	unsigned short nPort;
-    unsigned short nWorkers; // 工作进程数量
+    std::string_view mIP; // address
+    unsigned short mPort;
+    unsigned int mWorkers; // 工作进程数量
+    bool mRunning;
 };

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package notify;
+
+message Login {
+    string usrName = 1;
+    string password = 2;
+}

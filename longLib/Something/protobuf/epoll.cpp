@@ -6,10 +6,13 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <vector>
+
+#include "./message/notify.pb.h"
 
 int main()
 {
@@ -22,15 +25,17 @@ int main()
 	servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	int on = 1;
-	::setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+	::setsockopt(socketfd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on));
 	::bind(socketfd, (struct sockaddr *)&servAddr, sizeof(servAddr));
 
 	// 设置非阻塞
 	int nFlag = ::fcntl(socketfd, F_GETFL, 0);
 	if (nFlag == -1) {
+		std::cout << "fcntl: " << std::strerror(errno) << std::endl;
 		std::exit(-1);
 	}
-	if (::fcntl(socketfd, nFlag | O_NONBLOCK) == -1) {
+	if (::fcntl(socketfd, F_SETFL, nFlag | O_NONBLOCK) == -1) {
+		std::cout << "fcntl2: " << std::strerror(errno) << std::endl;
 		std::exit(-1);
 	}
 
@@ -38,6 +43,7 @@ int main()
 
 	int epollfd = epoll_create1(EPOLL_CLOEXEC);
 	if (epollfd <= 0) {
+		std::cout << "epoll_create1: " << std::strerror(errno) << std::endl;
 		std::exit(-1);
 	}
 
@@ -100,9 +106,19 @@ int main()
 					::epoll_ctl(epollfd, EPOLL_CTL_DEL, conn, &epEvent);
 				}
 
-				::write(conn, recvBuf, std::strlen(recvBuf));
+				notify::Login mLogin;
+				mLogin.ParseFromArray(recvBuf, ret);
+				std::cout << mLogin.usrname().data() << std::endl;
+				std::cout << mLogin.password().data() << std::endl;
+
+				std::string mSend{"hi,client!!!"};
+				::send(conn, mSend.data(), mSend.size(), MSG_DONTWAIT);
 			} else if (events[i].events & EPOLLOUT) {
 				// write
+				conn = events[i].data.fd;
+				if (conn <= 0) {
+					continue;
+				}
 			}
 		}
 	}

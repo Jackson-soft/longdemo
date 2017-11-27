@@ -1,0 +1,1 @@
+g++ client.cpp ./message/notify.pb.cc -lprotobuf -o client.out

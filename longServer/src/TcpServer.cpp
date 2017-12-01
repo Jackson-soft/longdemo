@@ -7,10 +7,10 @@
 
 TcpServer::TcpServer() {}
 
-TcpServer::TcpServer(std::string_view ip,
-					 unsigned short port,
+TcpServer::TcpServer(unsigned short port,
+                     std::string_view ip,
                      unsigned int workNum)
-    : mIP(ip), mPort(port), mWorkers(workNum), mRunning(true)
+    : mPort(port), mIP(ip), mWorkers(workNum), mRunning(true)
 {
     if (mWorkers == 0) {
         mWorkers = std::thread::hardware_concurrency();
@@ -22,7 +22,7 @@ TcpServer::~TcpServer() { Stop(); }
 bool TcpServer::initServer()
 {
     for (unsigned int i = 0; i < mWorkers; ++i) {
-		auto pid = fork();
+        auto pid = ::fork();
 		switch (pid) {
 		case -1:
 			//错误处理

@@ -23,12 +23,14 @@ public:
         NUM_LOG_LEVELS,
     };
 
+    Logger() = default;
     Logger(LogLevel level, std::string logPath, std::uint64_t maxFile);
     ~Logger();
 
     void SetLevel(LogLevel logLevel);
     LogLevel GetLevel() const;
 
+    //单例实例
     static Logger *
     GetInstance(LogLevel level, std::string logPath, std::uint64_t maxFile)
     {
@@ -51,14 +53,14 @@ private:
     int getLogHead(char *buffer, LogLevel level);
 
 private:
-    LogLevel tLogLevel;			//日志等级
-    std::string sLogPath;		//日志存放目录
-    std::uint64_t nMaxFileSize; //日志分隔的大小上限
-    std::FILE *fFd;				//日志文件描述符
-    std::FILE *fChangFd;		//日志文件描述符
-    std::atomic_bool bChangFd;  //是否要更换文件描述符
-    int nLogBlockid;			//日志的序号
-    std::string sLogLocation;   //日志文件名
-    std::string sCurrentDay;	//当前日期
-    uint64_t DEFAULT_BUFFER_SIZE = 2 * 1024 * 1024;
+    LogLevel mLevel;		   //日志等级
+    std::string mPath;		   //日志存放目录
+    std::uint64_t mMaxSize;	//日志分隔的大小上限
+    std::FILE *mFd;			   //日志文件描述符
+    std::FILE *mChangFd;	   //日志文件描述符
+    int mBlockid;			   //日志的序号
+    std::atomic_bool mIsChang; //是否要更换文件描述符
+    std::string mLocation;	 //日志文件名
+    std::string mCurrentDay;   //当前日期
+    uint64_t DEFAULT_BUFFER_SIZE{2 * 1024 * 1024};
 };

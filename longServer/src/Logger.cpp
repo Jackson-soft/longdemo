@@ -1,18 +1,22 @@
 #include "Logger.h"
 
 Logger::Logger(LogLevel level, std::string logPath, std::uint64_t maxFile)
-	: tLogLevel(level), sLogPath(logPath), nMaxFileSize(maxFile), nLogBlockid(0)
+    : mLevel(level), mPath(logPath), mMaxSize(maxFile), mBlockid(0),
+      mIsChang(false)
 {
 	if (!std::experimental::filesystem::create_directory(logPath)) {
 	}
-	bChangFd = false;
 }
 
-Logger::~Logger() { std::fclose(fFd); }
+Logger::~Logger()
+{
+    std::fclose(mFd);
+    std::fclose(mChangFd);
+}
 
-void Logger::SetLevel(LogLevel logLevel) { tLogLevel = logLevel; }
+void Logger::SetLevel(LogLevel logLevel) { mLevel = logLevel; }
 
-Logger::LogLevel Logger::GetLevel() const { return tLogLevel; }
+Logger::LogLevel Logger::GetLevel() const { return mLevel; }
 
 void Logger::Log(LogLevel level, const char *format, ...) {}
 
@@ -38,40 +42,40 @@ const char *Logger::logLevelToString(LogLevel level) const
 
 void Logger::checkFile()
 {
-	auto nFileSize = std::experimental::filesystem::file_size(sLogLocation);
+    auto nFileSize = std::experimental::filesystem::file_size(mLocation);
 
-	if (nFileSize >= nMaxFileSize * 1024 * 1024) {
-		nLogBlockid++;
-        if (sCurrentDay != TimeUtil::GetCurrentDay()) {
+    if (nFileSize >= mMaxSize * 1024 * 1024) {
+        mBlockid++;
+        if (mCurrentDay != TimeUtil::GetCurrentDay()) {
 			//序列重置为0
-			nLogBlockid = 0;
-            sCurrentDay = TimeUtil::GetCurrentDay();
+            mBlockid	= 0;
+            mCurrentDay = TimeUtil::GetCurrentDay();
 		}
 
-		sLogLocation = boost::str(boost::format("%s/log_%s%d.log") % sLogPath %
-								  sCurrentDay % nLogBlockid);
+        mLocation = boost::str(boost::format("%s/log_%s%d.log") % mPath %
+                               mCurrentDay % mBlockid);
 
-		fChangFd = std::fopen(sLogLocation.c_str(), "a");
-		if (nullptr != fChangFd) {
-			bChangFd = true;
+        mChangFd = std::fopen(mLocation.c_str(), "a");
+        if (nullptr != mChangFd) {
+            mIsChang = true;
 			//设置buffer为line buffering
-			std::setvbuf(fChangFd, nullptr, _IOLBF, 0);
+            std::setvbuf(mChangFd, nullptr, _IOLBF, 0);
 		}
 	}
 }
 
 bool Logger::openFile()
 {
-    sCurrentDay  = TimeUtil::GetCurrentDay();
-	sLogLocation = boost::str(boost::format("%s/log_%s%d.log") % sLogPath %
-							  sCurrentDay % nLogBlockid);
+    mCurrentDay = TimeUtil::GetCurrentDay();
+    mLocation   = boost::str(boost::format("%s/log_%s%d.log") % mPath %
+                           mCurrentDay % mBlockid);
 
-	fFd = std::fopen(sLogLocation.c_str(), "a");
-	if (nullptr == fFd) {
+    mFd = std::fopen(mLocation.c_str(), "a");
+    if (nullptr == mFd) {
 		return false;
 	}
 	//设置buffer为line buffering
-	if (std::setvbuf(fFd, nullptr, _IOLBF, 0) != 0) {
+    if (std::setvbuf(mFd, nullptr, _IOLBF, 0) != 0) {
 		return false;
 	}
 	return true;

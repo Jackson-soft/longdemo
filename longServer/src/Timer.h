@@ -1,31 +1,43 @@
 #pragma once
 
+#include "MinHeap.hpp"
+#include "Util.hpp"
 #include <chrono>
+#include <functional>
 
 //定时器
-class Timer
+class Timer : noncopyable
 {
-private:
-    std::chrono::microseconds nTick; //定时器的粒度
+	using Action = std::function<void()>;
 
-    Timer(std::chrono::microseconds tick);
-
-    //定时器循环
-    void timerExec();
 public:
-    ~Timer();
+	static Timer *GetInstance()
+	{
+		static Timer timer;
+		return &timer;
+	}
 
-    static Timer* GetInstance(std::chrono::microseconds tick) {
-        static Timer timer(tick);
-        return &timer;
-    }
+	// 单次
+	unsigned int SetOnceTimer(double interval, Action func);
 
-    //开始
-    unsigned int SetTimer(double interval);
+	// 循环
+	unsigned int SetLoopTimer(double interval, Action fucn);
 
-    //取消定时器
-    void StopTimer(unsigned int timeId);
+	//取消定时器
+	void StopTimer(unsigned int timeId);
 
-    //异步等待
-    void AsyncWait();
+	//异步等待
+	void AsyncWait();
+
+private:
+	std::chrono::microseconds mTick; //定时器的粒度
+
+	Timer(std::chrono::microseconds tick);
+
+	Timer();
+
+	~Timer();
+
+	//定时器循环
+	void timerExec();
 };

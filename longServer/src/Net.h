@@ -8,19 +8,33 @@
 class Socket
 {
 public:
-    Socket();
-    ~Socket();
+	Socket();
+	Socket(const int fd);
+	~Socket();
 
-    bool Listen(std::string_view ip, unsigned short port);
+	//监听服务器
+	bool Listen(unsigned short port, std::string_view ip = {""});
 
-    // 返回接收的socket文件描述符
-    int Accept();
+	//连接目标服务器
+	bool Dial(unsigned short port, std::string_view ip);
 
-    //优雅关闭
-    int ShutDown();
+	// 返回接收的socket文件描述符
+	int Accept();
 
-    int Close();
+	int SetKeeplive(bool on);
+
+	//优雅关闭
+	int ShutDown();
+
+	//关闭
+	int Close();
 
 private:
-    int mSocket; //
+	int mSocket{0}; //
+
+	//
+	bool createSocket();
+
+	//
+	bool bindSocket(unsigned short port, std::string_view ip = {""});
 };

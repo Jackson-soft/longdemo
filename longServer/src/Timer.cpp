@@ -1,14 +1,16 @@
 #include "Timer.h"
 
-Timer::Timer(std::chrono::microseconds tick) : nTick(tick) {}
+Timer::Timer(std::chrono::microseconds tick) : mTick(tick) {}
+
+Timer::Timer() : Timer(std::chrono::microseconds(1)) {}
 
 Timer::~Timer() {}
 
-unsigned int Timer::SetTimer(double interval) { return 0; }
+unsigned int Timer::SetOnceTimer(double interval, Action func) { return 0; }
+
+unsigned int Timer::SetLoopTimer(double interval, Action fucn) { return 0; }
 
 void Timer::StopTimer(unsigned int timeId) {}
-
-void Timer::timerExec() {}
 
 void Timer::AsyncWait()
 {
@@ -16,3 +18,5 @@ void Timer::AsyncWait()
 		this->timerExec();
 	}
 }
+
+void Timer::timerExec() {}

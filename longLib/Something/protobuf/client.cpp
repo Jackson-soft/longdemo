@@ -30,6 +30,7 @@ int main()
 	notify::Login mLogin;
 	mLogin.set_usrname("fusu");
 	mLogin.set_password("23455");
+	std::cout << "name: " << mLogin.descriptor()->name().data() << std::endl;
 
 	int nSize = mLogin.ByteSize();
 	unsigned char bts[nSize];
@@ -42,8 +43,10 @@ int main()
 	while (true) {
 		// recv();
 		char mBuffer[1024];
-		::recv(socketfd, &mBuffer, 1024, MSG_DONTWAIT);
-		std::cout << mBuffer << std::endl;
+		int nRecv = ::recv(socketfd, &mBuffer, 1024, MSG_DONTWAIT);
+		if (nRecv > 0) {
+			std::cout << mBuffer << std::endl;
+		}
 	}
 	close(socketfd);
 	return 0;

@@ -3,12 +3,14 @@
 //这个基类定义事件循环的接口
 class EventLoop
 {
-private:
 public:
     EventLoop() = default;
-    virtual ~EventLoop(){}
+    virtual ~EventLoop() {}
 
-    virtual void AddEvent(int socketfd) = 0;
-    virtual void DelEvent(int socketfd) = 0;
-    virtual void EventWait(int timeout = 0) = 0;
+    virtual void AddEvent(int eventfd) = 0;
+    virtual void DelEvent(int eventfd) = 0;
+    virtual void ModEvent(int eventfd) = 0;
+    virtual void EventWait(int eventfd, int timeout = 0) = 0;
+
+private:
 };

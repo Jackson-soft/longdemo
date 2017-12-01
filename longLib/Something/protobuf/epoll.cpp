@@ -49,7 +49,7 @@ int main()
 
 	struct epoll_event epEvent;
 	epEvent.data.fd = socketfd;
-	epEvent.events  = EPOLLIN | EPOLLET;
+	epEvent.events  = EPOLLIN | EPOLLOUT;
 	::epoll_ctl(epollfd, EPOLL_CTL_ADD, socketfd, &epEvent);
 
 	using EventList = std::vector<struct epoll_event>;
@@ -88,7 +88,7 @@ int main()
 				}
 
 				epEvent.data.fd = conn;
-				epEvent.events  = EPOLLIN | EPOLLET;
+				epEvent.events  = EPOLLIN;
 				::epoll_ctl(epollfd, EPOLL_CTL_ADD, conn, &epEvent);
 			} else if (events[i].events & EPOLLIN) {
 				// read
@@ -100,24 +100,40 @@ int main()
 				int ret = ::recv(conn, recvBuf, 1024, MSG_DONTWAIT);
 				if (ret == 0) {
 					std::cout << "client close" << std::endl;
-					::close(conn);
 
 					epEvent = events[i];
 					::epoll_ctl(epollfd, EPOLL_CTL_DEL, conn, &epEvent);
+					::close(conn);
 				}
 
 				notify::Login mLogin;
 				mLogin.ParseFromArray(recvBuf, ret);
 				std::cout << mLogin.usrname().data() << std::endl;
 				std::cout << mLogin.password().data() << std::endl;
-
-				std::string mSend{"hi,client!!!"};
-				::send(conn, mSend.data(), mSend.size(), MSG_DONTWAIT);
+				std::cout << "name: " << mLogin.descriptor()->name().data()
+						  << std::endl;
+				// epEvent			= events[i];
+				epEvent.events  = EPOLLOUT;
+				epEvent.data.fd = conn;
+				if (::epoll_ctl(epollfd, EPOLL_CTL_MOD, conn, &epEvent) < 0) {
+					std::cout << "read: " << std::strerror(errno) << std::endl;
+				}
 			} else if (events[i].events & EPOLLOUT) {
 				// write
+				std::cout << "write" << std::endl;
 				conn = events[i].data.fd;
 				if (conn <= 0) {
 					continue;
+				}
+
+				std::string mSend{"hi,client!!!"};
+				::send(conn, mSend.data(), mSend.size(), MSG_DONTWAIT);
+
+				// epEvent			= events[i];
+				epEvent.events  = EPOLLIN;
+				epEvent.data.fd = conn;
+				if (::epoll_ctl(epollfd, EPOLL_CTL_MOD, conn, &epEvent) < 0) {
+					std::cout << "write: " << std::strerror(errno) << std::endl;
 				}
 			}
 		}

@@ -8,8 +8,8 @@ class TcpServer : boost::noncopyable
 {
 public:
 	TcpServer();
-    TcpServer(std::string_view ip,
-              unsigned short port,
+    TcpServer(unsigned short port,
+              std::string_view ip  = {""},
               unsigned int workNum = 0);
 	~TcpServer();
 
@@ -26,8 +26,8 @@ private:
 	void workerRun();
 
 private:
-    std::string_view mIP; // address
     unsigned short mPort;
+    std::string_view mIP;  // address
     unsigned int mWorkers; // 工作进程数量
     bool mRunning;
 };

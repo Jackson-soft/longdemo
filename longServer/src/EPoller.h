@@ -13,9 +13,10 @@ public:
 
     void AddEvent(int socketfd) override;
     void DelEvent(int socketfd) override;
-    void EventWait(int timeout = 0) override;
+    void ModEvent(int socketfd) override;
+    void EventWait(int eventfd, int timeout = 0) override;
 
 private:
-	int fEpoll; // epoll文件描述符
+    int mEpoll; // epoll文件描述符
 	std::vector<struct epoll_event> mEvents;
 };

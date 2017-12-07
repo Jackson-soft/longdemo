@@ -8,15 +8,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-Socket::Socket() {}
+Net::Net() {}
 
-Socket::Socket(const int fd) : mSocket(fd) {}
+Net::Net(const int fd) : mSocket(fd) {}
 
-Socket::~Socket() { Close(); }
+Net::~Net() { Close(); }
 
-bool Socket::Listen(unsigned short port, std::string_view ip)
+bool Net::Listen(unsigned short port, std::string_view ip)
 {
-	bool bRet = createSocket();
+    bool bRet = newSocket();
 	if (bRet) {
 		bRet = bindSocket(port, ip);
 	}
@@ -30,9 +30,9 @@ bool Socket::Listen(unsigned short port, std::string_view ip)
 	return bRet;
 }
 
-bool Socket::Dial(unsigned short port, std::string_view ip)
+bool Net::Dial(unsigned short port, std::string_view ip)
 {
-	bool bRet = createSocket();
+    bool bRet = newSocket();
 
 	if (bRet) {
 		struct sockaddr_in servAddr;
@@ -50,7 +50,7 @@ bool Socket::Dial(unsigned short port, std::string_view ip)
 	return bRet;
 }
 
-int Socket::Accept()
+int Net::Accept()
 {
 	struct sockaddr_in addr;
 	socklen_t socklen = sizeof(addr);
@@ -60,21 +60,21 @@ int Socket::Accept()
 					 SOCK_NONBLOCK | SOCK_CLOEXEC);
 }
 
-int Socket::SetKeeplive(bool on)
+int Net::SetKeeplive(bool on)
 {
 	int optVal = on ? 1 : 0;
 	return ::setsockopt(mSocket,
 						SOL_SOCKET,
 						SO_KEEPALIVE,
 						&optVal,
-                        static_cast<socklen_t>(sizeof(optVal)));
+						static_cast<socklen_t>(sizeof(optVal)));
 }
 
-int Socket::ShutDown() { return ::shutdown(mSocket, SHUT_WR); }
+int Net::ShutDown() { return ::shutdown(mSocket, SHUT_WR); }
 
-int Socket::Close() { return ::close(mSocket); }
+int Net::Close() { return ::close(mSocket); }
 
-bool Socket::createSocket()
+bool Net::newSocket()
 {
 	mSocket = ::socket(
 		AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
@@ -90,7 +90,7 @@ bool Socket::createSocket()
 	}
 }
 
-bool Socket::bindSocket(unsigned short port, std::string_view ip)
+bool Net::bindSocket(unsigned short port, std::string_view ip)
 {
 	struct sockaddr_in addr;
 	std::memset(&addr, 0, sizeof(addr));

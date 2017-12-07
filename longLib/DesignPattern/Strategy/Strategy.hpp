@@ -7,5 +7,5 @@ public:
 	Strategy();
 	virtual ~Strategy();
 
-	virtual void algorithm() = 0;
+	virtual void Algorithm() = 0;
 };

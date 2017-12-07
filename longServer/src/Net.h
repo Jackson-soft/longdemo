@@ -5,12 +5,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-class Socket
+class Net
 {
 public:
-	Socket();
-	Socket(const int fd);
-	~Socket();
+	Net();
+	Net(const int fd);
+	~Net();
 
 	//监听服务器
 	bool Listen(unsigned short port, std::string_view ip = {""});
@@ -30,11 +30,11 @@ public:
 	int Close();
 
 private:
-	int mSocket{0}; //
+    int mSocket{0}; //
 
 	//
-	bool createSocket();
+    bool newSocket();
 
 	//
-	bool bindSocket(unsigned short port, std::string_view ip = {""});
+    bool bindSocket(unsigned short port, std::string_view ip = {""});
 };

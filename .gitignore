@@ -1,6 +1,5 @@
 *.user
 build-*/
-build
 *.out
 *.o
 CMakeCache.txt

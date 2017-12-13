@@ -15,7 +15,7 @@ public:
 
 private:
 	std::string mName;
-	int mObserverState;
+    // int mObserverState;
 };
 
 ConcreteObeserver::ConcreteObeserver(std::string name) : mName(name) {}
@@ -24,7 +24,7 @@ ConcreteObeserver::~ConcreteObeserver() {}
 
 void ConcreteObeserver::Update(const std::string &msg)
 {
-	std::cout << msg.data() << std::endl;
+    std::cout << "this is " << mName.data() << " : " << msg.data() << std::endl;
 }
 
 std::string ConcreteObeserver::GetName() { return mName; }

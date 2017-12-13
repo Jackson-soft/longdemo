@@ -7,6 +7,21 @@
 
 int main()
 {
-	Subject *tSub;
-	return 0;
+    ConcreteObeserver *B = new ConcreteObeserver("B");
+    ConcreteObeserver *C = new ConcreteObeserver("C");
+
+    ConcreteSubject *Group = new ConcreteSubject();
+
+    Group->Attach(B);
+    Group->Attach(C);
+
+    Group->Notify("hello");
+
+    Group->Detach(C);
+
+    Group->Notify("World");
+    delete B;
+    delete C;
+    delete Group;
+    return 0;
 }

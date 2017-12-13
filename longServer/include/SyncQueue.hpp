@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Util.hpp"
 #include <mutex>
 #include <queue>
 #include <utility>
 
 template <typename T>
-class SyncQueue
+class SyncQueue : public Noncopyable
 {
 public:
 	SyncQueue() {}
@@ -29,7 +30,7 @@ public:
 		mQueue.push(value);
 	}
 
-    void Emplace(T && value)
+    void Emplace(T &&value)
     {
         std::lock_guard<std::mutex> locker(tMutex);
         mQueue.emplace(value);
@@ -47,7 +48,7 @@ public:
         return mQueue.front();
 	}
 
-    T& Back()
+    T &Back()
     {
         std::lock_guard<std::mutex> locker(tMutex);
         return mQueue.back();

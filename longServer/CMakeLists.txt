@@ -10,11 +10,10 @@ project(longServer)
 #查找当前目录下所有的文件并保存到DIR_SRCS变量
 aux_source_directory(. DIR_SRCS)
 
-#添加子目录
-add_subdirectory(src)
+include_directories(include)
 
 #指定生成目标
 add_executable(${PROJECT_NAME} ${DIR_SRCS})
 
 #添加链接库
-target_link_libraries(${PROJECT_NAME} pthread longlib)
+target_link_libraries(${PROJECT_NAME} pthread)

@@ -3,7 +3,7 @@
 // 具体目标
 #include "Subject.hpp"
 
-#include <vector>
+#include <list>
 
 class Observer;
 
@@ -16,10 +16,10 @@ public:
 	void Attach(Observer *pObserver);
 	void Detach(Observer *pObserver);
 
-	void Notify();
+    void Notify(const std::string &msg);
 
 private:
-	std::vector<Observer *> mObservers;
+    std::list<Observer *> mObservers;
 };
 
 void ConcreteSubject::Attach(Observer *pObserver)
@@ -29,17 +29,18 @@ void ConcreteSubject::Attach(Observer *pObserver)
 
 void ConcreteSubject::Detach(Observer *pObserver)
 {
-	for (auto it : mObservers) {
-		if (it == pObserver) {
-			mObservers.erase(pObserver);
-			return;
-		}
-	}
+    for (auto it = mObservers.begin(); it != mObservers.end();) {
+        if (*it == pObserver) {
+            it = mObservers.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
-void ConcreteSubject::Notify()
+void ConcreteSubject::Notify(const std::string &msg)
 {
 	for (auto it : mObservers) {
-		it->Update();
+        it->Update(msg);
 	}
 }

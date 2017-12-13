@@ -11,6 +11,4 @@ public:
     virtual void DelEvent(int eventfd) = 0;
     virtual void ModEvent(int eventfd) = 0;
     virtual void EventWait(int eventfd, int timeout = 0) = 0;
-
-private:
 };

@@ -1,36 +1,30 @@
 #pragma once
 
-#include <boost/noncopyable.hpp>
+#include "Acceptor.hpp"
+#include "Util.hpp"
 #include <string_view>
 
 // Tcp 服务器
-class TcpServer : boost::noncopyable
+class TcpServer : public Noncopyable
 {
 public:
-	//委托构造函数
-	TcpServer() : TcpServer(8088, "127.0.0.1") {}
+	TcpServer() {}
 
-	TcpServer(unsigned short port,
-			  std::string_view ip  = {""},
-			  unsigned int workNum = 0)
+	~TcpServer() {}
+
+	// 主循环
+	bool ListenTcp(unsigned short port,
+				   std::string_view ip  = {""},
+				   unsigned int workNum = 0)
 		: mPort(port), mIP(ip), mWorkers(workNum), mRunning(true)
 	{
 		if (mWorkers == 0) {
 			mWorkers = std::thread::hardware_concurrency();
 		}
-	}
-
-	~TcpServer() { Stop(); }
-
-	// 主循环
-	void Run()
-	{
 		initServer();
 		while (1) {
 		}
 	}
-
-	void Stop() { mRunning = false; }
 
 private:
 	// 初始化master,worker进程
@@ -63,8 +57,8 @@ private:
 	}
 
 private:
-	unsigned short mPort;
-	std::string_view mIP;  // address
+	unsigned short mPort;  // 端口
+	std::string_view mIP;  // ip地址
 	unsigned int mWorkers; // 工作进程数量
-	bool mRunning;
+	Acceptor mListener;
 };

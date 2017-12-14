@@ -6,4 +6,13 @@
 class Acceptor : public Noncopyable
 {
 public:
+	Acceptor() {}
+	~Acceptor() {}
+
+	int Accept() {}
+
+	void Close() {}
+
+private:
+	int mSocket;
 };

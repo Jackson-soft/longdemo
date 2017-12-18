@@ -9,7 +9,7 @@ public:
 	Acceptor() {}
 	~Acceptor() {}
 
-	int Accept() {}
+	int Accept() { return 0; }
 
 	void Close() {}
 

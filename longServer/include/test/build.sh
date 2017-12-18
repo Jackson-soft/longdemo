@@ -1,0 +1,1 @@
+g++ RingTest.cpp -std=c++17 -lboost_unit_test_framework -lpthread

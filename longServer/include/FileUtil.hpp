@@ -1,6 +1,6 @@
 #pragma once
 
-//异步AIO
+// 文件工具类
 
 class FileUtil
 {

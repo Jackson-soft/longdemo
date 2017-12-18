@@ -17,6 +17,7 @@ public:
 		}
 		mEvents.reserve(16);
 	}
+
 	~EPoller() { ::close(mEpoll); }
 
 	void AddEvent(int socketfd) override
@@ -52,7 +53,12 @@ public:
 				continue;
 			}
 			for (size_t i = 0; i < static_cast<size_t>(nReady); ++i) {
-				if (mEvents.at(i).data.fd == eventfd) {
+				if ((mEvents[i].events & EPOLLERR) ||
+					(mEvents[i].events & EPOLLHUP) ||
+					(!(mEvents[i].events & EPOLLIN))) {
+					::close(mEvents[i].data.fd);
+					continue;
+				} else if (mEvents.at(i).data.fd == eventfd) {
 					// accept
 				} else if (mEvents.at(i).events & EPOLLIN) {
 					// read

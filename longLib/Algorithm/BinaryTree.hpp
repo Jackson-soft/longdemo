@@ -17,10 +17,17 @@ public:
 	~BinaryTree() { root = nullptr; }
 
 	//压入
-	void Push(T t);
+	void Push(T t)
+	{
+		TreeNode *tn = new TreeNode();
+		tn->data	 = t;
+		if (root == nullptr) {
+			root = tn;
+		}
+	}
 
 	//弹出
-	void Pop();
+	void Pop() {}
 
 	//
 	void Display() { PreOrder(root); }
@@ -29,30 +36,12 @@ private:
 	TreeNode *root;
 
 	//前序遍历
-	void PreOrder(TreeNode *r);
+	void PreOrder(TreeNode *r)
+	{
+		if (r != nullptr) {
+			std::cout << r->data << " ";
+			PreOrder(r->left);
+			PreOrder(r->right);
+		}
+	}
 };
-
-template <typename T>
-void BinaryTree<T>::PreOrder(TreeNode *r)
-{
-	if (r != nullptr) {
-		std::cout << r->data << " ";
-		PreOrder(r->left);
-		PreOrder(r->right);
-	}
-}
-
-template <typename T>
-void BinaryTree<T>::Push(T t)
-{
-	TreeNode *tn = new TreeNode();
-	tn->data	 = t;
-	if (root == nullptr) {
-		root = tn;
-	}
-}
-
-template <typename T>
-void BinaryTree<T>::Pop()
-{
-}

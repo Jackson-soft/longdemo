@@ -8,14 +8,6 @@
 template <typename T>
 class RingBuffer
 {
-private:
-	//读写锁
-	mutable std::shared_mutex tMutex;
-	unsigned int nSize; // 总容量
-	unsigned int nWrite;
-	unsigned int nRead;
-	std::vector<T> vElems;
-
 public:
 	RingBuffer() : RingBuffer(30) {}
 	RingBuffer(int size) : nSize(size)
@@ -31,4 +23,12 @@ public:
 		std::unique_lock<std::shared_mutex> lock(tMutex);
 		return vElems.emplace_back(value);
 	}
+
+private:
+	//读写锁
+	mutable std::shared_mutex tMutex;
+	unsigned int nSize; // 总容量
+	unsigned int nWrite;
+	unsigned int nRead;
+	std::vector<T> vElems;
 };

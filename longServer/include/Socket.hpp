@@ -194,7 +194,7 @@ public:
 	int Close() { return ::close(mSocket); }
 
 	// 获取原生socket
-	int GetNativeFD() { return mSocket; }
+	int GetNativeFD() const { return mSocket; }
 
 private:
 	int mSocket{0}; //

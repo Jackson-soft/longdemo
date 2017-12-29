@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EventLoop.hpp"
+#include <cassert>
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <vector>
@@ -12,9 +13,7 @@ public:
 	EPoller()
 	{
 		mEpoll = epoll_create1(EPOLL_CLOEXEC);
-		if (mEpoll == -1) {
-			//
-		}
+		assert(mEpoll != -1);
 		mEvents.reserve(16);
 	}
 

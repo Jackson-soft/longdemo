@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EventLoop.hpp"
+#include <atomic>
 #include <cassert>
 #include <sys/epoll.h>
 #include <unistd.h>
@@ -19,25 +20,25 @@ public:
 
 	~EPoller() { ::close(mEpoll); }
 
-	void AddEvent(int socketfd) override
+	int AddEvent(int fd) override
 	{
 		struct epoll_event event;
-		::epoll_ctl(mEpoll, EPOLL_CTL_ADD, socketfd, &event);
+		return ::epoll_ctl(mEpoll, EPOLL_CTL_ADD, fd, &event);
 	}
 
-	void DelEvent(int socketfd) override
+	int DelEvent(int fd) override
 	{
 		struct epoll_event event;
-		::epoll_ctl(mEpoll, EPOLL_CTL_DEL, socketfd, &event);
+		return ::epoll_ctl(mEpoll, EPOLL_CTL_DEL, fd, &event);
 	}
 
-	void ModEvent(int socketfd) override
+	int ModEvent(int fd) override
 	{
 		struct epoll_event event;
-		::epoll_ctl(mEpoll, EPOLL_CTL_MOD, socketfd, &event);
+		return ::epoll_ctl(mEpoll, EPOLL_CTL_MOD, fd, &event);
 	}
 
-	void EventWait(int eventfd, int timeout = 0) override
+	int EventWait(int fd, int timeout = 0) override
 	{
 		int nReady{0};
 
@@ -57,7 +58,7 @@ public:
 					(!(mEvents[i].events & EPOLLIN))) {
 					::close(mEvents[i].data.fd);
 					continue;
-				} else if (mEvents.at(i).data.fd == eventfd) {
+				} else if (mEvents.at(i).data.fd == fd) {
 					// accept
 				} else if (mEvents.at(i).events & EPOLLIN) {
 					// read
@@ -66,9 +67,13 @@ public:
 				}
 			}
 		}
+		return 0;
 	}
 
 private:
-	int mEpoll; // epoll文件描述符
+	// epoll文件描述符
+	int mEpoll{0};
 	std::vector<struct epoll_event> mEvents;
+
+	std::atomic_bool mRunning{true};
 };

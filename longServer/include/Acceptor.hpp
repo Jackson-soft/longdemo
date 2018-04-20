@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Socket.hpp"
 #include "Util.hpp"
 
 // 接收器类
@@ -14,5 +15,5 @@ public:
 	void Close() {}
 
 private:
-	int mSocket;
+	Socket mSocket;
 };

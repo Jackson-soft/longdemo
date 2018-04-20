@@ -1,6 +1,6 @@
 #pragma once
 
-// socket封装类
+// socket封装类,ipv6
 
 #include "Util.hpp"
 #include <arpa/inet.h>
@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <string>
 #include <string_view>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -17,85 +18,99 @@
 class Socket : public Noncopyable
 {
 public:
-	Socket() {}
+	Socket() = default;
 	Socket(const int fd) : mSocket(fd) {}
+
+	// move constructor
+	Socket(const int &&fd) : mSocket(std::move(fd)) {}
 	~Socket() { Close(); }
 
-	bool NewSocket()
+	bool NewSocket(std::string_view network)
 	{
-		mSocket = ::socket(
-			AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
+		if (network == "tcp") {
+			mSocket = ::socket(AF_INET6,
+							   SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
+							   IPPROTO_IP);
+		} else if (network == "udp") {
+			mSocket = ::socket(AF_INET6,
+							   SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
+							   IPPROTO_IP);
+		} else if (network == "unix") {
+			mSocket = ::socket(AF_UNIX,
+							   SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
+							   IPPROTO_IP);
+		} else {
+			return false;
+		}
+
 		if (mSocket <= 0) {
 			return false;
 		}
 
-		// reuseport
-		int optVal = 1;
-		if (::setsockopt(
-				mSocket, SOL_SOCKET, SO_REUSEPORT, &optVal, sizeof(optVal))) {
-			return false;
-		}
-		return true;
+		mNet = std::move(network);
+
+		return SetReusePort(true) == 1 ? true : false;
 	}
 
 	//监听服务器
-	bool Listen() { return ::listen(mSocket, SOMAXCONN); }
+	int Listen() { return ::listen(mSocket, SOMAXCONN); }
 
 	// 绑定
 	int Bind(unsigned short port, std::string_view ip = {""})
 	{
-		struct sockaddr_in addr;
+		struct sockaddr_in6 addr;
 
 		std::memset(&addr, 0, sizeof(addr));
-		addr.sin_family = AF_INET;
-		addr.sin_port   = ::htons(port);
+		addr.sin6_family = AF_INET6;
+		addr.sin6_port   = ::htons(port);
 
 		if (!ip.empty()) {
-			addr.sin_addr.s_addr = ::inet_addr(ip.data());
+			if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
+				return 0;
 		} else {
-			addr.sin_addr.s_addr = ::htonl(INADDR_ANY);
+			addr.sin6_addr = in6addr_any;
 		}
 
-		if (INADDR_NONE == addr.sin_addr.s_addr) {
-			return 0;
-		}
-
-		return ::bind(mSocket, (struct sockaddr *)&addr, sizeof(addr)))
+		return ::bind(mSocket,
+					  reinterpret_cast<struct sockaddr *>(&addr),
+					  static_cast<socklen_t>(sizeof(addr)));
 	}
 
 	//连接目标服务器
-	int Connect(unsigned short port, std::string_view ip = {""})
+	int Connect(unsigned short port, std::string_view ip)
 	{
-		struct sockaddr_in addr;
+		struct sockaddr_in6 addr;
 
 		std::memset(&addr, 0, sizeof(addr));
-		addr.sin_family = AF_INET;
-		addr.sin_port   = ::htons(port);
+		addr.sin6_family = AF_INET6;
+		addr.sin6_port   = ::htons(port);
 
 		if (!ip.empty()) {
-			addr.sin_addr.s_addr = ::inet_addr(ip.data());
+			if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
+				return 0;
 		} else {
-			addr.sin_addr.s_addr = ::htonl(INADDR_ANY);
+			addr.sin6_addr = in6addr_any;
 		}
 
-		if (INADDR_NONE == addr.sin_addr.s_addr) {
-			return 0;
-		}
-
-		return ::connect(mSocket, (struct sockaddr *)&addr, sizeof(addr))
+		return ::connect(mSocket,
+						 reinterpret_cast<struct sockaddr *>(&addr),
+						 static_cast<socklen_t>(sizeof(addr)));
 	}
 
 	// 返回接收的socket文件描述符
 	int Accept()
 	{
-		struct sockaddr_in addr;
+		struct sockaddr_in6 addr;
 		socklen_t socklen = sizeof(addr);
+		std::memset(&addr, 0, socklen);
+
 		return ::accept4(mSocket,
-						 (struct sockaddr *)&addr,
+						 reinterpret_cast<struct sockaddr *>(&addr),
 						 &socklen,
 						 SOCK_NONBLOCK | SOCK_CLOEXEC);
 	}
 
+	// 0成功，-1失败
 	int SetKeeplive(bool on)
 	{
 		int optVal = on ? 1 : 0;
@@ -107,7 +122,7 @@ public:
 	}
 
 	// 设置非阻塞
-	int SetNonBlock(bool on)
+	int SetNonBlock()
 	{
 		int nFlag = ::fcntl(mSocket, F_GETFL, 0);
 		if (nFlag == -1) {
@@ -198,4 +213,6 @@ public:
 
 private:
 	int mSocket{0}; //
+
+	std::string mNet;
 };

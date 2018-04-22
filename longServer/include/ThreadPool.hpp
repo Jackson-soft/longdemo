@@ -15,6 +15,55 @@
 
 class ThreadPool : public Noncopyable
 {
+
+public:
+	ThreadPool() : ThreadPool(0) {}
+
+	ThreadPool(unsigned int num) : mThreadNum(num)
+	{
+		if (mThreadNum == 0) {
+			// 线程池大小配置为CPU核数+1
+			mThreadNum = std::thread::hardware_concurrency() + 1;
+		}
+		mThreads.reserve(mThreadNum);
+		for (unsigned int i = 0; i < mThreadNum; ++i) {
+			mThreads.emplace_back(std::make_shared<std::thread>(
+				std::bind(&ThreadPool::threadWork, this)));
+		}
+	}
+
+	~ThreadPool()
+	{
+		if (mRunning.load()) {
+			mRunning.store(false, std::memory_order_release);
+			mCondition.notify_all();
+			for (auto &it : mThreads) {
+				// it.get()->join(); //线程自行消亡
+				it.get()->detach();
+			}
+			mThreads.clear();
+		}
+	}
+
+	//提交任务到队列
+	template<typename F, typename... Args>
+	auto AddTask(F &&f, Args &&... args)
+		-> std::future<std::result_of_t<F(Args...)>>
+	{
+		if (!mRunning.load()) {
+			throw std::runtime_error("task executor have closed commit.");
+		}
+		using resType = std::result_of_t<F(Args...)>;
+		std::unique_lock<std::mutex> tLock(mMutex);
+		auto task = std::make_shared<std::packaged_task<resType()>>(
+			std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+		mTasks.Emplace([task]() { (*task)(); });
+		mCondition.notify_one();
+		std::future<resType> ret = task.get()->get_future();
+		return ret;
+	}
+
+public:
 	using Task = std::function<void()>;
 
 private:
@@ -36,52 +85,5 @@ private:
 			mTasks.Pop(); //删掉队列的头元素
 			task();
 		}
-	}
-
-public:
-	ThreadPool() : ThreadPool(0) {}
-
-	ThreadPool(unsigned int num) : mThreadNum(num)
-	{
-		if (mThreadNum == 0) {
-			// 线程池大小配置为CPU核数+1
-			mThreadNum = std::thread::hardware_concurrency() + 1;
-		}
-		mThreads.reserve(mThreadNum);
-		for (unsigned int i = 0; i < mThreadNum; ++i) {
-			mThreads.emplace_back(std::make_shared<std::thread>(
-				std::bind(&ThreadPool::threadWork, this)));
-		}
-	}
-
-	~ThreadPool()
-    {
-        if (mRunning.load()) {
-            mRunning.store(false, std::memory_order_release);
-            mCondition.notify_all();
-            for (auto &it : mThreads) {
-                // it.get()->join(); //线程自行消亡
-                it.get()->detach();
-            }
-            mThreads.clear();
-        }
-	}
-
-	//提交任务到队列
-	template <typename F, typename... Args>
-	auto AddTask(F &&f, Args &&... args)
-		-> std::future<std::result_of_t<F(Args...)>>
-	{
-		if (!mRunning.load()) {
-			throw std::runtime_error("task executor have closed commit.");
-		}
-		using resType = std::result_of_t<F(Args...)>;
-		std::unique_lock<std::mutex> tLock(mMutex);
-		auto task = std::make_shared<std::packaged_task<resType()>>(
-			std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-		mTasks.Emplace([task]() { (*task)(); });
-		mCondition.notify_one();
-		std::future<resType> ret = task.get()->get_future();
-		return ret;
 	}
 };

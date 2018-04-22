@@ -6,7 +6,7 @@
 class EventLoop : Noncopyable
 {
 public:
-	EventLoop() = default;
+    EventLoop() {}
 	virtual ~EventLoop() {}
 
 	virtual int AddEvent(int fd)				   = 0;

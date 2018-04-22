@@ -8,17 +8,21 @@
 #include <vector>
 
 // 消息循环的epoll实现
-class EPoller : public EventLoop
+class Epoller : public EventLoop
 {
 public:
-	EPoller()
+	Epoller()
 	{
 		mEpoll = epoll_create1(EPOLL_CLOEXEC);
 		assert(mEpoll != -1);
 		mEvents.reserve(16);
 	}
 
-	~EPoller() { ::close(mEpoll); }
+    ~Epoller() override  {
+        if(mRunning.load()){
+            mRunning.store(false, std::memory_order_release);
+        }
+        ::close(mEpoll); }
 
 	int AddEvent(int fd) override
 	{
@@ -42,18 +46,17 @@ public:
 	{
 		int nReady{0};
 
-		while (true) {
+        while (mRunning.load()) {
 			// timeout：-1永久阻塞，0立即返回，非阻塞，>0指定微秒数
 			nReady = ::epoll_wait(mEpoll,
 								  &*mEvents.begin(),
 								  static_cast<int>(mEvents.size()),
 								  timeout);
 			if (nReady <= 0) {
-				//这里做点啥呢
 				continue;
 			}
 			for (size_t i = 0; i < static_cast<size_t>(nReady); ++i) {
-				if ((mEvents[i].events & EPOLLERR) ||
+                if ((mEvents[i].events & EPOLLERR) ||
 					(mEvents[i].events & EPOLLHUP) ||
 					(!(mEvents[i].events & EPOLLIN))) {
 					::close(mEvents[i].data.fd);
@@ -70,9 +73,14 @@ public:
 		return 0;
 	}
 
+    void Stop() {
+        mRunning.store(false, std::memory_order_release);
+    }
+
 private:
 	// epoll文件描述符
 	int mEpoll{0};
+
 	std::vector<struct epoll_event> mEvents;
 
 	std::atomic_bool mRunning{true};

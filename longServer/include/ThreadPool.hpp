@@ -15,8 +15,8 @@
 
 class ThreadPool : public Noncopyable
 {
-
 public:
+	using Task = std::function<void()>;
 	ThreadPool() : ThreadPool(0) {}
 
 	ThreadPool(unsigned int num) : mThreadNum(num)
@@ -63,18 +63,7 @@ public:
 		return ret;
 	}
 
-public:
-	using Task = std::function<void()>;
-
 private:
-	SyncQueue<Task> mTasks;								//任务队列
-	std::vector<std::shared_ptr<std::thread>> mThreads; //线程对象
-	unsigned int mThreadNum;							//线程数
-
-	std::mutex mMutex;					//锁
-	std::condition_variable mCondition; //条件变量
-	std::atomic_bool mRunning{true};	//是否在运行
-
 	//任务执行体
 	void threadWork()
 	{
@@ -86,4 +75,12 @@ private:
 			task();
 		}
 	}
+
+private:
+	SyncQueue<Task> mTasks;								//任务队列
+	std::vector<std::shared_ptr<std::thread>> mThreads; //线程对象
+	unsigned int mThreadNum;							//线程数
+	std::mutex mMutex;									//锁
+	std::condition_variable mCondition;					//条件变量
+	std::atomic_bool mRunning{true};					//是否在运行
 };

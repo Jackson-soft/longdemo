@@ -2,6 +2,7 @@
 
 #include "Acceptor.hpp"
 #include "Util.hpp"
+#include <atomic>
 #include <string_view>
 
 // Tcp 服务器
@@ -60,5 +61,7 @@ private:
 	unsigned short mPort;  // 端口
 	std::string_view mIP;  // ip地址
 	unsigned int mWorkers; // 工作进程数量
+
+	std::atomic_bool mRunning{true};
 	Acceptor mListener;
 };

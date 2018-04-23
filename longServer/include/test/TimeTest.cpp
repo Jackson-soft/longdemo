@@ -17,4 +17,14 @@ BOOST_AUTO_TEST_CASE(current_day)
 	std::cout << TimeUtil::GetCurrentDay() << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(unit_time)
+{
+	std::cout << TimeUtil::GetUnixTime() << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE(mil_unit_time)
+{
+	std::cout << TimeUtil::GetMilUnixTime() << std::endl;
+}
+
 BOOST_AUTO_TEST_SUITE_END()

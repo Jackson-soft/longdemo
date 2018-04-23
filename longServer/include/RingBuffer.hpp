@@ -5,10 +5,8 @@
 #include <shared_mutex>
 #include <vector>
 
-#include <iostream>
-
 // 环形缓存
-template <typename T>
+template<typename T>
 class RingBuffer : public Noncopyable
 {
 public:

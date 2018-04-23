@@ -8,9 +8,8 @@
 //定时器
 class Timer : Noncopyable
 {
-	using Action = std::function<void()>;
-
 public:
+	using Action = std::function<void()>;
 	static Timer *GetInstance()
 	{
 		static Timer timer;
@@ -35,14 +34,15 @@ public:
 	}
 
 private:
-	std::chrono::microseconds mTick; //定时器的粒度
-
-	Timer(std::chrono::microseconds tick) : mTick(tick) {}
-
 	Timer() {}
 
 	~Timer() {}
 
 	//定时器循环
 	void timerExec() {}
+
+private:
+	std::chrono::microseconds mTick; //定时器的粒度
+
+	Timer(std::chrono::microseconds tick) : mTick(tick) {}
 };

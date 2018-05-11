@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <vector>
 
+// Reactor 模式
 // 消息循环的epoll实现
 class Epoller : public EventLoop
 {
@@ -18,11 +19,13 @@ public:
 		mEvents.reserve(16);
 	}
 
-    ~Epoller() override  {
-        if(mRunning.load()){
-            mRunning.store(false, std::memory_order_release);
-        }
-        ::close(mEpoll); }
+	~Epoller() override
+	{
+		if (mRunning.load()) {
+			mRunning.store(false, std::memory_order_release);
+		}
+		::close(mEpoll);
+	}
 
 	int AddEvent(int fd) override
 	{
@@ -46,7 +49,7 @@ public:
 	{
 		int nReady{0};
 
-        while (mRunning.load()) {
+		while (mRunning.load()) {
 			// timeout：-1永久阻塞，0立即返回，非阻塞，>0指定微秒数
 			nReady = ::epoll_wait(mEpoll,
 								  &*mEvents.begin(),
@@ -56,7 +59,7 @@ public:
 				continue;
 			}
 			for (size_t i = 0; i < static_cast<size_t>(nReady); ++i) {
-                if ((mEvents[i].events & EPOLLERR) ||
+				if ((mEvents[i].events & EPOLLERR) ||
 					(mEvents[i].events & EPOLLHUP) ||
 					(!(mEvents[i].events & EPOLLIN))) {
 					::close(mEvents[i].data.fd);
@@ -73,9 +76,10 @@ public:
 		return 0;
 	}
 
-    void Stop() {
-        mRunning.store(false, std::memory_order_release);
-    }
+	// 回调分发器
+	void Dispatcher() {}
+
+	void Stop() { mRunning.store(false, std::memory_order_release); }
 
 private:
 	// epoll文件描述符

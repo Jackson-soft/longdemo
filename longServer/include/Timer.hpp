@@ -36,13 +36,13 @@ public:
 private:
 	Timer() {}
 
+	Timer(std::chrono::duration<int> tick) : mTick(tick) {}
+
 	~Timer() {}
 
 	//定时器循环
 	void timerExec() {}
 
 private:
-	std::chrono::microseconds mTick; //定时器的粒度
-
-	Timer(std::chrono::microseconds tick) : mTick(tick) {}
+	std::chrono::duration<int> mTick{1}; //定时器的粒度
 };

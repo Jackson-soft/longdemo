@@ -7,6 +7,4 @@ class FileUtil
 public:
 	FileUtil();
 	~FileUtil();
-
-private:
 };

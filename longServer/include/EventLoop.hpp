@@ -6,11 +6,11 @@
 class EventLoop : Noncopyable
 {
 public:
-    EventLoop() {}
+	EventLoop() {}
 	virtual ~EventLoop() {}
 
-	virtual int AddEvent(int fd)				   = 0;
-	virtual int DelEvent(int fd)				   = 0;
-	virtual int ModEvent(int fd)				   = 0;
-	virtual int EventWait(int fd, int timeout = 0) = 0;
+	virtual int AddEvent(int fd)	 = 0;
+	virtual int DelEvent(int fd)	 = 0;
+	virtual int ModEvent(int fd)	 = 0;
+	virtual int Run(int timeout = 0) = 0;
 };

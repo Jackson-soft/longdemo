@@ -22,6 +22,7 @@ enum class LogLevel {
 	NUM_LOG_LEVELS,
 };
 
+// Logger 日志的主类
 class Logger : public Noncopyable
 {
 public:
@@ -124,7 +125,7 @@ private:
 	{
 		mCurrentDay = TimeUtil::GetCurrentDay();
 		mLocation   = boost::str(boost::format("%s/log_%s%d.log") % mLogPath %
-							   mCurrentDay % mBlockid);
+								 mCurrentDay % mBlockid);
 
 		mFd = std::fopen(mLocation.c_str(), "a");
 		if (nullptr == mFd) {

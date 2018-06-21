@@ -3,6 +3,7 @@
 #include "EventLoop.hpp"
 #include <atomic>
 #include <cassert>
+#include <cstring>
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <vector>
@@ -19,7 +20,7 @@ public:
 		mEvents.reserve(16);
 	}
 
-	~Epoller() override
+    ~Epoller() override
 	{
 		if (mRunning.load()) {
 			mRunning.store(false, std::memory_order_release);
@@ -30,22 +31,25 @@ public:
 	int AddEvent(int fd) override
 	{
 		struct epoll_event event;
+		std::memset(&event, 0, sizeof(event));
 		return ::epoll_ctl(mEpoll, EPOLL_CTL_ADD, fd, &event);
 	}
 
 	int DelEvent(int fd) override
 	{
 		struct epoll_event event;
+		std::memset(&event, 0, sizeof(event));
 		return ::epoll_ctl(mEpoll, EPOLL_CTL_DEL, fd, &event);
 	}
 
 	int ModEvent(int fd) override
 	{
 		struct epoll_event event;
+		std::memset(&event, 0, sizeof(event));
 		return ::epoll_ctl(mEpoll, EPOLL_CTL_MOD, fd, &event);
 	}
 
-	int EventWait(int fd, int timeout = 0) override
+	int Run(int timeout = 0) override
 	{
 		int nReady{0};
 
@@ -64,7 +68,7 @@ public:
 					(!(mEvents[i].events & EPOLLIN))) {
 					::close(mEvents[i].data.fd);
 					continue;
-				} else if (mEvents.at(i).data.fd == fd) {
+					//} else if (mEvents.at(i).data.fd == fd) {
 					// accept
 				} else if (mEvents.at(i).events & EPOLLIN) {
 					// read
@@ -75,9 +79,6 @@ public:
 		}
 		return 0;
 	}
-
-	// 回调分发器
-	void Dispatcher() {}
 
 	void Stop() { mRunning.store(false, std::memory_order_release); }
 

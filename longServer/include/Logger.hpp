@@ -1,13 +1,10 @@
 #pragma once
 
-#include "TimeUtil.hpp"
 #include "Util.hpp"
 #include <atomic>
-#include <boost/format.hpp>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <experimental/filesystem>
 #include <string>
 #include <string_view>
 
@@ -47,7 +44,6 @@ public:
 	void Log(LogLevel level, const char *format, ...) {}
 
 private:
-
 	//检测日志文件是否超量
 	void checkFile()
 	{
@@ -88,19 +84,6 @@ private:
 			return false;
 		}
 		return true;
-	}
-
-	//组装日志头
-	int getLogHead(char *buffer, LogLevel level)
-	{
-		return std::snprintf(buffer,
-							 DEFAULT_BUFFER_SIZE,
-							 "[%s] [%s] [%s:%d] [%s] ",
-							 TimeUtil::GetCurrentTime().c_str(),
-							 logLevelToString(level),
-							 __FILE__,
-							 __LINE__,
-							 __FUNCTION__);
 	}
 
 private:

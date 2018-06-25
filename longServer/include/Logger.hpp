@@ -11,17 +11,6 @@
 #include <string>
 #include <string_view>
 
-//日志等级枚举类
-enum class LogLevel {
-	TRACE,
-	DEBUG,
-	INFO,
-	WARN,
-	ERROR,
-	FATAL,
-	NUM_LOG_LEVELS,
-};
-
 // Logger 日志的主类
 class Logger : public Noncopyable
 {
@@ -58,43 +47,6 @@ public:
 	void Log(LogLevel level, const char *format, ...) {}
 
 private:
-	const char *logLevelToString(LogLevel level) const
-	{
-		switch (level) {
-		case LogLevel::TRACE:
-			return "TRACE";
-		case LogLevel::DEBUG:
-			return "DEBUG";
-		case LogLevel::INFO:
-			return "INFO";
-		case LogLevel::WARN:
-			return "WARN";
-		case LogLevel::ERROR:
-			return "ERROR";
-		case LogLevel::FATAL:
-			return "FATAL";
-		default:
-			return "DEBUG"; // if the level is wrong, use DEBUG instead
-		}
-	}
-
-	LogLevel stringToLogLevel(std::string_view &logLevel)
-	{
-		if (logLevel == "TRACE")
-			return LogLevel::TRACE;
-		else if (logLevel == "DEBUG")
-			return LogLevel::DEBUG;
-		else if (logLevel == "INFO")
-			return LogLevel::INFO;
-		else if ("WARN" == logLevel)
-			return LogLevel::WARN;
-		else if ("ERROR" == logLevel)
-			return LogLevel::ERROR;
-		else if ("FATAL" == logLevel)
-			return LogLevel::FATAL;
-		else
-			return LogLevel::INFO;
-	}
 
 	//检测日志文件是否超量
 	void checkFile()

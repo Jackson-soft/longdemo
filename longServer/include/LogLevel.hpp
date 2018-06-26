@@ -3,28 +3,42 @@
 #include <boost/algorithm/string.hpp>
 #include <string_view>
 
+//日志等级枚举类
+enum class LogLevel {
+    TRACE,
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+    FATAL,
+    NUM_LOG_LEVELS,
+};
+
 class Level
 {
-    //日志等级枚举类
-    enum class LogLevel {
-        TRACE,
-        DEBUG,
-        INFO,
-        WARN,
-        ERROR,
-        FATAL,
-        NUM_LOG_LEVELS,
-    };
-
 public:
 	Level() {}
-    Level(std::string_view lvl) : mLevel(lvl) {}
+
+	//从字符串解析要严格一点
+	Level(std::string_view str)
+	{
+		mLevel	= Unmarshal(str);
+		mStrLevel = Marshal(mLevel);
+	}
+
+	Level(LogLevel lvl) : mLevel(lvl) { mStrLevel = Marshal(mLevel); }
+
 	~Level() {}
 
+	const std::string String() const { return mStrLevel; }
+
+    LogLevel ToLevel() const { return mLevel; }
+
 private:
-    const char *String() const
+	//将日志等级解析成字符串
+	std::string Marshal(LogLevel lvl) const
 	{
-		switch (level) {
+		switch (lvl) {
 		case LogLevel::TRACE:
 			return "trace";
 		case LogLevel::DEBUG:
@@ -38,30 +52,31 @@ private:
 		case LogLevel::FATAL:
 			return "fatal";
 		default:
-			return "debug"; // if the level is wrong, use DEBUG instead
+			return "info"; // if the level is wrong, use DEBUG instead
 		}
 	}
 
 	//将字符串解析成日志等级
-	LogLevel ParseLevel(std::string_view &logLevel)
+	LogLevel Unmarshal(std::string_view str) const
 	{
-		boost::algorithm::to_lower(logLevel);
-		if (logLevel == "trace")
+        // boost::algorithm::to_lower(str);
+		if (str == "trace")
 			return LogLevel::TRACE;
-		else if (logLevel == "debgug")
+		else if (str == "debgug")
 			return LogLevel::DEBUG;
-		else if (logLevel == "info")
+		else if (str == "info")
 			return LogLevel::INFO;
-		else if ("warn" == logLevel)
+		else if ("warn" == str)
 			return LogLevel::WARN;
-		else if ("error" == logLevel)
+		else if ("error" == str)
 			return LogLevel::ERROR;
-		else if ("fatal" == logLevel)
+		else if ("fatal" == str)
 			return LogLevel::FATAL;
 		else
 			return LogLevel::INFO;
 	}
 
 private:
-    std::string mLevel{""};
+	std::string mStrLevel{""};
+	LogLevel mLevel;
 };

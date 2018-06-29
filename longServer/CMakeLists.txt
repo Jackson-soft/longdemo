@@ -18,4 +18,4 @@ include_directories(include)
 add_executable(${PROJECT_NAME} ${DIR_SRCS})
 
 #添加链接库
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} pthread)
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} pthread stdc++fs)

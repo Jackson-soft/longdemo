@@ -1,8 +1,10 @@
 #pragma once
 
-#include <experimental/filesystem>
+#include "TimeUtil.hpp"
+#include <filesystem>
 #include <fstream>
 #include <string>
+#include <string_view>
 
 // Backend 日志输出后端
 class Backend
@@ -19,11 +21,59 @@ class FileBackend : public Backend
 {
 public:
 	FileBackend() {}
-    ~FileBackend() override {}
+	~FileBackend() override { Close(); }
 
-	void Write() override {}
+    //初始化各项参数
+    bool InitBackend(std::string_view path,
+                     int64_t maxSize		   = 0,
+                     std::string_view prefix   = "",
+                     std::string_view fileLink = "")
+    {
+        if (path.size() <= 0) {
+            return false;
+        } else {
+            mPath = path;
+        }
 
-	void Close() override { mFile.close(); }
+        if (prefix.size() > 0) {
+            mPrefix = prefix;
+        }
+        if (fileLink.size() > 0) {
+            mLink = fileLink;
+        }
+
+        if (maxSize > 0) {
+            mMaxSize = maxSize * 1024 * 1024;
+        }
+
+        if (!std::filesystem::exists(path)) {
+            if (!std::filesystem::create_directory(path)) {
+                return false;
+            }
+        }
+
+        mCurrentDay = TimeUtil::GetCurrentDay();
+
+        return true;
+    }
+
+	void Write() override { doIncise(); }
+
+	void Close() override
+	{
+		mFile.close();
+		mFile.clear();
+	}
+
+private:
+	//文件切割逻辑
+	void doIncise() {}
+
+	//检查日期
+	void checkData() {}
+
+	//检查文件
+	void checkSize() {}
 
 private:
 	std::fstream mFile;					 //文件流

@@ -23,10 +23,14 @@ public:
 
 	// move constructor
 	Socket(const int &&fd) : mSocket(std::move(fd)) {}
+
 	~Socket() { Close(); }
 
 	bool NewSocket(std::string_view network)
 	{
+		if (network.empty()) {
+			return false;
+		}
 		if (network == "tcp") {
 			mSocket = ::socket(AF_INET6,
 							   SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
@@ -58,6 +62,9 @@ public:
 	// 绑定
 	int Bind(unsigned short port, std::string_view ip = {""})
 	{
+		if (port <= 0) {
+			return -1;
+		}
 		struct sockaddr_in6 addr;
 
 		std::memset(&addr, 0, sizeof(addr));
@@ -79,6 +86,9 @@ public:
 	//连接目标服务器
 	int Connect(unsigned short port, std::string_view ip)
 	{
+		if (port <= 0 || ip.empty()) {
+			return -1;
+		}
 		struct sockaddr_in6 addr;
 
 		std::memset(&addr, 0, sizeof(addr));
@@ -212,7 +222,10 @@ public:
 	int GetNativeFD() const { return mSocket; }
 
 private:
+	void GetTcpInfo() {}
+
+private:
 	int mSocket{0}; //
 
-	std::string mNet;
+	std::string mNet{""};
 };

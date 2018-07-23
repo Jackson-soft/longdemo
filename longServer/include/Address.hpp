@@ -24,9 +24,11 @@ public:
 	AddressV6() {}
 	~AddressV6() override {}
 
+	AddressV6(std::string_view net, std::string_view addr) {}
+
 	std::string Network() override { return mNetwork; }
 
-	std::string String() override {}
+	std::string String() override { return ""; }
 
 private:
 	std::string mNetwork{""};

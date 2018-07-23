@@ -9,11 +9,11 @@
 #include <unistd.h>
 
 // 连接器类
-class Connector : public Noncopyable, std::enable_shared_from_this<Connector>
+class Dialer : public Noncopyable, std::enable_shared_from_this<Dialer>
 {
 public:
-	Connector() = default;
-	~Connector() { Close(); }
+	Dialer() = default;
+	~Dialer() { Close(); }
 
 	//连接到网络地址
 	bool

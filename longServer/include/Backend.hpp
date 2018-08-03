@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TimeUtil.hpp"
+#include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -13,8 +14,8 @@ public:
 	Backend() {}
 	virtual ~Backend() {}
 
-	virtual void Write() = 0;
-	virtual void Close() = 0;
+    virtual void Write(std::string_view buf) = 0;
+    virtual void Close()					 = 0;
 };
 
 class FileBackend : public Backend
@@ -54,10 +55,16 @@ public:
 
         mCurrentDay = TimeUtil::GetCurrentDay();
 
+        mFile.open("xxx", std::ios::in);
+
         return true;
     }
 
-	void Write() override { doIncise(); }
+    void Write(std::string_view buf) override
+    {
+        doIncise();
+        mFile.write(buf.data(), 10);
+    }
 
 	void Close() override
 	{

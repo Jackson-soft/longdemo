@@ -1,10 +1,14 @@
 #pragma once
 
+#include "Backend.hpp"
+#include "Formatter.hpp"
 #include "Util.hpp"
+#include <LogLevel.hpp>
 #include <atomic>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include <string>
 #include <string_view>
 
@@ -14,11 +18,7 @@ class Logger : public Noncopyable
 public:
 	Logger() {}
 
-	~Logger()
-	{
-		std::fclose(mFd);
-		std::fclose(mChangFd);
-	}
+    ~Logger() { std::fclose(mFd); }
 
 	//单例实例
 	static Logger *GetInstance()
@@ -27,9 +27,11 @@ public:
 		return &logger;
 	}
 
-	void Init(LogLevel level, std::string logPath, std::uint64_t maxSize)
+    void Init(std::string_view level,
+              std::string_view logPath,
+              std::uint64_t maxSize)
 	{
-		if (!std::experimental::filesystem::create_directory(logPath)) {
+        if (!std::filesystem::create_directory(logPath)) {
 		}
 		mLevel   = level;
 		mLogPath = logPath;
@@ -87,16 +89,15 @@ private:
 	}
 
 private:
-	LogLevel mLevel;		   //日志等级
-	std::string mLogPath;	  //日志存放目录
-	std::uint64_t mMaxSize;	//日志分隔的大小上限
-	std::FILE *mFd;			   //日志文件描述符
-	std::FILE *mChangFd;	   //日志文件描述符
-	int mBlockid;			   //日志的序号
-	std::atomic_bool mIsChang; //是否要更换文件描述符
-	std::string mLocation;	 //日志文件名
-	std::string mCurrentDay;   //当前日期
-	uint64_t DEFAULT_BUFFER_SIZE{2 * 1024 * 1024};
+    LogLevel mLevel;						   //日志等级
+    std::string mLogPath;					   //日志存放目录
+    std::uint64_t mMaxSize{500 * 1024 * 1024}; //日志分隔的大小上限
+    std::FILE *mFd;							   //日志文件描述符
+    int mBlockid{0};						   //日志的序号
+    std::atomic_bool mIsChang{false};		   //是否要更换文件描述符
+    std::string mLocation{""};				   //日志文件名
+    std::string mCurrentDay;				   //当前日期
+    uint64_t DEFAULT_BUFFER_SIZE{2 * 1024 * 1024};
 };
 
 #define LOG_INFO Logger::GetInstance().Log()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Address.hpp"
 #include "Socket.hpp"
 #include "Util.hpp"
 #include <chrono>
@@ -8,8 +9,26 @@
 #include <string_view>
 #include <unistd.h>
 
+//接口
+class Conn
+{
+public:
+    Conn() {}
+    virtual ~Conn() = 0;
+
+    virtual int Read() = 0;
+
+    virtual int Write(std::byte b) = 0;
+
+    virtual void Close() = 0;
+
+    virtual Address LocalAddr() = 0;
+
+    virtual Address RemoteAddr() = 0;
+};
+
 // 连接器类
-class Dialer : public Noncopyable, std::enable_shared_from_this<Dialer>
+class Dialer : public Conn Noncopyable, std::enable_shared_from_this<Dialer>
 {
 public:
 	Dialer() = default;
@@ -56,11 +75,11 @@ private:
 
 	std::chrono::duration<int> mTimeout;
 
-	//客户端ip
+    //客户端地址
 	std::string mLocalAddr{""};
 
-	//网络ip
-	std::string mNetAddr{""};
+    //远程地址
+    std::string mRemoteAddr{""};
 
 	unsigned short mPort{0};
 

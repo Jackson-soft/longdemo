@@ -28,7 +28,7 @@ public:
 		mThreads.reserve(mThreadNum);
 		for (unsigned int i = 0; i < mThreadNum; ++i) {
 			mThreads.emplace_back(std::make_shared<std::thread>(
-				std::bind(&ThreadPool::threadWork, this)));
+                std::bind(&ThreadPool::dispatch, this)));
 		}
 	}
 
@@ -64,8 +64,8 @@ public:
 	}
 
 private:
-	//任务执行体
-	void threadWork()
+    //任务分发
+    void dispatch()
 	{
 		while (mRunning.load()) {
 			std::unique_lock<std::mutex> tLock(mMutex);

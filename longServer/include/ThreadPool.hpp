@@ -22,13 +22,13 @@ public:
 	ThreadPool(unsigned int num) : mThreadNum(num)
 	{
 		if (mThreadNum == 0) {
-			// 线程池大小配置为CPU核数+1
-			mThreadNum = std::thread::hardware_concurrency() + 1;
+			// 线程池大小配置为CPU核数
+			mThreadNum = std::thread::hardware_concurrency();
 		}
 		mThreads.reserve(mThreadNum);
 		for (unsigned int i = 0; i < mThreadNum; ++i) {
 			mThreads.emplace_back(std::make_shared<std::thread>(
-                std::bind(&ThreadPool::dispatch, this)));
+				std::bind(&ThreadPool::dispatch, this)));
 		}
 	}
 
@@ -64,8 +64,8 @@ public:
 	}
 
 private:
-    //任务分发
-    void dispatch()
+	//任务分发
+	void dispatch()
 	{
 		while (mRunning.load()) {
 			std::unique_lock<std::mutex> tLock(mMutex);

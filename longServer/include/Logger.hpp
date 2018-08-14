@@ -4,10 +4,8 @@
 #include "Formatter.hpp"
 #include "LogLevel.hpp"
 #include "Util.hpp"
-#include <atomic>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
+#include <mutex>
+#include <queue>
 #include <string>
 #include <string_view>
 
@@ -15,9 +13,13 @@
 class Logger : public Noncopyable
 {
 public:
-	Logger() {}
+	Logger() = default;
 
-	~Logger() { std::fclose(mFd); }
+	~Logger()
+	{
+		delete mFormatter;
+		delete mBackend;
+	}
 
 	//单例实例
 	static Logger *GetInstance()
@@ -26,41 +28,45 @@ public:
 		return &logger;
 	}
 
-	void SetLevel(LogLevel logLevel) { mLevel = logLevel; }
-
-	LogLevel GetLevel() const { return mLevel; }
-
-	//日志输出对外接口
-	void Log(LogLevel level, const char *format, ...) {}
-
-private:
-	bool openFile()
+	//初始化，只需要调一次
+	bool Initialization(LogLevel level, Formatter *fmt, Backend *backend)
 	{
-		mCurrentDay = TimeUtil::GetCurrentDay();
-		mLocation   = boost::str(boost::format("%s/log_%s%d.log") % mLogPath %
-								 mCurrentDay % mBlockid);
-
-		mFd = std::fopen(mLocation.c_str(), "a");
-		if (nullptr == mFd) {
-			return false;
-		}
-		//设置buffer为line buffering
-		if (std::setvbuf(mFd, nullptr, _IOLBF, 0) != 0) {
-			return false;
-		}
+		mMutex.lock();
+		mLevel	 = level;
+		mFormatter = fmt;
+		mBackend   = backend;
+		mMutex.unlock();
 		return true;
 	}
 
+	//日志输出对外接口
+    void Inforln(std::string_view msg) { return outPut(LogLevel::INFOR, msg); }
+
+	void Run()
+	{
+		while (true) {
+			if (mBuffer.Size() > 0) {
+                mBackend->Write(mBuffer.front());
+                mBuffer.pop();
+			}
+		}
+	}
+
 private:
-	LogLevel mLevel;						   //日志等级
-	std::string mLogPath;					   //日志存放目录
-	std::uint64_t mMaxSize{500 * 1024 * 1024}; //日志分隔的大小上限
-	std::FILE *mFd;							   //日志文件描述符
-	int mBlockid{0};						   //日志的序号
-	std::atomic_bool mIsChang{false};		   //是否要更换文件描述符
-	std::string mLocation{""};				   //日志文件名
-	std::string mCurrentDay;				   //当前日期
-	uint64_t DEFAULT_BUFFER_SIZE{2 * 1024 * 1024};
+	//输出
+	void outPut(LogLevel level, std::string_view msg)
+	{
+		if (level >= mLevel) {
+            mBuffer.push(mFormatter.Format(msg));
+		}
+	}
+
+private:
+	std::mutex mMutex;
+	LogLevel mLevel;
+	Formatter *mFormatter;			 //格式化前端
+	Backend *mBackend;				 //输出后端
+	std::queue<std::string> mBuffer; //环型缓存
 };
 
-#define LOG_INFO Logger::GetInstance().Log()
+#define LOG_INFO Logger::GetInstance().Inforln()

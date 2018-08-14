@@ -7,44 +7,29 @@
 enum class LogLevel {
     TRACE,
     DEBUG,
-    INFO,
+    INFOR,
     WARN,
     ERROR,
     FATAL,
-    NUM_LOG_LEVELS,
+    NULL_LEVEL,
 };
 
 class Level
 {
 public:
-	Level() {}
+    Level()  = default;
+    ~Level() = default;
 
-	//从字符串解析要严格一点
-	Level(std::string_view str)
-	{
-		mLevel	= Unmarshal(str);
-		mStrLevel = Marshal(mLevel);
-	}
-
-	Level(LogLevel lvl) : mLevel(lvl) { mStrLevel = Marshal(mLevel); }
-
-	~Level() {}
-
-	const std::string String() const { return mStrLevel; }
-
-    LogLevel ToLevel() const { return mLevel; }
-
-private:
 	//将日志等级解析成字符串
-	std::string Marshal(LogLevel lvl) const
+    static std::string Marshal(LogLevel lvl)
 	{
 		switch (lvl) {
 		case LogLevel::TRACE:
 			return "trace";
 		case LogLevel::DEBUG:
 			return "debug";
-		case LogLevel::INFO:
-			return "info";
+        case LogLevel::INFOR:
+            return "infor";
 		case LogLevel::WARN:
 			return "warn";
 		case LogLevel::ERROR:
@@ -52,20 +37,20 @@ private:
 		case LogLevel::FATAL:
 			return "fatal";
 		default:
-			return "info"; // if the level is wrong, use DEBUG instead
+            return ""; // if the level is wrong
 		}
 	}
 
 	//将字符串解析成日志等级
-	LogLevel Unmarshal(std::string_view str) const
+    static LogLevel Unmarshal(std::string_view str)
 	{
-        // boost::algorithm::to_lower(str);
+        boost::algorithm::to_lower(str);
 		if (str == "trace")
 			return LogLevel::TRACE;
 		else if (str == "debgug")
 			return LogLevel::DEBUG;
-		else if (str == "info")
-			return LogLevel::INFO;
+        else if (str == "infor")
+            return LogLevel::INFOR;
 		else if ("warn" == str)
 			return LogLevel::WARN;
 		else if ("error" == str)
@@ -73,10 +58,6 @@ private:
 		else if ("fatal" == str)
 			return LogLevel::FATAL;
 		else
-			return LogLevel::INFO;
+            return LogLevel::NULL_LEVEL;
 	}
-
-private:
-	std::string mStrLevel{""};
-	LogLevel mLevel;
 };

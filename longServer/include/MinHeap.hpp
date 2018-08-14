@@ -1,4 +1,5 @@
 #pragma once
+
 //最小堆
 #include <algorithm>
 #include <mutex>
@@ -6,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-template <typename T>
+template<typename T>
 class MinHeap
 {
 public:

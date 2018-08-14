@@ -57,7 +57,9 @@ public:
 
 		mCurrentDay = TimeUtil::GetCurrentDay();
 
-		createFile();
+		if (mChang) {
+			createFile();
+		}
 
 		return true;
 	}
@@ -65,11 +67,12 @@ public:
 	void Write(std::string_view buf) override
 	{
 		doIncise();
-		mFile.write(buf.data(), buf.Size());
+        mFile.write(buf.data(), buf.size());
 	}
 
 	void Close() override
 	{
+		mFile.flush();
 		mFile.close();
 		mFile.clear();
 	}
@@ -128,5 +131,5 @@ private:
 	std::string mAppellation{""};		 //日志文件的名称
 	int mIndex{1};						 //日志文件序号
 	std::string mCurrentDay{""};		 //当前日期
-	std::atomic_bool mChang{false};		 //日志文件是否需要切割
+	bool mChang{true};					 //日志文件是否需要切割
 };

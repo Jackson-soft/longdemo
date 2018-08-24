@@ -13,26 +13,26 @@
 class Conn
 {
 public:
-    Conn() {}
-    virtual ~Conn() = 0;
+	Conn() {}
+	virtual ~Conn() {}
 
-    virtual int Read() = 0;
+	virtual int Read() = 0;
 
-    virtual int Write(std::byte b) = 0;
+	virtual int Write(std::byte b) = 0;
 
-    virtual void Close() = 0;
+	virtual void Close() = 0;
 
-    virtual Address LocalAddr() = 0;
+	virtual Address LocalAddr() = 0;
 
-    virtual Address RemoteAddr() = 0;
+	virtual Address RemoteAddr() = 0;
 };
 
 // 连接器类
-class Dialer : public Conn Noncopyable, std::enable_shared_from_this<Dialer>
+class Dialer : public Conn, Noncopyable, std::enable_shared_from_this<Dialer>
 {
 public:
 	Dialer() = default;
-	~Dialer() { Close(); }
+	~Dialer() override { Close(); }
 
 	//连接到网络地址
 	bool
@@ -41,8 +41,8 @@ public:
 		if (network.empty() || ip.empty() || port <= 0) {
 			return false;
 		}
-		mNetAddr = std::move(ip);
-		mPort	= port;
+		mRemoteAddr = std::move(ip);
+		mPort		= port;
 
 		if (!mSocket.NewSocket(network))
 			return false;
@@ -51,10 +51,10 @@ public:
 	}
 
 	//本地网络地址
-	std::string LocalAddr() { return ""; }
+	std::string LocalAddr() const { return ""; }
 
 	//远程网络地址
-	std::string RemoteAddr() { return ""; }
+	std::string RemoteAddr() const { return ""; }
 
 	int Read() { return 0; }
 
@@ -75,11 +75,11 @@ private:
 
 	std::chrono::duration<int> mTimeout;
 
-    //客户端地址
+	//客户端地址
 	std::string mLocalAddr{""};
 
-    //远程地址
-    std::string mRemoteAddr{""};
+	//远程地址
+	std::string mRemoteAddr{""};
 
 	unsigned short mPort{0};
 

@@ -9,5 +9,6 @@ cmake_install.cmake
 build/
 .vscode
 .idea/
+.ccls-cache/
 
 cmake-build-debug/

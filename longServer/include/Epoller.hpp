@@ -13,14 +13,17 @@
 class Epoller : public EventLoop
 {
 public:
-	Epoller()
+	// 委托构造
+	Epoller() : Epoller(0) {}
+
+	Epoller(int timeout) : mTimeout(timeout)
 	{
 		mEpoll = epoll_create1(EPOLL_CLOEXEC);
 		assert(mEpoll != -1);
 		mEvents.reserve(16);
 	}
 
-    ~Epoller() override
+	~Epoller() override
 	{
 		if (mRunning.load()) {
 			mRunning.store(false, std::memory_order_release);
@@ -30,8 +33,10 @@ public:
 
 	int AddEvent(int fd) override
 	{
-		struct epoll_event event;
+        struct epoll_event event;
 		std::memset(&event, 0, sizeof(event));
+        event.data.fd = fd;
+        event.events  = EPOLLIN | EPOLLET;
 		return ::epoll_ctl(mEpoll, EPOLL_CTL_ADD, fd, &event);
 	}
 
@@ -39,6 +44,7 @@ public:
 	{
 		struct epoll_event event;
 		std::memset(&event, 0, sizeof(event));
+        event.data.fd = fd;
 		return ::epoll_ctl(mEpoll, EPOLL_CTL_DEL, fd, &event);
 	}
 
@@ -46,10 +52,11 @@ public:
 	{
 		struct epoll_event event;
 		std::memset(&event, 0, sizeof(event));
+        event.data.fd = fd;
 		return ::epoll_ctl(mEpoll, EPOLL_CTL_MOD, fd, &event);
 	}
 
-	int Run(int timeout = 0) override
+	int Run() override
 	{
 		int nReady{0};
 
@@ -58,7 +65,7 @@ public:
 			nReady = ::epoll_wait(mEpoll,
 								  &*mEvents.begin(),
 								  static_cast<int>(mEvents.size()),
-								  timeout);
+								  mTimeout);
 			if (nReady <= 0) {
 				continue;
 			}
@@ -85,6 +92,8 @@ public:
 private:
 	// epoll文件描述符
 	int mEpoll{0};
+
+	int mTimeout{0};
 
 	std::vector<struct epoll_event> mEvents;
 

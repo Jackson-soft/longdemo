@@ -9,7 +9,7 @@
 class Listener
 {
 public:
-	Listener() {}
+    Listener() {}
     virtual ~Listener() {}
 
     virtual int Listen(std::string_view network, std::string_view address) = 0;
@@ -35,7 +35,7 @@ public:
         }
     }
 
-    int Accept() override {}
+    int Accept() override { return 0; }
 
     void Close() override { mSocket.Close(); }
 

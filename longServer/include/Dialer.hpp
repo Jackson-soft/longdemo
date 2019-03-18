@@ -9,6 +9,8 @@
 #include <string_view>
 #include <unistd.h>
 
+// 连接器
+
 //接口
 class Conn
 {
@@ -78,10 +80,9 @@ private:
 	//客户端地址
 	std::string mLocalAddr{""};
 
-	//远程地址
-	std::string mRemoteAddr{""};
+	//远程地址std::string mRemoteAddr{""};
 
-	unsigned short mPort{0};
+    unsigned short mPort{0};
 
-	std::chrono::duration<int> mKeepAlive;
+    std::chrono::duration<int> mKeepAlive;
 };

@@ -61,8 +61,7 @@ public:
 
         while (mRunning.load()) {
             // timeout：-1永久阻塞，0立即返回，非阻塞，>0指定微秒数
-            nReady = ::epoll_wait(
-                mEpoll, &*mEvents.begin(), static_cast<int>(mEvents.size()), mTimeout);
+            nReady = ::epoll_wait(mEpoll, &*mEvents.begin(), static_cast<int>(mEvents.size()), mTimeout);
             if (nReady <= 0) {
                 continue;
             }
@@ -86,7 +85,8 @@ public:
     void Stop() { mRunning.store(false, std::memory_order_release); }
 
 private:
-    // epoll文件描述符int mEpoll{0};
+    // epoll文件描述符
+    int mEpoll{0};
 
     int mTimeout{0};
 

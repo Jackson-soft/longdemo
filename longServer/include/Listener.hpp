@@ -9,7 +9,7 @@
 class Listener
 {
 public:
-    Listener() {}
+    Listener() = default;
     virtual ~Listener() {}
 
     virtual int Listen(std::string_view network, std::string_view address) = 0;

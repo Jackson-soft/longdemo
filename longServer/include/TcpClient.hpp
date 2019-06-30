@@ -2,18 +2,19 @@
 
 // TCP 客户端
 
-#include "Connector.hpp"
+#include "Dialer.hpp"
 #include "Util.hpp"
+#include <cstdint>
 #include <string_view>
 
 class TcpClient : public Noncopyable
 {
 public:
-	TcpClient() {}
-	~TcpClient() {}
+    TcpClient() {}
+    ~TcpClient() {}
 
-	bool Dial(std::string_view ip, unsigned short port) {}
+    bool Dial(std::string_view ip, std::uint32_t port) { return false; }
 
 private:
-	Connector mTcpConn;
+    Dialer mDialer;
 };

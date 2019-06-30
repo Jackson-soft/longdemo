@@ -5,6 +5,6 @@ fi
 
 cd build
 
-cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
 
 make

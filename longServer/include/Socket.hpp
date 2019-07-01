@@ -18,214 +18,178 @@
 class Socket : public Noncopyable
 {
 public:
-	Socket() = default;
-	Socket(const int fd) : mSocket(fd) {}
+    Socket() = default;
+    Socket(const int fd) : mSocket(fd) {}
 
-	// move constructor
-	Socket(const int &&fd) : mSocket(std::move(fd)) {}
+    //
+    Socket(const int &&fd) : mSocket(std::move(fd)) {}
 
-	~Socket() { Close(); }
+    // move constructor
+    Socket(const Socket &&obj) {}
 
-	bool NewSocket(std::string_view network)
-	{
-		if (network.empty()) {
-			return false;
-		}
-		if (network == "tcp") {
-			mSocket = ::socket(AF_INET6,
-							   SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
-							   IPPROTO_IP);
-		} else if (network == "udp") {
-			mSocket = ::socket(AF_INET6,
-							   SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
-							   IPPROTO_IP);
-		} else if (network == "unix") {
-			mSocket = ::socket(AF_UNIX,
-							   SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
-							   IPPROTO_IP);
-		} else {
-			return false;
-		}
+    // copy constructor
+    Socket(const Socket &obj)
+    {
+        mSocket = obj.mSocket;
+        mNet    = obj.mNet;
+    }
 
-		if (mSocket <= 0) {
-			return false;
-		}
+    ~Socket() { Close(); }
 
-		mNet = std::move(network);
+    bool NewSocket(const std::string_view network = "tcp")
+    {
+        if (network.empty()) {
+            return false;
+        } else if (network == "tcp") {
+            mSocket = ::socket(AF_INET6, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
+        } else if (network == "udp") {
+            mSocket = ::socket(AF_INET6, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
+        } else if (network == "unix") {
+            mSocket = ::socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
+        } else {
+            return false;
+        }
 
-		return SetReusePort(true) == 1 ? true : false;
-	}
+        if (mSocket <= 0) {
+            return false;
+        }
 
-	//监听服务器
-	int Listen() { return ::listen(mSocket, SOMAXCONN); }
+        mNet = std::move(network);
 
-	// 绑定
-	int Bind(unsigned short port, std::string_view ip = {""})
-	{
-		if (port <= 0) {
-			return -1;
-		}
-		struct sockaddr_in6 addr;
+        return SetReusePort(true) == 1 ? true : false;
+    }
 
-		std::memset(&addr, 0, sizeof(addr));
-		addr.sin6_family = AF_INET6;
-		addr.sin6_port   = ::htons(port);
+    //监听服务器
+    int Listen() { return ::listen(mSocket, SOMAXCONN); }
 
-		if (!ip.empty()) {
-			if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
-				return 0;
-		} else {
-			addr.sin6_addr = in6addr_any;
-		}
+    // 绑定
+    int Bind(unsigned short port, std::string_view ip = {""})
+    {
+        if (port <= 0) {
+            return -1;
+        }
+        struct sockaddr_in6 addr;
 
-		return ::bind(mSocket,
-					  reinterpret_cast<struct sockaddr *>(&addr),
-					  static_cast<socklen_t>(sizeof(addr)));
-	}
+        std::memset(&addr, 0, sizeof(addr));
+        addr.sin6_family = AF_INET6;
+        addr.sin6_port   = ::htons(port);
 
-	//连接目标服务器
-	int Connect(unsigned short port, std::string_view ip)
-	{
-		if (port <= 0 || ip.empty()) {
-			return -1;
-		}
-		struct sockaddr_in6 addr;
+        if (!ip.empty()) {
+            if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
+                return 0;
+        } else {
+            addr.sin6_addr = in6addr_any;
+        }
 
-		std::memset(&addr, 0, sizeof(addr));
-		addr.sin6_family = AF_INET6;
-		addr.sin6_port   = ::htons(port);
+        return ::bind(mSocket, reinterpret_cast<struct sockaddr *>(&addr), static_cast<socklen_t>(sizeof(addr)));
+    }
 
-		if (!ip.empty()) {
-			if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
-				return 0;
-		} else {
-			addr.sin6_addr = in6addr_any;
-		}
+    //连接目标服务器
+    int Connect(const std::string_view ip, const unsigned short port)
+    {
+        if (port <= 0) {
+            return -1;
+        }
+        struct sockaddr_in6 addr;
 
-		return ::connect(mSocket,
-						 reinterpret_cast<struct sockaddr *>(&addr),
-						 static_cast<socklen_t>(sizeof(addr)));
-	}
+        std::memset(&addr, 0, sizeof(addr));
+        addr.sin6_family = AF_INET6;
+        addr.sin6_port   = ::htons(port);
 
-	// 返回接收的socket文件描述符
-	int Accept()
-	{
-		struct sockaddr_in6 addr;
-		socklen_t socklen = sizeof(addr);
-		std::memset(&addr, 0, socklen);
+        if (!ip.empty()) {
+            if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
+                return 0;
+        } else {
+            addr.sin6_addr = in6addr_any;
+        }
 
-		return ::accept4(mSocket,
-						 reinterpret_cast<struct sockaddr *>(&addr),
-						 &socklen,
-						 SOCK_NONBLOCK | SOCK_CLOEXEC);
-	}
+        return ::connect(mSocket, reinterpret_cast<struct sockaddr *>(&addr), static_cast<socklen_t>(sizeof(addr)));
+    }
 
-	// 0成功，-1失败
-	int SetKeeplive(bool on)
-	{
-		int optVal = on ? 1 : 0;
-		return ::setsockopt(mSocket,
-							SOL_SOCKET,
-							SO_KEEPALIVE,
-							&optVal,
-							static_cast<socklen_t>(sizeof(optVal)));
-	}
+    // 返回接收的socket文件描述符
+    int Accept()
+    {
+        struct sockaddr_in6 addr;
+        socklen_t socklen = sizeof(addr);
+        std::memset(&addr, 0, socklen);
 
-	// 设置非阻塞
-	int SetNonBlock()
-	{
-		int nFlag = ::fcntl(mSocket, F_GETFL, 0);
-		if (nFlag == -1) {
-			return nFlag;
-		}
-		return ::fcntl(mSocket, F_SETFL, nFlag | O_NONBLOCK | FD_CLOEXEC);
-	}
+        return ::accept4(mSocket, reinterpret_cast<struct sockaddr *>(&addr), &socklen, SOCK_NONBLOCK | SOCK_CLOEXEC);
+    }
 
-	// Nagle 算法(小包合并成大包)
-	int SetNoDelay(bool on)
-	{
-		int optval = on ? 1 : 0;
-		return ::setsockopt(mSocket,
-							IPPROTO_TCP,
-							TCP_NODELAY,
-							&optval,
-							static_cast<socklen_t>(sizeof optval));
-	}
+    // 0成功，-1失败
+    int SetKeeplive(bool on)
+    {
+        int optVal = on ? 1 : 0;
+        return ::setsockopt(mSocket, SOL_SOCKET, SO_KEEPALIVE, &optVal, static_cast<socklen_t>(sizeof(optVal)));
+    }
 
-	int SetCork(bool on)
-	{
-		int optVal = on ? 1 : 0;
-		return ::setsockopt(mSocket,
-							IPPROTO_TCP,
-							TCP_CORK,
-							&optVal,
-							static_cast<socklen_t>(sizeof optVal));
-	}
+    // 设置非阻塞
+    int SetNonBlock()
+    {
+        int nFlag = ::fcntl(mSocket, F_GETFL, 0);
+        if (nFlag == -1) {
+            return nFlag;
+        }
+        return ::fcntl(mSocket, F_SETFL, nFlag | O_NONBLOCK | FD_CLOEXEC);
+    }
 
-	// 地址复用
-	int SetReuseAddr(bool on)
-	{
-		int optval = on ? 1 : 0;
-		return ::setsockopt(mSocket,
-							SOL_SOCKET,
-							SO_REUSEADDR,
-							&optval,
-							static_cast<socklen_t>(sizeof optval));
-	}
+    // Nagle 算法(小包合并成大包)
+    int SetNoDelay(bool on)
+    {
+        int optval = on ? 1 : 0;
+        return ::setsockopt(mSocket, IPPROTO_TCP, TCP_NODELAY, &optval, static_cast<socklen_t>(sizeof optval));
+    }
 
-	// 端口复用
-	int SetReusePort(bool on)
-	{
-		int optval = on ? 1 : 0;
-		return ::setsockopt(mSocket,
-							SOL_SOCKET,
-							SO_REUSEPORT,
-							&optval,
-							static_cast<socklen_t>(sizeof optval));
-	}
+    int SetCork(bool on)
+    {
+        int optVal = on ? 1 : 0;
+        return ::setsockopt(mSocket, IPPROTO_TCP, TCP_CORK, &optVal, static_cast<socklen_t>(sizeof optVal));
+    }
 
-	// 读数据
-	ssize_t Read(void *buf, size_t count)
-	{
-		return ::recv(mSocket, buf, count, 0);
-	}
+    // 地址复用
+    int SetReuseAddr(bool on)
+    {
+        int optval = on ? 1 : 0;
+        return ::setsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR, &optval, static_cast<socklen_t>(sizeof optval));
+    }
 
-	ssize_t Readv(const struct iovec *iov, int iovcnt)
-	{
-		return ::readv(mSocket, iov, iovcnt);
-	}
+    // 端口复用
+    int SetReusePort(bool on)
+    {
+        int optval = on ? 1 : 0;
+        return ::setsockopt(mSocket, SOL_SOCKET, SO_REUSEPORT, &optval, static_cast<socklen_t>(sizeof optval));
+    }
 
-	// 写数据
-	ssize_t Write(const void *buf, size_t count)
-	{
-		return ::send(mSocket, buf, count, 0);
-	}
+    // 读数据
+    ssize_t Read(void *buf, size_t count) { return ::recv(mSocket, buf, count, 0); }
 
-	ssize_t Writev(const struct iovec *iov, int iovcnt)
-	{
-		return ::writev(mSocket, iov, iovcnt);
-	}
+    ssize_t Readv(const struct iovec *iov, int iovcnt) { return ::readv(mSocket, iov, iovcnt); }
 
-	//优雅关闭读写双半闭
-	int ShutDown() { return ::shutdown(mSocket, SHUT_RDWR); }
+    // 写数据
+    ssize_t Write(const void *buf, size_t count) { return ::send(mSocket, buf, count, 0); }
 
-	// 关闭读
-	int CloseRead() { return ::shutdown(mSocket, SHUT_RD); }
+    ssize_t Writev(const struct iovec *iov, int iovcnt) { return ::writev(mSocket, iov, iovcnt); }
 
-	// 关闭写
-	int CloseWrite() { return ::shutdown(mSocket, SHUT_WR); }
+    //优雅关闭读写双半闭
+    int ShutDown() { return ::shutdown(mSocket, SHUT_RDWR); }
 
-	//关闭
-	int Close() { return ::close(mSocket); }
+    // 关闭读
+    int CloseRead() { return ::shutdown(mSocket, SHUT_RD); }
 
-	// 获取原生socket
-	int GetNativeFD() const { return mSocket; }
+    // 关闭写
+    int CloseWrite() { return ::shutdown(mSocket, SHUT_WR); }
+
+    //关闭
+    int Close() { return ::close(mSocket); }
+
+    // 获取原生socket
+    int GetNativeFD() const { return mSocket; }
 
 private:
-	void GetTcpInfo() {}
+    void GetTcpInfo() {}
 
 private:
-	int mSocket{0}; //
+    int mSocket{0};  //
 
-	std::string mNet{""};
+    std::string mNet{""};
 };

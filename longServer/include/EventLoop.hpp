@@ -2,6 +2,8 @@
 
 #include "Util.hpp"
 
+namespace Uranus
+{
 //这个基类定义事件循环的接口
 class EventLoop : public Noncopyable
 {
@@ -14,3 +16,4 @@ public:
     virtual int ModEvent(int fd) = 0;
     virtual int Run()            = 0;
 };
+}  // namespace Uranus

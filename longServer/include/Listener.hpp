@@ -5,6 +5,8 @@
 #include <string>
 #include <string_view>
 
+namespace Uranus
+{
 // 监听器接口
 class Listener
 {
@@ -44,3 +46,4 @@ public:
 private:
     Socket mSocket;
 };
+}  // namespace Uranus

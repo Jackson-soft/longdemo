@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+namespace Uranus
+{
 class ThreadPool : public Noncopyable
 {
 public:
@@ -83,3 +85,4 @@ private:
     std::condition_variable mCondition;                  //条件变量
     std::atomic_bool mRunning{true};                     //是否在运行
 };
+}  // namespace Uranus

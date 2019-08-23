@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <string_view>
 
+namespace Uranus
+{
 class TcpClient : public Noncopyable
 {
 public:
@@ -18,3 +20,4 @@ public:
 private:
     Dialer mDialer;
 };
+}  // namespace Uranus

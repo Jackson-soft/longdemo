@@ -3,6 +3,8 @@
 #include <boost/algorithm/string.hpp>
 #include <string_view>
 
+namespace Uranus
+{
 //日志等级枚举类
 enum class LogLevel {
     TRACE,
@@ -61,3 +63,4 @@ public:
             return LogLevel::NULL_LEVEL;
     }
 };
+}  // namespace Uranus

@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <string>
 
+namespace Uranus
+{
 //时间操作
 class TimeUtil
 {
@@ -58,3 +60,4 @@ public:
         return *std::localtime(&now_c);
     }
 };
+}  // namespace Uranus

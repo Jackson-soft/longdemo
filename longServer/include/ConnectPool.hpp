@@ -9,6 +9,8 @@
 #include <mutex>
 #include <string_view>
 
+namespace Uranus
+{
 template<typename T>
 class ConnectPool : public Noncopyable
 {
@@ -75,3 +77,4 @@ private:
     std::once_flag mFlag;
     std::deque<std::shared_ptr<T>> mPool;
 };
+}  // namespace Uranus

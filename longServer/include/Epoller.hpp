@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <vector>
 
+namespace Uranus
+{
 // Reactor 模式
 // 消息循环的epoll实现
 class Epoller : public EventLoop
@@ -94,3 +96,4 @@ private:
 
     std::atomic_bool mRunning{true};
 };
+}  // namespace Uranus

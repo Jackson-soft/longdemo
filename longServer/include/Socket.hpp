@@ -1,7 +1,6 @@
 #pragma once
 
 // socket封装类,ipv6
-
 #include "Util.hpp"
 #include <arpa/inet.h>
 #include <cstring>
@@ -15,6 +14,8 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+namespace Uranus
+{
 class Socket : public Noncopyable
 {
 public:
@@ -193,3 +194,4 @@ private:
 
     std::string mNet{""};
 };
+}  // namespace Uranus

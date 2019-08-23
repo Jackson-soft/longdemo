@@ -1,5 +1,10 @@
 #pragma once
 
-#define CATCH_CONFIG_MAIN
+#include <vector>
 
-TEST_CASE("dd", "dd") {}
+TEST_CASE("dd")
+{
+    std::vector<int> v(5);
+    REQUIRE(v.size() == 5);
+    REQUIRE(v.capacity() >= 5);
+}

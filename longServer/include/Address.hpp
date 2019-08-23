@@ -3,6 +3,8 @@
 #include <string>
 #include <string_view>
 
+namespace Uranus
+{
 //网络地址接口
 class Address
 {
@@ -18,7 +20,7 @@ public:
     //网络类型： tcp,udp,unix
     virtual std::string Network() = 0;
 
-    //网络地址： 127.0.0.1:80,2000:0000:0000:0000:0001:2345:6789:abcd::5060
+    //网络地址： ipv4:127.0.0.1:80; ipv6:2000:0000:0000:0000:0001:2345:6789:abcd::5060
     virtual std::string String() = 0;
 };
 
@@ -79,3 +81,4 @@ private:
     std::string mNetwork{""};
     std::string mAddress{""};
 };
+}  // namespace Uranus

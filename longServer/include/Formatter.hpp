@@ -7,6 +7,8 @@
 #include <string>
 #include <string_view>
 
+namespace Uranus
+{
 // Formatter 日志格式化前端
 class Formatter
 {
@@ -46,3 +48,4 @@ private:
     std::map<std::string, std::string> mData;
     std::string mLevel;  // 日志级别
 };
+}  // namespace Uranus

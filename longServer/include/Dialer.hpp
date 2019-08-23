@@ -4,18 +4,20 @@
 #include "Socket.hpp"
 #include "Util.hpp"
 #include <chrono>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <unistd.h>
 
 // 连接器
-
-//接口
+namespace Uranus
+{
+// connection 接口
 class Conn
 {
 public:
-    Conn() {}
+    Conn() = default;
     virtual ~Conn() {}
 
     virtual int Read() = 0;
@@ -48,7 +50,7 @@ public:
         if (!mSocket.NewSocket(network))
             return false;
 
-        return mSocket.Connect(port, ip) == 0 ? true : false;
+        return mSocket.Connect(ip, port) == 0 ? true : false;
     }
 
     //本地网络地址
@@ -83,3 +85,4 @@ private:
 
     std::chrono::duration<int> mKeepAlive;
 };
+}  // namespace Uranus

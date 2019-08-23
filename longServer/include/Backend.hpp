@@ -10,6 +10,8 @@
 #include <string>
 #include <string_view>
 
+namespace Uranus
+{
 // Backend 日志输出后端
 class Backend
 {
@@ -133,3 +135,4 @@ private:
     std::string mCurrentDay{""};                //当前日期
     bool mChang{true};                          //日志文件是否需要切割
 };
+}  // namespace Uranus

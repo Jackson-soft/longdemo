@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.10)
 
 # 项目信息
 project(longServer)
@@ -8,9 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-g -Wall") # 开启所有警告
 set(CMAKE_CXX_FLAGS_DEBUG "-o0") # 调试不优化
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
-
-# 设置boost使用静态链接
-set(Boost_USE_STATIC_LIBS ON)
 
 find_package(Boost COMPONENTS REQUIRED)
 

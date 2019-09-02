@@ -65,7 +65,7 @@ public:
     UnixAddr() {}
     ~UnixAddr() override {}
 
-    UnixAddr(std::string_view net, std::string_view addr)
+    UnixAddr(const std::string_view net, const std::string_view addr)
     {
         if ((net == "unix" || net == "unixgram" || net == "unixpacket") && (!addr.empty())) {
             mNetwork = net;

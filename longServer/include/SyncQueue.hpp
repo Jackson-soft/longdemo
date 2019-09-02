@@ -10,11 +10,11 @@
 namespace Uranus
 {
 template<typename T>
-class SyncQueue : public Noncopyable
+class SyncQueue : public Uranus::Noncopyable
 {
 public:
-    SyncQueue() {}
-    ~SyncQueue() {}
+    SyncQueue()  = default;
+    ~SyncQueue() = default;
 
     bool Empty()
     {

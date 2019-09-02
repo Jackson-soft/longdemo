@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RingBuffer.hpp"
+#include "doctest.h"
 #include <vector>
 
 TEST_CASE("dd")

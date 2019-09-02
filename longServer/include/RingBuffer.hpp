@@ -9,7 +9,7 @@ namespace Uranus
 {
 // 环形缓存
 template<typename T>
-class RingBuffer : public Noncopyable
+class RingBuffer : public Uranus::Noncopyable
 {
 public:
     RingBuffer() : RingBuffer(16) {}

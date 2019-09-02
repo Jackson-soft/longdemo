@@ -12,7 +12,7 @@
 namespace Uranus
 {
 template<typename T>
-class ConnectPool : public Noncopyable
+class ConnectPool : public Uranus::Noncopyable
 {
 public:
     static ConnectPool<T> *Get()
@@ -21,7 +21,7 @@ public:
         return &connPool;
     }
 
-    void Initalize(std::string_view conn, int maxConn = 10, int maxIdle = 5)
+    void Initalize(const std::string_view conn, const int maxConn = 10, const int maxIdle = 5)
     {
         mConnect = conn;
         mMaxIdle = maxIdle;
@@ -45,13 +45,12 @@ public:
 
     void Put(std::shared_ptr<T> conn)
     {
-        if (conn == nullptr) {
+        if (!conn) {
             return;
         }
 
         std::unique_lock<std::mutex> lock(mMutex);
         mPool.push_back(conn);
-        lock.unlock();
     }
 
 private:
@@ -69,10 +68,10 @@ private:
 
 private:
     std::mutex mMutex;
-    std::string_view mConnect;  // 连接
-    int mMaxIdle{0};            // 最大空闲数
-    int mMaxConn{10};           // 最大连接数
-    int mNumOpen{0};            //打开的连接数
+    std::string mConnect;  // 连接
+    int mMaxIdle{0};       // 最大空闲数
+    int mMaxConn{10};      // 最大连接数
+    int mNumOpen{0};       //打开的连接数
     std::condition_variable mCondition;
     std::once_flag mFlag;
     std::deque<std::shared_ptr<T>> mPool;

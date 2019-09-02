@@ -1,11 +1,11 @@
 #pragma once
 
+#include "doctest.h"
 #include <iostream>
 #include <utility>
 #include <vector>
 
 // test something
-
 TEST_CASE("test remove")
 {
     std::vector<int> a{2, 34, 5, 6, 8};

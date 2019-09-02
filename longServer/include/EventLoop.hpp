@@ -5,7 +5,7 @@
 namespace Uranus
 {
 //这个基类定义事件循环的接口
-class EventLoop : public Noncopyable
+class EventLoop : public Uranus::Noncopyable
 {
 public:
     EventLoop()          = default;

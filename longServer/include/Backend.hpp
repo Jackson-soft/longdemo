@@ -30,7 +30,7 @@ public:
     ~FileBackend() override { Close(); }
 
     //初始化各项参数
-    bool InitBackend(std::string_view path,
+    bool InitBackend(const std::string_view path,
                      int64_t maxSize           = 0,
                      std::string_view prefix   = "",
                      std::string_view fileLink = "")

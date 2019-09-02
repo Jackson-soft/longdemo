@@ -16,7 +16,7 @@ public:
     Formatter() {}
     virtual ~Formatter() {}
 
-    virtual std::string Format(std::string_view msg)                   = 0;
+    virtual std::string Format(const std::string_view msg)             = 0;
     virtual void WithFields(std::map<std::string, std::string> fields) = 0;
 };
 
@@ -26,14 +26,14 @@ public:
     TextFormatter() : TextFormatter("infor") {}
     ~TextFormatter() override { mData.clear(); }
 
-    TextFormatter(std::string_view lvl) : mLevel(lvl) {}
+    TextFormatter(const std::string_view lvl) : mLevel(lvl) {}
 
-    std::string Format(std::string_view msg) override
+    std::string Format(const std::string_view msg) override
     {
         std::string retData{""};
         std::sprintf(
             retData.data(), "%s [%s] %s:%d :: ", TimeUtil::CurrentDay().data(), mLevel.data(), __FILE__, __LINE__);
-        if (mData.size() > 0) {
+        if (!mData.empty()) {
             for (const auto &i : mData) {
                 std::sprintf(retData.data(), "%s%s:%s,", retData.data(), i.first.data(), i.second.data());
             }
@@ -45,7 +45,7 @@ public:
     void WithFields(std::map<std::string, std::string> fields) override { mData.insert(fields.begin(), fields.end()); }
 
 private:
-    std::map<std::string, std::string> mData;
-    std::string mLevel;  // 日志级别
+    std::map<std::string, std::string> mData;  // 附加信息
+    std::string mLevel;                        // 日志级别
 };
 }  // namespace Uranus

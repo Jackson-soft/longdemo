@@ -17,15 +17,6 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src DIR_SRCS)
 # 添加头文件目录
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include ${Boost_INCLUDE_DIRS})
 
-# 指定生成目标
-add_executable(${PROJECT_NAME} ${DIR_SRCS})
-
-# 添加链接库
-target_link_libraries(${PROJECT_NAME}
-                      ${Boost_LIBRARIES}
-                      pthread
-                      stdc++fs)
-
 set(Test_Case TestMain)
 add_executable(${Test_Case} test/TestMain.cpp)
 target_link_libraries(${Test_Case} pthread ${Boost_LIBRARIES})

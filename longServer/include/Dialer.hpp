@@ -32,14 +32,14 @@ public:
 };
 
 // 连接器类
-class Dialer : public Conn, Noncopyable, std::enable_shared_from_this<Dialer>
+class Dialer : public Conn, Uranus::Noncopyable, std::enable_shared_from_this<Dialer>
 {
 public:
     Dialer() = default;
     ~Dialer() override { Close(); }
 
     //连接到网络地址
-    bool Dial(std::string_view network, std::string_view ip, unsigned short port)
+    bool Dial(const std::string_view network, const std::string_view ip, const unsigned short port)
     {
         if (network.empty() || ip.empty() || port <= 0) {
             return false;

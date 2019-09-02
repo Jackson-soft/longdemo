@@ -41,7 +41,7 @@ public:
             mCondition.notify_all();
             for (auto &it : mThreads) {
                 // it.get()->join(); //线程自行消亡
-                it.get()->detach();
+                it->detach();
             }
             mThreads.clear();
         }

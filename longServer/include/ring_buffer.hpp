@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Util.hpp"
+#include "utils/Util.hpp"
 #include <mutex>
 #include <shared_mutex>
 #include <vector>
@@ -9,7 +9,7 @@ namespace Uranus
 {
 // 环形缓存
 template<typename T>
-class RingBuffer : public Uranus::Noncopyable
+class RingBuffer : public Utils::Noncopyable
 {
 public:
     RingBuffer() : RingBuffer(16) {}

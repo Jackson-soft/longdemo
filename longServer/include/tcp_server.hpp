@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Acceptor.hpp"
-#include "Util.hpp"
+#include "net/acceptor.hpp"
+#include "utils/util.hpp"
 #include <atomic>
 #include <string_view>
 

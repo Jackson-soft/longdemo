@@ -70,7 +70,7 @@ Thumbs.db
 # --------
 *.dll
 *.exe
-.devcontainer/
 .vscode/
 build/
+.clangd/
 *.out

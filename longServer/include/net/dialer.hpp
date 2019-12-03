@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Address.hpp"
-#include "Socket.hpp"
-#include "Util.hpp"
+#include "address.hpp"
+#include "socket.hpp"
+#include "utils/util.hpp"
 #include <chrono>
 #include <cstddef>
 #include <memory>
@@ -12,6 +12,8 @@
 
 // 连接器
 namespace Uranus
+{
+namespace Net
 {
 // connection 接口
 class Conn
@@ -85,4 +87,5 @@ private:
 
     std::chrono::duration<int> mKeepAlive;
 };
+}  // namespace Net
 }  // namespace Uranus

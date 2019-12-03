@@ -1,9 +1,12 @@
 #pragma once
 
 #include <boost/algorithm/string.hpp>
+#include <map>
 #include <string_view>
 
 namespace Uranus
+{
+namespace Log
 {
 //日志等级枚举类
 enum class LogLevel {
@@ -23,7 +26,7 @@ public:
     ~Level() = default;
 
     //将日志等级解析成字符串
-    static std::string Marshal(const LogLevel lvl)
+    static std::string Marshal(const LogLevel &lvl)
     {
         switch (lvl) {
         case LogLevel::TRACE:
@@ -47,20 +50,14 @@ public:
     static LogLevel Unmarshal(std::string &str)
     {
         boost::algorithm::to_lower(str);
-        if (str == "trace")
-            return LogLevel::TRACE;
-        else if (str == "debgug")
-            return LogLevel::DEBUG;
-        else if (str == "infor")
-            return LogLevel::INFOR;
-        else if ("warn" == str)
-            return LogLevel::WARN;
-        else if ("error" == str)
-            return LogLevel::ERROR;
-        else if ("fatal" == str)
-            return LogLevel::FATAL;
-        else
-            return LogLevel::NULL_LEVEL;
+        std::map<std::string, LogLevel> levelMap{{"trace", LogLevel::TRACE},
+                                                 {"debug", LogLevel::DEBUG},
+                                                 {"infor", LogLevel::INFOR},
+                                                 {"warn", LogLevel::WARN},
+                                                 {"error", LogLevel::ERROR},
+                                                 {"fatal", LogLevel::FATAL}};
+        return levelMap[str];
     }
 };
+}  // namespace Log
 }  // namespace Uranus

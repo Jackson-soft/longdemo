@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SyncQueue.hpp"
-#include "Util.hpp"
+#include "sync_queue.hpp"
+#include "utils/util.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
@@ -16,7 +16,7 @@
 
 namespace Uranus
 {
-class ThreadPool : public Noncopyable
+class ThreadPool : public Utils::Noncopyable
 {
 public:
     using Task = std::function<void()>;

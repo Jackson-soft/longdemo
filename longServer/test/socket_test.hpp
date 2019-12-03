@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Socket.hpp"
 #include "doctest.h"
+#include "net/Socket.hpp"
 
 TEST_CASE("socket test")
 {
-    Uranus::Socket fd;
+    Uranus::Net::Socket fd;
     fd.NewSocket();
     CHECK(fd.GetNativeFD() > 0);
     CHECK(fd.Listen());

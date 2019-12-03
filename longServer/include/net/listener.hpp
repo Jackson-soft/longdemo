@@ -1,11 +1,13 @@
 #pragma once
 
-#include "Socket.hpp"
-#include "Util.hpp"
+#include "socket.hpp"
+#include "utils/util.hpp"
 #include <string>
 #include <string_view>
 
 namespace Uranus
+{
+namespace Net
 {
 // 监听器接口
 class Listener
@@ -46,4 +48,5 @@ public:
 private:
     Socket mSocket;
 };
+}  // namespace Net
 }  // namespace Uranus

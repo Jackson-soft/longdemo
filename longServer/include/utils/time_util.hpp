@@ -1,13 +1,15 @@
 #pragma once
 
-#include <boost/format.hpp>
 #include <chrono>
 #include <cstdint>
 #include <ctime>
 #include <iomanip>
+#include <sstream>
 #include <string>
 
 namespace Uranus
+{
+namespace Utils
 {
 //时间操作
 class TimeUtil
@@ -20,14 +22,18 @@ public:
     static std::string CurrentTime()
     {
         auto now = NowTime();
-        return boost::str(boost::format("%s") % std::put_time(&now, "%F %T"));
+        std::stringstream ss;
+        ss << std::put_time(&now, "%F %T");
+        return ss.str();
     }
 
     // 获取当前日期 格式：YYYY-MM-DD
     static std::string CurrentDay()
     {
         auto now = NowTime();
-        return boost::str(boost::format("%s") % std::put_time(&now, "%F"));
+        std::stringstream ss;
+        ss << std::put_time(&now, "%F");
+        return ss.str();
     }
 
     // 获取当前时间戳(秒精度)
@@ -54,9 +60,9 @@ public:
 
     static std::tm NowTime()
     {
-        std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-        std::time_t now_c                         = std::chrono::system_clock::to_time_t(now);
+        std::time_t now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         return *std::localtime(&now_c);
     }
 };
+}  // namespace Utils
 }  // namespace Uranus

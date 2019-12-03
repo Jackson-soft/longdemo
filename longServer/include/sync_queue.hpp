@@ -2,7 +2,7 @@
 
 // 同步队列
 
-#include "Util.hpp"
+#include "utils/Util.hpp"
 #include <mutex>
 #include <queue>
 #include <utility>
@@ -10,7 +10,7 @@
 namespace Uranus
 {
 template<typename T>
-class SyncQueue : public Uranus::Noncopyable
+class SyncQueue : public Utils::Noncopyable
 {
 public:
     SyncQueue()  = default;

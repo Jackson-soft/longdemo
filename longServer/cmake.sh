@@ -1,9 +1,12 @@
 #!/bin/bash
-if [ ! -d "build" ]; then
-    mkdir build
+
+dir="build"
+
+if [ ! -d $dir ]; then
+    mkdir $dir
 fi
 
-cd build
+cd $dir
 
 cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
 

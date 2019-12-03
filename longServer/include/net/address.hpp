@@ -5,12 +5,14 @@
 
 namespace Uranus
 {
+namespace Net
+{
 //网络地址接口
 class Address
 {
 public:
-    Address() {}
-    virtual ~Address() {}
+    Address()          = default;
+    virtual ~Address() = default;
 
     virtual Address &operator=(const Address &obj) = 0;     // copy
     virtual Address &operator=(Address &&obj)         = 0;  // move
@@ -81,4 +83,5 @@ private:
     std::string mNetwork{""};
     std::string mAddress{""};
 };
+}  // namespace Net
 }  // namespace Uranus

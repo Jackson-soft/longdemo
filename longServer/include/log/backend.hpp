@@ -1,32 +1,40 @@
 #pragma once
 
-#include "TimeUtil.hpp"
+#include "utils/time_util.hpp"
 #include <atomic>
-#include <boost/format.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <fmt/format.h>
 #include <fstream>
 #include <string>
 #include <string_view>
 
 namespace Uranus
 {
-// Backend 日志输出后端
+namespace Log
+{
+// Backend 日志输出后端接口
 class Backend
 {
 public:
-    Backend() {}
-    virtual ~Backend() {}
+    Backend()          = default;
+    virtual ~Backend() = default;
 
     virtual void Write(const std::string_view buf) = 0;
     virtual void Close()                           = 0;
 };
 
+// 终端输出后端
+class ConsoleBackend : public Backend
+{
+};
+
+// 文件输出后端
 class FileBackend : public Backend
 {
 public:
-    FileBackend() {}
+    FileBackend() = default;
     ~FileBackend() override { Close(); }
 
     //初始化各项参数
@@ -58,7 +66,7 @@ public:
             }
         }
 
-        mCurrentDay = TimeUtil::GetCurrentDay();
+        mCurrentDay = Utils::TimeUtil::CurrentDay();
 
         if (mChang) {
             createFile();
@@ -94,7 +102,7 @@ private:
     //检查日期
     void checkData()
     {
-        auto tDay = TimeUtil::CurrentDay();
+        auto tDay = Utils::TimeUtil::CurrentDay();
         if (tDay != mCurrentDay) {
             mCurrentDay = tDay;
             mIndex      = 1;
@@ -115,7 +123,7 @@ private:
     //打开文件
     void createFile()
     {
-        mAppellation = boost::str(boost::format("%s/%s-%s-%.4d.log") % mPath % mPrefix % mCurrentDay % mIndex);
+        mAppellation = fmt::format("{}/{}-{}-{:4d}.log", mPath, mPrefix, mCurrentDay, mIndex);
 
         mFile.open(mAppellation, std::ios::in);
         if (mLink.size() > 0) {
@@ -135,4 +143,5 @@ private:
     std::string mCurrentDay{""};                //当前日期
     bool mChang{true};                          //日志文件是否需要切割
 };
+}  // namespace Log
 }  // namespace Uranus

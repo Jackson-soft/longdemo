@@ -1,7 +1,7 @@
 #pragma once
 
 // socket封装类,ipv6
-#include "Util.hpp"
+#include "utils/Util.hpp"
 #include <arpa/inet.h>
 #include <cstdint>
 #include <cstring>
@@ -18,7 +18,9 @@
 
 namespace Uranus
 {
-class Socket : public Uranus::Noncopyable
+namespace Net
+{
+class Socket : public Uranus::Utils::Noncopyable
 {
 public:
     Socket() = default;
@@ -194,4 +196,5 @@ private:
 
     std::string mNet{""};
 };
+}  // namespace Net
 }  // namespace Uranus

@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
 # 项目信息
-project(longServer)
+project(longServer CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 

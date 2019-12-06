@@ -1,13 +1,18 @@
 #!/bin/bash
+set -u
 
 dir="build"
 
 if [ ! -d $dir ]; then
-    mkdir $dir
+    mkdir -p $dir
 fi
 
-cd $dir
+cmake -B$dir -H. -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
-cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+ninja -C $dir -j 6
 
-make
+lnFile="compile_commands.json"
+
+if [ ! -f $lnFile ]; then
+    ln -s $dir/$lnFile .
+fi

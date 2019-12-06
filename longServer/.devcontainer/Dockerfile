@@ -9,7 +9,7 @@ FROM fedora:latest
 RUN dnf -y update && dnf -y install clang clang-tools-extra git
 
 # Install C++ tools
-RUN dnf -y install cmake make cppcheck valgrind boost-devel fmt-devel mariadb-connector-c-devel range-v3-devel
+RUN dnf -y install cmake ninja-build ccache boost-devel fmt-devel mariadb-connector-c-devel range-v3-devel
 
 # Clean up
 RUN dnf autoremove -y

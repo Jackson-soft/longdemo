@@ -4,7 +4,6 @@
 	"extensions": [
 		"ms-vscode.cpptools",
 		"twxs.cmake",
-		"llvm-vs-code-extensions.vscode-clangd",
 		"tabnine.tabnine-vscode"
 	],
 	"runArgs": [

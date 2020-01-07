@@ -74,3 +74,4 @@ Thumbs.db
 build/
 .clangd/
 *.out
+compile_commands.json

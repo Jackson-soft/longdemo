@@ -1,12 +1,13 @@
 #pragma once
 
-#include "dsn.hpp"
+#include "DSN.hpp"
+#include "LogHelper.hpp"
 #include <any>
 #include <boost/algorithm/string/replace.hpp>
 #include <cstdint>
 #include <cstring>
-#include <fmt/format.h>
 #include <memory>
+#include <spdlog/fmt/fmt.h>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -83,6 +84,7 @@ public:
         ::MYSQL_STMT *stmt = ::mysql_stmt_init(mMysql);
         if (0 != ::mysql_stmt_prepare(stmt, sql.data(), sql.size())) {
             auto [code, message] = Error();
+            GLOG_ERRORF("mysql_stmt_prepare code: {}, error: {}", code, message);
             return 0;
         }
 
@@ -119,11 +121,13 @@ public:
 
         if (0 != ::mysql_stmt_bind_param(stmt, vBinds.data())) {
             auto [code, message] = Error();
+            GLOG_ERRORF("mysql_stmt_bind_param code: {}, error: {}", code, message);
             return 0;
         }
 
         if (0 != ::mysql_stmt_execute(stmt)) {
             auto [code, message] = Error();
+            GLOG_ERRORF("mysql_stmt_execute code: {}, error: {}", code, message);
             return 0;
         }
 
@@ -163,12 +167,14 @@ public:
 
         if (0 != ::mysql_stmt_prepare(stmt, sql.data(), sql.size())) {
             auto [code, message] = Error();
+            GLOG_ERRORF("mysql_stmt_prepare code: {}, error: {}", code, message);
             return 0;
         }
 
         auto paramCount = ::mysql_stmt_param_count(stmt);
 
         if (args.size() != paramCount) {
+            GLOG_ERRORF("parameter count is {},but args is {}", paramCount, args.size());
             return 0;
         }
 
@@ -184,10 +190,14 @@ public:
         }
 
         if (0 != ::mysql_stmt_bind_param(stmt, vBinds.data())) {
+            auto [code, msg] = Error();
+            GLOG_ERRORF("mysql_stmt_bind_param code: {}, message: {}", code, msg);
             return 0;
         }
 
         if (0 != ::mysql_stmt_execute(stmt)) {
+            auto [code, msg] = Error();
+            GLOG_ERRORF("mysql_stmt_execute code: {}, message: {}", code, msg);
             return 0;
         }
 
@@ -304,6 +314,8 @@ public:
         }
 
         if (0 != ::mysql_stmt_execute(stmt)) {
+            auto info = Error();
+            GLOG_ERRORF("{},{}", std::get<std::string>(info));
             return false;
         }
 

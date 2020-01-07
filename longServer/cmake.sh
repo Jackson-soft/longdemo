@@ -3,9 +3,12 @@ set -u
 
 dir="build"
 
-if [ ! -d $dir ]; then
-    mkdir -p $dir
+if [ -d $dir ]; then
+    ninja -C $dir -j 6
+    exit 0
 fi
+
+mkdir -p $dir
 
 cmake -B$dir -H. -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 

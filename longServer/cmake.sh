@@ -10,7 +10,7 @@ fi
 
 mkdir -p $dir
 
-cmake -B$dir -H. -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+cmake -B$dir -H. -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
 
 ninja -C $dir -j 6
 

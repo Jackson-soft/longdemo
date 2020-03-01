@@ -1,8 +1,12 @@
 #pragma once
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <map>
 #include <string>
 #include <string_view>
+#include <vector>
 
 // [scheme:][//[userinfo@]host][/]path[?query][#fragment]
 
@@ -17,27 +21,32 @@ public:
     ~URL() = default;
 
 public:
-    auto Parse(std::string_view rawurl) -> bool
+    auto Parse(const std::string_view rawurl) -> bool
     {
         if (rawurl.empty())
             return false;
         if (rawurl == "*") {
-            path_ = "*";
+            Path = "*";
             return true;
         }
+
+        std::vector<std::string> result;
+        boost::split(result, rawurl, boost::is_any_of("#"), boost::token_compress_on);
+
+        boost::to_lower(Scheme);
         return false;
     }
     bool Query() { return false; }
 
-    auto IsAbs() -> bool { return !scheme_.empty(); }
+    auto IsAbs() -> bool { return !Scheme.empty(); }
 
 private:
-    std::string scheme_;
-    std::string opaque_;  // encoded opaque data
-    std::string host_;    // host or host:port
-    std::string path_;
-    std::string rawQuery_;
-    std::string fragment_;
+    std::string Scheme;
+    std::string Opaque;  // encoded opaque data
+    std::string Host;    // host or host:port
+    std::string Path;
+    std::string RawQuery;
+    std::string Fragment;
 };
 }  // namespace Http
 }  // namespace Uranus

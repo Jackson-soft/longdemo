@@ -16,7 +16,12 @@ public:
     ~Request() = default;
 
 public:
-    std::string Cookie(const std::string_view name) { return ""; }
+    std::string Cookie(const std::string_view name)
+    {
+        if (name.empty())
+            return "";
+        return "";
+    }
     void AddCookie() {}
 
 private:

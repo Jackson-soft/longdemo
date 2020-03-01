@@ -1,5 +1,7 @@
 #pragma once
 
+#include "request.hpp"
+#include "response.hpp"
 #include <string_view>
 
 namespace Uranus
@@ -13,8 +15,18 @@ public:
     ~Client() = default;
 
 public:
-    bool Get(const std::string_view rawurl) { return false; }
-    void Post(const std::string_view rawurl) {}
+    bool Get(const std::string_view rawurl)
+    {
+        if (rawurl.empty())
+            return false;
+        return false;
+    }
+
+    void Post(const std::string_view rawurl)
+    {
+        if (rawurl.empty())
+            return;
+    }
 
 private:
     void do() {}

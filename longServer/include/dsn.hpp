@@ -16,6 +16,8 @@
  *
  *  [user[:password]@][net[(addr)]]/dbname[?param1=value1&paramN=valueN]
  *
+ *  username:password@protocol(address)/dbname?param=value
+ *
  */
 
 namespace Uranus

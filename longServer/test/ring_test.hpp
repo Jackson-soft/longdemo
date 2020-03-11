@@ -1,7 +1,7 @@
 #pragma once
 
 #include "doctest.h"
-#include "ring_buffer.hpp"
+#include "utils/ring_buffer.hpp"
 #include <vector>
 
 TEST_CASE("dd")

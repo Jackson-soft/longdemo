@@ -28,22 +28,20 @@ public:
     //将日志等级解析成字符串
     static std::string Marshal(const LogLevel &lvl)
     {
-        switch (lvl) {
-        case LogLevel::TRACE:
-            return "trace";
-        case LogLevel::DEBUG:
-            return "debug";
-        case LogLevel::INFOR:
-            return "infor";
-        case LogLevel::WARN:
-            return "warn";
-        case LogLevel::ERROR:
-            return "error";
-        case LogLevel::FATAL:
-            return "fatal";
-        default:
-            return "";  // if the level is wrong
+        std::map<LogLevel, std::string> levelMap{
+            {LogLevel::TRACE, "trace"},
+            {LogLevel::DEBUG, "debug"},
+            {LogLevel::INFOR, "infor"},
+            {LogLevel::WARN, "warn"},
+            {LogLevel::ERROR, "error"},
+            {LogLevel::FATAL, "fatal"},
+        };
+
+        auto iter = levelMap.find(lvl);
+        if (iter != levelMap.end()) {
+            return iter->second;
         }
+        return "";
     }
 
     //将字符串解析成日志等级
@@ -56,7 +54,11 @@ public:
                                                  {"warn", LogLevel::WARN},
                                                  {"error", LogLevel::ERROR},
                                                  {"fatal", LogLevel::FATAL}};
-        return levelMap[str];
+        auto iter = levelMap.find(str);
+        if (iter != levelMap.end()) {
+            return iter->second;
+        }
+        return LogLevel::NULL_LEVEL;
     }
 };
 }  // namespace Log

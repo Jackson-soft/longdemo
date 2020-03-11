@@ -1,7 +1,6 @@
 #pragma once
 
 #include "doctest.h"
-#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -13,8 +12,4 @@ TEST_CASE("test remove")
     a.pop_back();
 
     CHECK(a.size() == 4);
-
-    for (const auto &it : a) {
-        std::cout << it << std::endl;
-    }
 }

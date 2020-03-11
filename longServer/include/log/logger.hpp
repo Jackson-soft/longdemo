@@ -3,7 +3,7 @@
 #include "backend.hpp"
 #include "formatter.hpp"
 #include "log_level.hpp"
-#include "utils/Util.hpp"
+#include "utils/util.hpp"
 #include <memory>
 #include <mutex>
 #include <queue>

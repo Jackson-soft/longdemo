@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sync_queue.hpp"
+#include "utils/sync_queue.hpp"
 #include "utils/util.hpp"
 #include <atomic>
 #include <condition_variable>

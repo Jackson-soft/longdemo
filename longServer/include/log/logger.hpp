@@ -22,9 +22,9 @@ public:
 
     ~Logger()
     {
-        auto fpt = formatter_.release();
+        auto fpt = formatter.release();
         delete fpt;
-        auto fbt = backend_.release();
+        auto fbt = backend.release();
         delete fbt;
     }
 
@@ -36,12 +36,12 @@ public:
     }
 
     //初始化，只需要调一次
-    bool Set(const LogLevel &level, std::unique_ptr<Formatter> fmt, std::unique_ptr<Backend> backend)
+    bool Set(const LogLevel &lvl, std::unique_ptr<Formatter> fmt, std::unique_ptr<Backend> backend)
     {
-        std::lock_guard<std::mutex> locker(mutex_);
-        level_ = level;
-        formatter_.swap(fmt);
-        backend_.swap(backend);
+        std::lock_guard<std::mutex> locker(mutex);
+        level = lvl;
+        formatter.swap(fmt);
+        backend.swap(backend);
         return true;
     }
 
@@ -51,9 +51,9 @@ public:
     void Run()
     {
         while (true) {
-            if (buffer_.size() > 0) {
-                backend_->Write(buffer_.front());
-                buffer_.pop();
+            if (buffer.size() > 0) {
+                backend->Write(buffer.front());
+                buffer.pop();
             }
         }
     }
@@ -62,18 +62,18 @@ private:
     //输出
     void outPut(LogLevel level, std::string_view msg)
     {
-        std::lock_guard<std::mutex> locker(mutex_);
-        if (level >= level_) {
-            buffer_.push(formatter_->Format(msg));
+        std::lock_guard<std::mutex> locker(mutex);
+        if (level >= level) {
+            buffer.push(formatter->Format(msg));
         }
     }
 
 private:
-    std::mutex mutex_;
-    LogLevel level_;
-    std::unique_ptr<Formatter> formatter_;  //格式化前端
-    std::unique_ptr<Backend> backend_;      //输出后端
-    std::queue<std::string> buffer_;        //环型缓存
+    std::mutex mutex;
+    LogLevel level;
+    std::unique_ptr<Formatter> formatter;  //格式化前端
+    std::unique_ptr<Backend> backend;      //输出后端
+    std::queue<std::string> buffer;        //环型缓存
 };
 
 #define LOG_INFO Logger::GetInstance().Inforln()

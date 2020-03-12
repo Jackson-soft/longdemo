@@ -9,8 +9,8 @@
 #include <vector>
 
 /* [scheme:][//[userinfo@]host][/]path[?query][#fragment]
- * RFC 3986[https://tools.ietf.org/pdf/rfc3986.pdf]
- *
+  RFC 3986[https://tools.ietf.org/pdf/rfc3986.pdf]
+
                      hierarchical part
         ┌───────────────────┴─────────────────────┐
                     authority               path
@@ -41,27 +41,30 @@ public:
         if (rawurl.empty())
             return false;
         if (rawurl == "*") {
-            Path = "*";
+            path = "*";
             return true;
         }
 
         std::vector<std::string> result;
         boost::split(result, rawurl, boost::is_any_of("#"), boost::token_compress_on);
 
-        boost::to_lower(Scheme);
+        boost::to_lower(scheme);
         return false;
     }
     bool Query() { return false; }
 
-    auto IsAbs() -> bool { return !Scheme.empty(); }
+    auto IsAbs() -> bool { return !scheme.empty(); }
 
 private:
-    std::string Scheme;
-    std::string Opaque;  // encoded opaque data
-    std::string Host;    // host or host:port
-    std::string Path;
-    std::string RawQuery;
-    std::string Fragment;
+    std::string &getscheme(const std::string_view rawurl) {}
+
+private:
+    std::string scheme;
+    std::string opaque;  // encoded opaque data
+    std::string host;    // host or host:port
+    std::string path;
+    std::string rawQuery;
+    std::string fragment;
 };
 }  // namespace Http
 }  // namespace Uranus

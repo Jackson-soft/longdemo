@@ -6,13 +6,10 @@
 FROM fedora:latest
 
 # Configure apt
-RUN dnf -y update && dnf -y install clang clang-tools-extra git
+RUN dnf -y update && dnf -y install clang clang-tools-extra git cmake ninja-build
 
 # Install C++ tools
-RUN dnf -y install cmake ninja-build ccache boost-devel fmt-devel mariadb-connector-c-devel range-v3-devel
-
-# Clean up
-RUN dnf autoremove -y
+RUN dnf -y install boost-devel fmt-devel mariadb-connector-c-devel range-v3-devel && dnf autoremove -y
 
 # Set the default shell to bash instead of sh
 ENV SHELL /bin/bash

@@ -17,6 +17,8 @@ public:
     virtual ~IP() = default;
 
     virtual bool operator==(const IP &lhs) = 0;
+
+    virtual std::string &String() = 0;
 };
 
 // IPV6
@@ -43,7 +45,7 @@ public:
         return mIP == loopback;
     }
 
-    std::string String() { return ""; }
+    std::string &String() override { return ""; }
 
 private:
     void parse(std::string_view str)

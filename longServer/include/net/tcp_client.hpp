@@ -9,7 +9,7 @@
 
 namespace Uranus
 {
-class TcpClient : public Noncopyable
+class TcpClient : public Utils::Noncopyable
 {
 public:
     TcpClient() {}
@@ -18,6 +18,6 @@ public:
     bool Dial(std::string_view ip, std::uint32_t port) { return false; }
 
 private:
-    Dialer mDialer;
+    Net::Dialer dialer;
 };
 }  // namespace Uranus

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "DBConn.hpp"
-#include "DSN.hpp"
+#include "db_conn.hpp"
+#include "dsn.hpp"
 #include <boost/noncopyable.hpp>
 #include <cstdint>
 #include <deque>

@@ -1,27 +1,31 @@
 #pragma once
 
-#include "net/acceptor.hpp"
 #include "utils/util.hpp"
 #include <atomic>
 #include <string_view>
+#include <thread>
+#include <unistd.h>
 
 namespace Uranus
 {
 // Tcp 服务器
-class TcpServer : public Noncopyable
+class TcpServer : public Utils::Noncopyable
 {
 public:
-    TcpServer() {}
+    TcpServer() = default;
 
-    ~TcpServer() {}
+    ~TcpServer() = default;
 
-    // 主循环
-    bool ListenTcp(unsigned short port, std::string_view ip = {""}, unsigned int workNum = 0)
-        : mPort(port), mIP(ip), mWorkers(workNum), mRunning(true)
+    TcpServer(unsigned int workNum = 0) : mWorkers(workNum), mRunning(true)
     {
         if (mWorkers == 0) {
             mWorkers = std::thread::hardware_concurrency();
         }
+    }
+
+    // 主循环
+    bool ListenTcp(unsigned short port, std::string_view ip = {""})
+    {
         initServer();
         while (1) {
         }
@@ -63,6 +67,5 @@ private:
     unsigned int mWorkers;  // 工作进程数量
 
     std::atomic_bool mRunning{true};
-    Acceptor mListener;
 };
 }  // namespace Uranus

@@ -2,6 +2,7 @@
 
 #include "request.hpp"
 #include "response.hpp"
+#include "types.hpp"
 #include <string_view>
 
 namespace Uranus
@@ -15,11 +16,13 @@ public:
     ~Client() = default;
 
 public:
-    bool Get(const std::string_view rawurl)
+    Response *Get(const std::string_view rawurl)
     {
         if (rawurl.empty())
-            return false;
-        return false;
+            return nullptr;
+        auto req = newRequest(Uranus::Http::Method::Get, rawurl);
+
+        return do();
     }
 
     void Post(const std::string_view rawurl)
@@ -29,7 +32,8 @@ public:
     }
 
 private:
-    void do() {}
+    Response *do() { return nullptr; }
+    Request *newRequest(Uranus::Http::Method method, const std::string_view url) { return nullptr; }
 
 private:
     int timeOut;

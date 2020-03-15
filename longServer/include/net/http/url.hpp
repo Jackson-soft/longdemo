@@ -46,17 +46,24 @@ public:
         }
 
         std::vector<std::string> result;
+        result.reserve(2);
+
         boost::split(result, rawurl, boost::is_any_of("#"), boost::token_compress_on);
+        fragment = result[1];
+        result.clear();
+        boost::split(result, rawurl, boost::is_any_of("://"), boost::token_compress_on);
+        scheme = boost::to_lower_copy(result[0]);
 
         boost::to_lower(scheme);
+
         return false;
     }
     bool Query() { return false; }
 
     auto IsAbs() -> bool { return !scheme.empty(); }
 
-private:
-    std::string &getscheme(const std::string_view rawurl) {}
+    //
+    std::string &String() { return ""; }
 
 private:
     std::string scheme;

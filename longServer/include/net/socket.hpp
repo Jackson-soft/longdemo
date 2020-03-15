@@ -20,7 +20,7 @@ namespace Uranus
 {
 namespace Net
 {
-class Socket : public Uranus::Utils::Noncopyable
+class Socket : public Utils::Noncopyable
 {
 public:
     Socket() = default;

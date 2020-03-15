@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 
@@ -20,18 +21,18 @@ public:
     virtual bool operator!=(const Address &obj) const = 0;
 
     //网络类型： tcp,udp,unix
-    virtual std::string Network() = 0;
+    [[nodiscard]] virtual const std::string &Network() const = 0;
 
     //网络地址： ipv4:127.0.0.1:80; ipv6:2000:0000:0000:0000:0001:2345:6789:abcd::5060
-    virtual std::string String() = 0;
+    [[nodiscard]] virtual const std::string &String() const = 0;
 };
 
 // ipv6地址类
 class IPv6Addr : public Address
 {
 public:
-    IPv6Addr() {}
-    ~IPv6Addr() override {}
+    IPv6Addr()           = default;
+    ~IPv6Addr() override = default;
 
     IPv6Addr(const IPv6Addr &obj) {}  // 复制构造函
     IPv6Addr(IPv6Addr &&obj) {}       // 移动构造函数
@@ -50,14 +51,14 @@ public:
         mNetwork = net;
         return true;
     }
-    std::string Network() override { return mNetwork; }
+    const std::string &Network() const override { return mNetwork; }
 
-    std::string String() override { return ""; }
+    const std::string &String() const override { return ""; }
 
 private:
     std::string mNetwork{""};
     std::string mIP{""};
-    unsigned short mPort{0};
+    std::uint16_t mPort{0};
 };
 
 // Unix地址类
@@ -75,9 +76,9 @@ public:
         }
     }
 
-    std::string Network() override { return mNetwork; }
+    std::string &Network() override { return mNetwork; }
 
-    std::string String() override { return mAddress; }
+    std::string &String() override { return mAddress; }
 
 private:
     std::string mNetwork{""};

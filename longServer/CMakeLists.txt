@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 # 项目信息
 project(longServer CXX)
 
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS "-g -Wall -o2") # 开启所有警告

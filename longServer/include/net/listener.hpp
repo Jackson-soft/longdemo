@@ -34,7 +34,7 @@ public:
 
     void Close() override { mSocket.Close(); }
 
-    std::string &Address() const override { return ""; }
+    const std::string &Address() const override { return ""; }
 
 private:
     Socket mSocket;

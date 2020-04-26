@@ -60,10 +60,10 @@ public:
 
 private:
     //输出
-    void outPut(LogLevel level, std::string_view msg)
+    void outPut(const LogLevel lvl, std::string_view msg)
     {
         std::lock_guard<std::mutex> locker(mutex);
-        if (level >= level) {
+        if (lvl >= level) {
             buffer.push(formatter->Format(msg));
         }
     }

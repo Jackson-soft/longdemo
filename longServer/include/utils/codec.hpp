@@ -1,9 +1,7 @@
 #pragma once
 
-#include "LogHelper.hpp"
-#include "Utility.hpp"
+#include "utils/util.hpp"
 #include <arpa/inet.h>
-#include <boost/core/noncopyable.hpp>
 #include <cstdint>
 #include <cstring>
 #include <google/protobuf/descriptor.h>
@@ -13,20 +11,23 @@
 
 namespace Uranus
 {
+namespace Utils
+{
 //  数据包封包解包
-class Codec : public boost::noncopyable
+class Codec : public Noncopyable
 {
 public:
     Codec()  = default;
     ~Codec() = default;
 
-    static std::shared_ptr<Codec> Get(){
-        static  std::shared_ptr<Codec> it = std::make_shared<Codec>();
+    static std::shared_ptr<Codec> Get()
+    {
+        static std::shared_ptr<Codec> it = std::make_shared<Codec>();
         return it;
     }
 
     // 编码
-    std::string EnCode(const google::protobuf::Message &msg)
+    auto EnCode(const google::protobuf::Message &msg) -> std::string
     {
         std::string data;
 
@@ -99,4 +100,5 @@ private:
     // 最小的数据包长度
     const std::uint32_t mMinDataLen{2 * mHeaderLen};
 };
+}  // namespace Utils
 }  // namespace Uranus

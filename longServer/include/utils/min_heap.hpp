@@ -9,11 +9,13 @@
 
 namespace Uranus
 {
+namespace Utils
+{
 template<typename T>
 class MinHeap
 {
 public:
-    MinHeap() : MinHeap(30) {}
+    MinHeap() : MinHeap(10) {}
 
     //这是做一下预分配内存
     explicit MinHeap(int capacity) { mArray.reserve(capacity); }
@@ -97,4 +99,5 @@ private:
     // mutable声明可变数据成员
     mutable std::shared_mutex mMutex;
 };
+}  // namespace Utils
 }  // namespace Uranus

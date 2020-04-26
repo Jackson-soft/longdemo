@@ -13,9 +13,8 @@ namespace Uranus
 {
 namespace Net
 {
-
 // 连接器类
-class Dialer : Utils::Noncopyable, std::enable_shared_from_this<Dialer>
+class Dialer : public Utils::Noncopyable
 {
 public:
     Dialer() = default;

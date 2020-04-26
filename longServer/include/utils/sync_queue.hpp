@@ -1,7 +1,6 @@
 #pragma once
 
 // 同步队列
-
 #include "utils/util.hpp"
 #include <mutex>
 #include <queue>
@@ -9,57 +8,60 @@
 
 namespace Uranus
 {
+namespace Utils
+{
 template<typename T>
-class SyncQueue : public Utils::Noncopyable
+class SyncQueue : public Noncopyable
 {
 public:
     SyncQueue()  = default;
     ~SyncQueue() = default;
 
-    bool Empty()
+    auto Empty() -> bool
     {
-        std::lock_guard<std::mutex> locker(mMutex);
-        return mQueue.empty();
+        std::lock_guard<std::mutex> locker(mutex);
+        return queue.empty();
     }
 
     void Push(T &&value)
     {
-        std::lock_guard<std::mutex> locker(mMutex);
-        mQueue.push(std::move(value));
+        std::lock_guard<std::mutex> locker(mutex);
+        queue.push(std::move(value));
     }
 
     void Push(const T &value)
     {
-        std::lock_guard<std::mutex> locker(mMutex);
-        mQueue.push(value);
+        std::lock_guard<std::mutex> locker(mutex);
+        queue.push(value);
     }
 
     void Emplace(T &&value)
     {
-        std::lock_guard<std::mutex> locker(mMutex);
-        mQueue.emplace(value);
+        std::lock_guard<std::mutex> locker(mutex);
+        queue.emplace(value);
     }
 
     void Pop()
     {
-        std::lock_guard<std::mutex> locker(mMutex);
-        mQueue.pop();
+        std::lock_guard<std::mutex> locker(mutex);
+        queue.pop();
     }
 
-    T &Front()
+    auto Front()
     {
-        std::lock_guard<std::mutex> locker(mMutex);
-        return mQueue.front();
+        std::lock_guard<std::mutex> locker(mutex);
+        return queue.front();
     }
 
-    T &Back()
+    auto Back()
     {
-        std::lock_guard<std::mutex> locker(mMutex);
-        return mQueue.back();
+        std::lock_guard<std::mutex> locker(mutex);
+        return queue.back();
     }
 
 private:
-    std::mutex mMutex;
-    std::queue<T> mQueue;
+    std::mutex mutex;
+    std::queue<T> queue;
 };
+}  // namespace Utils
 }  // namespace Uranus

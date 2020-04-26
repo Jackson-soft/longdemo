@@ -5,19 +5,28 @@
 #include "dialer.hpp"
 #include "utils/util.hpp"
 #include <cstdint>
+#include <memory>
 #include <string_view>
 
 namespace Uranus
 {
+namespace Net
+{
 class TcpClient : public Utils::Noncopyable
 {
 public:
-    TcpClient() {}
-    ~TcpClient() {}
+    TcpClient()  = default;
+    ~TcpClient() = default;
 
-    bool Dial(std::string_view ip, std::uint32_t port) { return false; }
+    bool Dial(std::string_view ip, const std::uint16_t port)
+    {
+        if (ip.empty() || port <= 0)
+            return false;
+        return false;
+    }
 
 private:
-    Net::Dialer dialer;
+    std::unique_ptr<Dialer> dialer;
 };
+}  // namespace Net
 }  // namespace Uranus

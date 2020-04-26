@@ -8,6 +8,8 @@
 
 namespace Uranus
 {
+namespace Utils
+{
 //定时器
 class Timer : Utils::Noncopyable
 {
@@ -49,4 +51,5 @@ private:
 private:
     std::chrono::duration<int> mTick{1};  //定时器的粒度
 };
+}  // namespace Utils
 }  // namespace Uranus

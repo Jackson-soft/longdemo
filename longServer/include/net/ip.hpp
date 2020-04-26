@@ -18,7 +18,7 @@ public:
 
     virtual bool operator==(const IP &lhs) = 0;
 
-    virtual std::string &String() = 0;
+    virtual const std::string &String() const = 0;
 };
 
 // IPV6

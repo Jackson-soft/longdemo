@@ -1,7 +1,10 @@
 #pragma once
 
+#include "connect.hpp"
 #include "socket.hpp"
 #include "utils/util.hpp"
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -16,11 +19,11 @@ public:
     Listener()          = default;
     virtual ~Listener() = default;
 
-    virtual int Accept() = 0;
+    virtual auto Accept() -> std::shared_ptr<Conn> = 0;
 
     virtual void Close() = 0;
 
-    virtual const std::string &Address() const = 0;
+    virtual void Shutdown() = 0;
 };
 
 class TcpListener : public Listener
@@ -28,16 +31,38 @@ class TcpListener : public Listener
 public:
     TcpListener() = default;
 
-    ~TcpListener() override = default;
+    ~TcpListener() override { listenFD->Close(); }
 
-    int Accept() override { return 0; }
+    auto Listen(std::string_view addr) -> bool
+    {
+        if (addr.empty())
+            return false;
 
-    void Close() override { mSocket.Close(); }
+        listenFD = std::make_unique<Socket>();
+        if (!listenFD->NewSocket("tcp"))
+            return false;
 
-    std::string &Address() const override { return ""; }
+        if (listenFD->Bind(8080))
+            return false;
+
+        return listenFD->Listen();
+    }
+
+    auto Listen(const std::uint16_t port, std::string_view ip = {""}) -> bool {}
+
+    auto Accept() -> std::shared_ptr<Conn> override
+    {
+        auto clientFD = listenFD->Accept();
+
+        return std::make_shared<TcpConn>(clientFD, "tcp");
+    }
+
+    void Close() override { listenFD->Close(); }
+
+    void Shutdown() override { listenFD->Shutdown(); }
 
 private:
-    Socket mSocket;
+    std::shared_ptr<Socket> listenFD;
 };
 }  // namespace Net
 }  // namespace Uranus

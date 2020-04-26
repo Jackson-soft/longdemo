@@ -11,8 +11,9 @@ protected:
     Noncopyable()  = default;
     ~Noncopyable() = default;
 
+public:
     Noncopyable(const Noncopyable &) = delete;
-    Noncopyable &operator=(const Noncopyable &) = delete;
+    auto operator=(const Noncopyable &) -> Noncopyable & = delete;
 };
 }  // namespace Utils
 }  // namespace Uranus

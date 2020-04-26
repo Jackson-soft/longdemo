@@ -1,71 +1,74 @@
 #pragma once
 
+#include "epoller.hpp"
+#include "event_loop.hpp"
+#include "listener.hpp"
 #include "utils/util.hpp"
 #include <atomic>
+#include <cstdint>
+#include <memory>
 #include <string_view>
 #include <thread>
+#include <type_traits>
 #include <unistd.h>
 
 namespace Uranus
+{
+namespace Net
 {
 // Tcp 服务器
 class TcpServer : public Utils::Noncopyable
 {
 public:
-    TcpServer() = default;
+    TcpServer() : TcpServer(std::thread::hardware_concurrency()) {}
 
-    ~TcpServer() = default;
+    ~TcpServer() { listener->Shutdown(); };
 
-    TcpServer(unsigned int workNum = 0) : mWorkers(workNum), mRunning(true)
+    TcpServer(const std::uint32_t number = 0) : workers(number)
     {
-        if (mWorkers == 0) {
-            mWorkers = std::thread::hardware_concurrency();
+        if (workers == 0) {
+            workers = std::thread::hardware_concurrency();
         }
     }
 
-    // 主循环
-    bool ListenTcp(unsigned short port, std::string_view ip = {""})
+    // 监听端口
+    bool Listen(const std::uint16_t port, std::string_view ip = {""})
     {
-        initServer();
-        while (1) {
-        }
+        // 创建listener并开始监听
+        listener = std::make_unique<TcpListener>();
+        return false;
     }
 
-private:
-    // 初始化master,worker进程
-    bool initServer()
+    // 是否成为守护进程
+    bool Daemon()
     {
-        for (unsigned int i = 0; i < mWorkers; ++i) {
-            auto pid = ::fork();
-            switch (pid) {
-            case -1:
-                //错误处理
-                break;
-            case 0:
-                //子进程
-                workerRun();
-                break;
-            default:
-                //父进程
-                break;
-            }
+        auto pid = ::fork();
+        switch (pid) {
+        case -1:
+            //错误处理
+            return false;
+        case 0:
+            //子进程
+            break;
+        default:
+            //父进程
+            break;
         }
         return true;
     }
 
-    // worker
-    void workerRun()
+    // 主循环
+    void Run()
     {
-        while (1) {
-            /* code */
+        while (true) {
         }
     }
 
 private:
-    unsigned short mPort;   // 端口
-    std::string_view mIP;   // ip地址
-    unsigned int mWorkers;  // 工作进程数量
-
+    std::uint32_t workers;  // 工作进程数量
+    std::unique_ptr<TcpListener> listener;
+    std::unique_ptr<EventLoop> loop;
     std::atomic_bool mRunning{true};
 };
+}  // namespace Net
 }  // namespace Uranus

@@ -8,6 +8,8 @@
 
 namespace Uranus
 {
+namespace Utils
+{
 // 消息分发器
 class Dispatcher : boost::noncopyable
 {
@@ -42,4 +44,5 @@ public:
 private:
     std::unordered_map<const google::protobuf::Descriptor *, PBCallBack> mCallBackMap;
 };
+}  // namespace Utils
 }  // namespace Uranus

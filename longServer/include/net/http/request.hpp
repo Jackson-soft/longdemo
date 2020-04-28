@@ -5,9 +5,7 @@
 #include <string_view>
 #include <unordered_map>
 
-namespace Uranus
-{
-namespace Http
+namespace Uranus::Http
 {
 class Request
 {
@@ -15,8 +13,7 @@ public:
     Request()  = default;
     ~Request() = default;
 
-public:
-    std::string Cookie(const std::string_view name)
+    auto Cookie(std::string_view name) -> std::string
     {
         if (name.empty())
             return "";
@@ -25,13 +22,12 @@ public:
     void AddCookie() {}
 
 private:
-    std::string method_;
-    URL *url_;
-    int proto_;  // Version
+    std::string method;
+    URL *url;
+    int proto;  // Version
     std::unordered_map<std::string, std::string> headers;
-    std::string body_;
-    std::string host_;
-    std::unordered_map<std::string, std::string> form_;
+    std::string body;
+    std::string host;
+    std::unordered_map<std::string, std::string> form;
 };
-}  // namespace Http
-}  // namespace Uranus
+}  // namespace Uranus::Http

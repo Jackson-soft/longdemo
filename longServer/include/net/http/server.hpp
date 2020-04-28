@@ -3,9 +3,7 @@
 #include "header.hpp"
 #include <string>
 
-namespace Uranus
-{
-namespace Http
+namespace Uranus::Http
 {
 class Server
 {
@@ -21,5 +19,4 @@ public:
 private:
     std::string address;
 };
-}  // namespace Http
-}  // namespace Uranus
+}  // namespace Uranus::Http

@@ -1,10 +1,7 @@
 #pragma once
 
-namespace Uranus
+namespace Uranus::Utils
 {
-namespace Utils
-{
-// 工具类
 class Noncopyable
 {
 protected:
@@ -15,5 +12,4 @@ public:
     Noncopyable(const Noncopyable &) = delete;
     auto operator=(const Noncopyable &) -> Noncopyable & = delete;
 };
-}  // namespace Utils
-}  // namespace Uranus
+}  // namespace Uranus::Utils

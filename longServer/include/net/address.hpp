@@ -6,9 +6,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 //网络地址接口
 class Address
@@ -108,5 +106,4 @@ public:
 private:
     std::string address{""};
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

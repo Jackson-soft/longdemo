@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-namespace Uranus
+namespace Uranus::Utils
 {
 class LogHelper
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 // socket封装类,ipv6
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <arpa/inet.h>
 #include <cstdint>
 #include <cstring>
@@ -16,9 +16,7 @@
 #include <unistd.h>
 #include <utility>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 class Socket : public Utils::Noncopyable
 {
@@ -229,14 +227,12 @@ public:
     }
 
     // 获取原生socket
-    [[nodiscard]] int NativeFD() const { return fd; }
+    [[nodiscard]] auto NativeFD() const -> int { return fd; }
 
 private:
     void GetTcpInfo() {}
 
-private:
     int fd{0};                // socket 描述符
     std::string network{""};  // 网络类型
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/time_util.hpp"
+#include "utils/time.hpp"
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -10,9 +10,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Log
+namespace Uranus::Log
 {
 // Backend 日志输出后端接口
 class Backend
@@ -43,16 +41,15 @@ public:
                      std::string_view prefix   = "",
                      std::string_view fileLink = "")
     {
-        if (path.size() <= 0) {
+        if (path.empty()) {
             return false;
-        } else {
-            mPath = path;
         }
+        mPath = path;
 
-        if (prefix.size() > 0) {
+        if (!prefix.empty()) {
             mPrefix = prefix;
         }
-        if (fileLink.size() > 0) {
+        if (!fileLink.empty()) {
             mLink = fileLink;
         }
 
@@ -66,7 +63,7 @@ public:
             }
         }
 
-        mCurrentDay = Utils::TimeUtil::CurrentDay();
+        mCurrentDay = Utils::CurrentDay();
 
         if (mChang) {
             createFile();
@@ -102,7 +99,7 @@ private:
     //检查日期
     void checkData()
     {
-        auto tDay = Utils::TimeUtil::CurrentDay();
+        auto tDay = Utils::CurrentDay();
         if (tDay != mCurrentDay) {
             mCurrentDay = tDay;
             mIndex      = 1;
@@ -126,13 +123,12 @@ private:
         mAppellation = fmt::format("{}/{}-{}-{:4d}.log", mPath, mPrefix, mCurrentDay, mIndex);
 
         mFile.open(mAppellation, std::ios::in);
-        if (mLink.size() > 0) {
+        if (!mLink.empty()) {
             //创建文件软链接
         }
         mChang = false;
     }
 
-private:
     std::fstream mFile;                         //文件流
     std::string mPath{""};                      //存放日志文件的目录
     std::string mLink{""};                      //当前写入的日志文件链接
@@ -143,5 +139,4 @@ private:
     std::string mCurrentDay{""};                //当前日期
     bool mChang{true};                          //日志文件是否需要切割
 };
-}  // namespace Log
-}  // namespace Uranus
+}  // namespace Uranus::Log

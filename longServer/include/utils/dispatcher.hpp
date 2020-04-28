@@ -1,17 +1,15 @@
 #pragma once
 
-#include <boost/noncopyable.hpp>
+#include "noncopyable.hpp"
 #include <functional>
 #include <google/protobuf/message.h>
 #include <memory>
 #include <unordered_map>
 
-namespace Uranus
-{
-namespace Utils
+namespace Uranus::Utils
 {
 // 消息分发器
-class Dispatcher : boost::noncopyable
+class Dispatcher : Noncopyable
 {
 public:
     using PBCallBack = std::function<void(const std::shared_ptr<google::protobuf::Message> &message)>;
@@ -44,5 +42,4 @@ public:
 private:
     std::unordered_map<const google::protobuf::Descriptor *, PBCallBack> mCallBackMap;
 };
-}  // namespace Utils
-}  // namespace Uranus
+}  // namespace Uranus::Utils

@@ -5,9 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 // IP interface
 class IP
@@ -25,8 +23,8 @@ public:
 class IPV6 : public IP
 {
 public:
-    IPV6()          = default;
-    virtual ~IPV6() = default;
+    IPV6()           = default;
+    ~IPV6() override = default;
 
     bool operator==(const IP &lhs) override {}
 
@@ -61,5 +59,4 @@ private:
     // ipv6 长度是16  std::byte == std::uint8_t
     std::array<std::uint8_t, 16> mIP;
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

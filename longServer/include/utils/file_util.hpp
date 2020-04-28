@@ -1,8 +1,6 @@
 #pragma once
 
-namespace Uranus
-{
-namespace Utils
+namespace Uranus::Utils
 {
 // 文件工具类
 class FileUtil
@@ -11,5 +9,4 @@ public:
     FileUtil();
     ~FileUtil();
 };
-}  // namespace Utils
-}  // namespace Uranus
+}  // namespace Uranus::Utils

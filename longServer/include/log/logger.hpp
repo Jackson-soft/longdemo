@@ -3,16 +3,14 @@
 #include "backend.hpp"
 #include "formatter.hpp"
 #include "log_level.hpp"
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Log
+namespace Uranus::Log
 {
 // Logger 日志的主类
 class Logger : public Utils::Noncopyable
@@ -29,7 +27,7 @@ public:
     }
 
     //单例实例
-    static std::shared_ptr<Logger> GetInstance()
+    static auto Get() -> std::shared_ptr<Logger>
     {
         static auto logger = std::make_shared<Logger>();
         return logger;
@@ -77,5 +75,4 @@ private:
 };
 
 #define LOG_INFO Logger::GetInstance().Inforln()
-}  // namespace Log
-}  // namespace Uranus
+}  // namespace Uranus::Log

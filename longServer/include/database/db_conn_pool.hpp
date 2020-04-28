@@ -2,7 +2,7 @@
 
 #include "db_conn.hpp"
 #include "dsn.hpp"
-#include <boost/noncopyable.hpp>
+#include "utils/noncopyable.hpp"
 #include <cstdint>
 #include <deque>
 #include <memory>
@@ -10,9 +10,9 @@
 #include <string_view>
 #include <utility>
 
-namespace Uranus
+namespace Uranus::Database
 {
-class DBConnPool : public boost::noncopyable
+class DBConnPool : public Utils::Noncopyable
 {
 public:
     DBConnPool() = default;
@@ -147,4 +147,4 @@ private:
     std::uint32_t mNumOpen{0};  // 当前连接数
     std::deque<std::shared_ptr<DBConn>> mFreeConn;
 };
-}  // namespace Uranus
+}  // namespace Uranus::Database

@@ -2,15 +2,13 @@
 
 #include "connect.hpp"
 #include "socket.hpp"
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 // 监听器接口
 class Listener
@@ -64,5 +62,4 @@ public:
 private:
     std::shared_ptr<Socket> listenFD;
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

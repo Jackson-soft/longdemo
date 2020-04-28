@@ -9,9 +9,7 @@
 #include <unistd.h>
 #include <vector>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 // Reactor 模式
 // 消息循环的epoll实现
@@ -77,7 +75,7 @@ public:
                 if ((events[i].events & EPOLLERR) || (events[i].events & EPOLLHUP) || (!(events[i].events & EPOLLIN))) {
                     ::close(events[i].data.fd);
                     continue;
-                    //} else if (events.at(i).data.fd == fd) {
+                } else if (events.at(i).data.fd == fd) {
                     // accept
                 } else if (events.at(i).events & EPOLLIN) {
                     // read
@@ -97,5 +95,4 @@ private:
 
     std::vector<struct epoll_event> events;
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

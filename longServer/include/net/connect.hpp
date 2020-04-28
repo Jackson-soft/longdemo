@@ -10,9 +10,7 @@
 #include <sys/socket.h>
 #include <vector>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 // connection 接口
 class Conn
@@ -54,5 +52,4 @@ public:
 private:
     std::unique_ptr<Socket> remoteFD;
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

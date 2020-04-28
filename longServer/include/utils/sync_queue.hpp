@@ -1,14 +1,12 @@
 #pragma once
 
 // 同步队列
-#include "utils/util.hpp"
+#include "noncopyable.hpp"
 #include <mutex>
 #include <queue>
 #include <utility>
 
-namespace Uranus
-{
-namespace Utils
+namespace Uranus::Utils
 {
 template<typename T>
 class SyncQueue : public Noncopyable
@@ -63,5 +61,4 @@ private:
     std::mutex mutex;
     std::queue<T> queue;
 };
-}  // namespace Utils
-}  // namespace Uranus
+}  // namespace Uranus::Utils

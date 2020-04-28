@@ -1,11 +1,9 @@
-#pragma once
+#prag / noncopyable.hpp
 
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <sys/poll.h>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 enum class EventType : unsigned int {
     Read  = POLLIN | POLLPRI,
@@ -13,7 +11,7 @@ enum class EventType : unsigned int {
 };
 
 //这个基类定义事件循环的接口
-class EventLoop : public Noncopyable
+class EventLoop : public Utils::Noncopyable
 {
 public:
     EventLoop()          = default;
@@ -24,5 +22,4 @@ public:
     virtual int ModEvent(int fd, EventType tp) = 0;
     virtual int Run()                          = 0;
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

@@ -6,5 +6,7 @@
 #include "ring_test.hpp"
 //#include "socket_test.hpp"
 #include "address_test.hpp"
+#include "dns_test.hpp"
+#include "dsn_test.hpp"
 #include "thread_test.hpp"
 #include "time_test.hpp"

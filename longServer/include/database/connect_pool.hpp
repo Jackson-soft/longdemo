@@ -1,7 +1,7 @@
-#pragma once
+#prag / noncopyable.hpp
 // 连接池
 
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <chrono>
 #include <condition_variable>
 #include <deque>
@@ -9,10 +9,10 @@
 #include <mutex>
 #include <string_view>
 
-namespace Uranus
+namespace Uranus::Database
 {
 template<typename T>
-class ConnectPool : public Uranus::Noncopyable
+class ConnectPool : public Utils::Noncopyable
 {
 public:
     static ConnectPool<T> *Get()
@@ -76,4 +76,4 @@ private:
     std::once_flag mFlag;
     std::deque<std::shared_ptr<T>> mPool;
 };
-}  // namespace Uranus
+}  // namespace Uranus::Database

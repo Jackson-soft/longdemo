@@ -1,17 +1,15 @@
 #pragma once
 
 #include "utils/min_heap.hpp"
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <chrono>
 #include <cstdint>
 #include <functional>
 
-namespace Uranus
-{
-namespace Utils
+namespace Uranus::Utils
 {
 //定时器
-class Timer : Utils::Noncopyable
+class Timer : public Noncopyable
 {
 public:
     using Action = std::function<void()>;
@@ -48,8 +46,6 @@ private:
     //定时器循环
     void exec() {}
 
-private:
     std::chrono::duration<int> mTick{1};  //定时器的粒度
 };
-}  // namespace Utils
-}  // namespace Uranus
+}  // namespace Uranus::Utils

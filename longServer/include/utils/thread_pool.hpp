@@ -1,7 +1,7 @@
 #pragma once
 
+#include "noncopyable.hpp"
 #include "sync_queue.hpp"
-#include "util.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
@@ -14,9 +14,7 @@
 #include <utility>
 #include <vector>
 
-namespace Uranus
-{
-namespace Utils
+namespace Uranus::Utils
 {
 class ThreadPool : public Noncopyable
 {
@@ -87,5 +85,4 @@ private:
     std::condition_variable mCondition;                  //条件变量
     std::atomic_bool running{true};                      //是否在运行
 };
-}  // namespace Utils
-}  // namespace Uranus
+}  // namespace Uranus::Utils

@@ -3,9 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace Uranus
-{
-namespace Http
+namespace Uranus::Http
 {
 class Response
 {
@@ -14,10 +12,9 @@ public:
     ~Response() = default;
 
 private:
-    int statusCode;
+    int status;
     std::string body;
-    std::unordered_map<std::string, std::string> headers_;
+    std::unordered_map<std::string, std::string> headers;
 };
 
-}  // namespace Http
-}  // namespace Uranus
+}  // namespace Uranus::Http

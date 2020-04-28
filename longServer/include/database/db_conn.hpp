@@ -19,16 +19,15 @@
 #include <mysql/mysql.h>
 #endif
 
-namespace Uranus
+namespace Uranus::Database
 {
 class DBConn
 {
 public:
-    DBConn() : mMysql(nullptr) {}
+    DBConn() : mysql(nullptr) {}
 
     ~DBConn() { Close(); }
 
-public:
     bool Connect(const std::string_view host,
                  const std::string_view user,
                  const std::string_view pwd,
@@ -38,40 +37,40 @@ public:
         if (host.empty() || user.empty()) {
             return false;
         }
-        mMysql = ::mysql_init(nullptr);
-        if (!mMysql)
+        mysql = ::mysql_init(nullptr);
+        if (!mysql)
             return false;
 
         char reconnect = 1;
         // 启用重新连接，必须在调用mysql_real_connect前设置
-        if (0 != ::mysql_optionsv(mMysql, MYSQL_OPT_RECONNECT, (void *)&reconnect))
+        if (0 != ::mysql_optionsv(mysql, MYSQL_OPT_RECONNECT, (void *)&reconnect))
             return false;
 
-        if (0 != ::mysql_optionsv(mMysql, MYSQL_SET_CHARSET_NAME, (void *)"utf8mb4"))
+        if (0 != ::mysql_optionsv(mysql, MYSQL_SET_CHARSET_NAME, (void *)"utf8mb4"))
             return false;
 
-        mMysql = ::mysql_real_connect(mMysql, host.data(), user.data(), pwd.data(), db.data(), port, nullptr, 0);
-        return mMysql != nullptr;
+        mysql = ::mysql_real_connect(mysql, host.data(), user.data(), pwd.data(), db.data(), port, nullptr, 0);
+        return mysql != nullptr;
     }
 
     // 重连
     bool Reconnect()
     {
         // 调用该接口必须在mysql_init后设置MYSQL_OPT_RECONNECT
-        return int(0) == ::mariadb_reconnect(mMysql);
+        return int(0) == ::mariadb_reconnect(mysql);
     }
 
     // error information
-    std::tuple<std::uint32_t, std::string> Error() { return {::mysql_errno(mMysql), ::mysql_error(mMysql)}; }
+    std::tuple<std::uint32_t, std::string> Error() { return {::mysql_errno(mysql), ::mysql_error(mysql)}; }
 
     // ping
-    bool Ping() { return 0 == ::mysql_ping(mMysql); }
+    bool Ping() { return ::mysql_ping(mysql) == 0; }
 
     bool Timeout(std::uint32_t timeout)
     {
         if (timeout <= 0)
             return false;
-        return ::mysql_optionsv(mMysql, MYSQL_OPT_CONNECT_TIMEOUT, (void *)&timeout) == 0;
+        return ::mysql_optionsv(mysql, MYSQL_OPT_CONNECT_TIMEOUT, (void *)&timeout) == 0;
     }
 
     std::uint64_t Insert(const std::string_view sql, const std::vector<std::any> &args)
@@ -79,10 +78,9 @@ public:
         if (sql.empty())
             return 0;
 
-        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mMysql);
+        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mysql);
         if (0 != ::mysql_stmt_prepare(stmt, sql.data(), sql.size())) {
             auto [code, message] = Error();
-            GLOG_ERRORF("mysql_stmt_prepare code: {}, error: {}", code, message);
             return 0;
         }
 
@@ -119,13 +117,11 @@ public:
 
         if (0 != ::mysql_stmt_bind_param(stmt, vBinds.data())) {
             auto [code, message] = Error();
-            GLOG_ERRORF("mysql_stmt_bind_param code: {}, error: {}", code, message);
             return 0;
         }
 
         if (0 != ::mysql_stmt_execute(stmt)) {
             auto [code, message] = Error();
-            GLOG_ERRORF("mysql_stmt_execute code: {}, error: {}", code, message);
             return 0;
         }
 
@@ -146,10 +142,10 @@ public:
             boost::algorithm::replace_first(strSQL, "?", fmt::format("'{}'", it));
         }
 
-        if (0 != ::mysql_real_query(mMysql, strSQL.data(), strSQL.size())) {
+        if (0 != ::mysql_real_query(mysql, strSQL.data(), strSQL.size())) {
             return 0;
         }
-        return ::mysql_insert_id(mMysql);
+        return ::mysql_insert_id(mysql);
     }
 
     /*
@@ -158,21 +154,19 @@ public:
      */
     std::uint64_t Insert(const std::string_view sql, const std::vector<std::string> &args)
     {
-        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mMysql);
+        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mysql);
         if (!stmt) {
             return 0;
         }
 
         if (0 != ::mysql_stmt_prepare(stmt, sql.data(), sql.size())) {
             auto [code, message] = Error();
-            GLOG_ERRORF("mysql_stmt_prepare code: {}, error: {}", code, message);
             return 0;
         }
 
         auto paramCount = ::mysql_stmt_param_count(stmt);
 
         if (args.size() != paramCount) {
-            GLOG_ERRORF("parameter count is {},but args is {}", paramCount, args.size());
             return 0;
         }
 
@@ -189,13 +183,11 @@ public:
 
         if (0 != ::mysql_stmt_bind_param(stmt, vBinds.data())) {
             auto [code, msg] = Error();
-            GLOG_ERRORF("mysql_stmt_bind_param code: {}, message: {}", code, msg);
             return 0;
         }
 
         if (0 != ::mysql_stmt_execute(stmt)) {
             auto [code, msg] = Error();
-            GLOG_ERRORF("mysql_stmt_execute code: {}, message: {}", code, msg);
             return 0;
         }
 
@@ -211,7 +203,7 @@ public:
         if (sql.empty())
             return 0;
 
-        auto stmt = ::mysql_stmt_init(mMysql);
+        auto stmt = ::mysql_stmt_init(mysql);
         if (!stmt)
             return 0;
 
@@ -235,10 +227,10 @@ public:
         if (sql.empty())
             return false;
         result.clear();
-        if (0 != ::mysql_real_query(mMysql, sql.data(), sql.size()))
+        if (0 != ::mysql_real_query(mysql, sql.data(), sql.size()))
             return false;
 
-        auto tResult = ::mysql_store_result(mMysql);
+        auto tResult = ::mysql_store_result(mysql);
         if (!tResult)
             return false;
 
@@ -280,7 +272,7 @@ public:
         if (sql.empty())
             return false;
         result.clear();
-        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mMysql);
+        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mysql);
         if (!stmt) {
             return false;
         }
@@ -335,18 +327,18 @@ public:
         return false;
     }
 
-    int Shutdown() { return ::mysql_shutdown(mMysql, SHUTDOWN_DEFAULT); }
+    int Shutdown() { return ::mysql_shutdown(mysql, SHUTDOWN_DEFAULT); }
 
     // 关闭连接并释放内存
     void Close()
     {
-        if (!mMysql) {
-            ::mysql_close(mMysql);
-            mMysql = nullptr;
+        if (!mysql) {
+            ::mysql_close(mysql);
+            mysql = nullptr;
         }
     }
 
 private:
-    ::MYSQL *mMysql;
+    ::MYSQL *mysql;
 };
-}  // namespace Uranus
+}  // namespace Uranus::Database

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/util.hpp"
+#include "noncopyable.hpp"
 #include <arpa/inet.h>
 #include <cstdint>
 #include <cstring>
@@ -9,9 +9,7 @@
 #include <memory>
 #include <string>
 
-namespace Uranus
-{
-namespace Utils
+namespace Uranus::Utils
 {
 //  数据包封包解包
 class Codec : public Noncopyable
@@ -20,7 +18,7 @@ public:
     Codec()  = default;
     ~Codec() = default;
 
-    static std::shared_ptr<Codec> Get()
+    static auto Get() -> std::shared_ptr<Codec>
     {
         static std::shared_ptr<Codec> it = std::make_shared<Codec>();
         return it;
@@ -94,11 +92,9 @@ private:
         return nullptr;
     }
 
-private:
     // 数据包头
     const std::uint32_t mHeaderLen{sizeof(unsigned int)};
     // 最小的数据包长度
     const std::uint32_t mMinDataLen{2 * mHeaderLen};
 };
-}  // namespace Utils
-}  // namespace Uranus
+}  // namespace Uranus::Utils

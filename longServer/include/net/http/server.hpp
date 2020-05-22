@@ -11,7 +11,6 @@ public:
     Server()  = default;
     ~Server() = default;
 
-public:
     void Close() {}
     void Shutdown() {}
     void Run() {}

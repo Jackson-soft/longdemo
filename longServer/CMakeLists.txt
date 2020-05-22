@@ -22,3 +22,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/include ${Boost_INCLUDE_DIRS})
 set(Test_Case testMain)
 add_executable(${Test_Case} test/main_test.cpp)
 target_link_libraries(${Test_Case} pthread ${Boost_LIBRARIES} fmt::fmt)
+
+set(Example server)
+add_executable(${Example} src/main.cpp)
+target_link_libraries(${Example} pthread ${Boost_LIBRARIES} fmt::fmt)

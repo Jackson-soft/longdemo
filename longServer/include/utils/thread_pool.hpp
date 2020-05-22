@@ -22,15 +22,11 @@ public:
     using Task = std::function<void()>;
     ThreadPool() : ThreadPool(0) {}
 
-    ThreadPool(std::uint32_t num) : mThreadNum(num)
+    ThreadPool(std::uint32_t num) : number(num == 0 ? std::thread::hardware_concurrency() : num)
     {
-        if (!mThreadNum) {
-            // 线程池大小配置为CPU核数
-            mThreadNum = std::thread::hardware_concurrency();
-        }
-        mThreads.reserve(mThreadNum);
-        for (auto i = 0; i < mThreadNum; ++i) {
-            mThreads.emplace_back(std::make_shared<std::thread>(std::bind(&ThreadPool::dispatch, this)));
+        threads.reserve(number);
+        for (auto i = 0; i < number; ++i) {
+            threads.emplace_back(std::make_shared<std::thread>(std::bind(&ThreadPool::dispatch, this)));
         }
     }
 
@@ -38,12 +34,12 @@ public:
     {
         if (running.load()) {
             running.store(false, std::memory_order_release);
-            mCondition.notify_all();
-            for (auto &it : mThreads) {
+            condition.notify_all();
+            for (auto &it : threads) {
                 // it.get()->join(); //线程自行消亡
                 it->detach();
             }
-            mThreads.clear();
+            threads.clear();
         }
     }
 
@@ -55,11 +51,11 @@ public:
             throw std::runtime_error("task executor have closed commit.");
         }
         using resType = std::result_of_t<F(Args...)>;
-        std::unique_lock<std::mutex> tLock(mMutex);
+        std::unique_lock<std::mutex> tLock(mutex);
         auto task = std::make_shared<std::packaged_task<resType()>>(
             std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-        mTasks.Emplace([task]() { (*task)(); });
-        mCondition.notify_one();
+        tasks.Emplace([task]() { (*task)(); });
+        condition.notify_one();
         std::future<resType> ret = task.get()->get_future();
         return ret;
     }
@@ -69,20 +65,19 @@ private:
     void dispatch()
     {
         while (running.load()) {
-            std::unique_lock<std::mutex> tLock(mMutex);
-            mCondition.wait(tLock, [this]() { return !mTasks.Empty(); });
-            Task task{mTasks.Front()};
-            mTasks.Pop();  //删掉队列的头元素
+            std::unique_lock<std::mutex> tLock(mutex);
+            condition.wait(tLock, [this]() { return !tasks.Empty(); });
+            Task task{tasks.Front()};
+            tasks.Pop();  //删掉队列的头元素
             task();
         }
     }
 
-private:
-    SyncQueue<Task> mTasks;                              //任务队列
-    std::vector<std::shared_ptr<std::thread>> mThreads;  //线程对象
-    std::uint32_t mThreadNum;                            //线程数
-    std::mutex mMutex;                                   //锁
-    std::condition_variable mCondition;                  //条件变量
-    std::atomic_bool running{true};                      //是否在运行
+    SyncQueue<Task> tasks;                              //任务队列
+    std::vector<std::shared_ptr<std::thread>> threads;  //线程对象
+    std::uint32_t number;                               //线程数
+    std::mutex mutex;                                   //锁
+    std::condition_variable condition;                  //条件变量
+    std::atomic_bool running{true};                     //是否在运行
 };
 }  // namespace Uranus::Utils

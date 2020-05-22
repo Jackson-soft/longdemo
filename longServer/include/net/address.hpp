@@ -21,6 +21,21 @@ public:
     [[nodiscard]] virtual auto String() const -> std::string = 0;
 };
 
+class IPv4Addr : public Address
+{
+public:
+    IPv4Addr()           = default;
+    ~IPv4Addr() override = default;
+
+    [[nodiscard]] auto Network() const -> std::string override { return "ipv4"; }
+
+    [[nodiscard]] auto String() const -> std::string override { return fmt::format("{}:{}", host, port); }
+
+private:
+    std::string host;
+    std::uint16_t port;
+};
+
 // "[host]:port" or "[host%zone]:port"
 // ipv6地址类
 class IPv6Addr : public Address

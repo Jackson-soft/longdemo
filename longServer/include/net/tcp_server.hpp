@@ -12,6 +12,7 @@
 #include <memory>
 #include <queue>
 #include <string_view>
+#include <sys/socket.h>
 #include <thread>
 #include <type_traits>
 #include <unistd.h>
@@ -26,13 +27,30 @@ public:
 
     ~TcpServer() { listener->Close(); };
 
-    TcpServer(const std::uint32_t number = 0) : workers(number == 0 ? std::thread::hardware_concurrency() : number) {}
+    TcpServer(const std::uint32_t number = 0) : workers(number == 0 ? std::thread::hardware_concurrency() : number)
+    {
+        worker = std::make_unique<Utils::ThreadPool>(workers);
+        // 创建listener
+        listener = std::make_unique<TcpListener>();
+        loop     = std::make_unique<Epoller>();
+    }
 
     // 监听端口
     auto Listen(const std::uint16_t port, std::string_view ip = {""}) -> bool
     {
-        // 创建listener并开始监听
-        listener = std::make_unique<TcpListener>();
+        if (port <= 0)
+            return false;
+
+        if (!listener->Listen(port, ip))
+            return false;
+
+        return loop->AddEvent(listener->Native(), EventType::Read);
+    }
+
+    auto Listen(std::string_view addr) -> bool
+    {
+        if (addr.empty())
+            return false;
         return false;
     }
 
@@ -44,7 +62,7 @@ public:
     }
 
     // Ctrl-C 信号
-    auto Signal()
+    auto Signal() -> bool
     {
         sigset_t set;
         if (::sigemptyset(&set) < 0)
@@ -58,6 +76,16 @@ public:
     void Run()
     {
         while (true) {
+            auto eventMap = loop->Loop();
+            for (const auto &it : eventMap) {
+                if (it.first == listener->Native()) {
+                    auto fd = listener->Accept();
+                    loop->AddEvent(fd, EventType::Read);
+                }
+
+                if (it.second == EventType::Read) {
+                }
+            }
         }
     }
 
@@ -65,7 +93,7 @@ private:
     std::uint32_t workers;  // 工作进程数量
     std::unique_ptr<TcpListener> listener;
     std::unique_ptr<EventLoop> loop;
-    std::queue<Utils::ThreadPool> worker;
+    std::unique_ptr<Utils::ThreadPool> worker;
     std::atomic_bool running{true};
 };
 }  // namespace Uranus::Net

@@ -19,15 +19,15 @@ public:
     Conn()          = default;
     virtual ~Conn() = default;
 
-    virtual int Read() = 0;
+    virtual auto Read() -> int = 0;
 
-    virtual int Write(std::vector<std::byte> &data) = 0;
+    virtual auto Write(std::vector<std::byte> &data) -> int = 0;
 
     virtual void Close() = 0;
 
     virtual void Shutdown() = 0;
 
-    virtual const std::string RemoteAddr() const = 0;
+    [[nodiscard]] virtual auto RemoteAddr() const -> const std::string = 0;
 };
 
 class TcpConn : public Conn, std::enable_shared_from_this<Conn>
@@ -36,18 +36,23 @@ public:
     TcpConn() = default;
     ~TcpConn() override { Close(); }
 
-    TcpConn(const int fd, std::string_view net) : remoteFD(std::make_unique<Socket>(fd, net)) {}
+    TcpConn(const int fd) : remoteFD(std::make_unique<Socket>(fd, "tcp")) {}
 
-    int Read() override { return 0; }
+    auto Read() -> int override { return 0; }
 
-    int Write(std::vector<std::byte> &data) override { return 0; }
+    auto Write(std::vector<std::byte> &data) -> int override
+    {
+        if (data.empty())
+            return 0;
+        return 0;
+    }
 
     void Close() override { remoteFD->Close(); }
 
     void Shutdown() override { remoteFD->Shutdown(); }
 
     //远程网络地址
-    const std::string RemoteAddr() const override { return ""; }
+    [[nodiscard]] auto RemoteAddr() const -> const std::string override { return ""; }
 
 private:
     std::unique_ptr<Socket> remoteFD;

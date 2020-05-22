@@ -19,8 +19,8 @@ public:
     Backend()          = default;
     virtual ~Backend() = default;
 
-    virtual void Write(const std::string_view buf) = 0;
-    virtual void Close()                           = 0;
+    virtual void Write(std::string_view buf) = 0;
+    virtual void Close()                     = 0;
 };
 
 // 终端输出后端
@@ -72,7 +72,7 @@ public:
         return true;
     }
 
-    void Write(const std::string_view buf) override
+    void Write(std::string_view buf) override
     {
         doIncise();
         mFile.write(buf.data(), buf.size());

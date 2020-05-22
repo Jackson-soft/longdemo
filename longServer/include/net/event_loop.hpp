@@ -1,6 +1,7 @@
-#prag / noncopyable.hpp
+#pragma once
 
 #include "utils/noncopyable.hpp"
+#include <map>
 #include <sys/poll.h>
 
 namespace Uranus::Net
@@ -17,9 +18,9 @@ public:
     EventLoop()          = default;
     virtual ~EventLoop() = 0;
 
-    virtual int AddEvent(int fd, EventType tp) = 0;
-    virtual int DelEvent(int fd, EventType tp) = 0;
-    virtual int ModEvent(int fd, EventType tp) = 0;
-    virtual int Run()                          = 0;
+    virtual auto AddEvent(int fd, EventType tp) -> bool = 0;
+    virtual auto DelEvent(int fd, EventType tp) -> bool = 0;
+    virtual auto ModEvent(int fd, EventType tp) -> bool = 0;
+    virtual auto Loop() -> std::map<int, EventType>     = 0;
 };
 }  // namespace Uranus::Net

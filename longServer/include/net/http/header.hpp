@@ -12,11 +12,10 @@ public:
     Header()  = default;
     ~Header() = default;
 
-public:
-    void Add(const std::string_view key, const std::string_view value) {}
-    void Delete(const std::string_view key) {}
+    void Add(std::string_view key, std::string_view value) {}
+    void Delete(std::string_view key) {}
     std::string &Get(std::string_view key) { return ""; }
-    void Set(const std::string_view key, const std::string_view value) {}
+    void Set(std::string_view key, std::string_view value) {}
 
 private:
     std::map<std::string, std::string> header;

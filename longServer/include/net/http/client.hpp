@@ -13,7 +13,7 @@ public:
     Client()  = default;
     ~Client() = default;
 
-    Response *Get(const std::string_view rawurl)
+    Response *Get(std::string_view rawurl)
     {
         if (rawurl.empty())
             return nullptr;
@@ -30,7 +30,7 @@ public:
 
 private:
     Response *do() { return nullptr; }
-    Request *newRequest(Uranus::Http::Method method, const std::string_view url) { return nullptr; }
+    Request *newRequest(Uranus::Http::Method method, std::string_view url) { return nullptr; }
 
 private:
     int timeOut;

@@ -1,7 +1,6 @@
 #pragma once
 
-// socket封装类,ipv6
-#include "utils/noncopyable.hpp"
+// socket封装类
 #include <arpa/inet.h>
 #include <cstdint>
 #include <cstring>
@@ -18,14 +17,14 @@
 
 namespace Uranus::Net
 {
-class Socket : public Utils::Noncopyable
+class Socket
 {
 public:
     Socket() = default;
     Socket(const int sfd, std::string_view net) : fd(sfd), network(net) {}
 
     // move constructor
-    Socket(const Socket &&obj) = default;
+    Socket(Socket &&obj) = default;
 
     // copy constructor
     Socket(const Socket &obj)
@@ -36,7 +35,7 @@ public:
 
     ~Socket() { Close(); }
 
-    bool NewSocket(std::string_view net = "tcp")
+    auto Create(std::string_view net = "tcp") -> bool
     {
         if (net.empty()) {
             return false;
@@ -62,10 +61,10 @@ public:
     }
 
     //监听服务器
-    bool Listen() { return ::listen(fd, SOMAXCONN) == 0; }
+    auto Listen() -> bool { return ::listen(fd, SOMAXCONN) == 0; }
 
     // 绑定
-    bool Bind(const std::uint16_t port, std::string_view ip = {""})
+    auto Bind(const std::uint16_t port, std::string_view ip = {""}) -> bool
     {
         if (port <= 0) {
             return false;
@@ -89,7 +88,7 @@ public:
     }
 
     //连接目标服务器
-    bool Connect(std::string_view ip, const std::uint16_t port)
+    auto Connect(std::string_view ip, const std::uint16_t port) -> bool
     {
         if (port <= 0) {
             return false;
@@ -112,7 +111,7 @@ public:
     }
 
     // 返回接收的socket文件描述符
-    int Accept()
+    auto Accept() -> int
     {
         struct sockaddr_in6 addr {
         };
@@ -123,14 +122,14 @@ public:
     }
 
     // 0成功，-1失败
-    bool Keepalive(bool on)
+    auto Keepalive(bool on) -> bool
     {
         int optVal = on ? 1 : 0;
         return ::setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &optVal, static_cast<socklen_t>(sizeof(optVal))) == 0;
     }
 
     // 设置非阻塞
-    bool NonBlock()
+    auto NonBlock() -> bool
     {
         int flag = ::fcntl(fd, F_GETFL, 0);
         if (flag < 0) {
@@ -140,53 +139,53 @@ public:
     }
 
     // Nagle 算法(小包合并成大包)
-    bool NoDelay(bool on)
+    auto NoDelay(bool on) -> bool
     {
         int optval = on ? 1 : 0;
-        return ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &optval, static_cast<socklen_t>(sizeof optval)) == 0;
+        return ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &optval, static_cast<socklen_t>(sizeof(optval))) == 0;
     }
 
-    bool Cork(bool on)
+    auto Cork(bool on) -> bool
     {
         int optVal = on ? 1 : 0;
-        return ::setsockopt(fd, IPPROTO_TCP, TCP_CORK, &optVal, static_cast<socklen_t>(sizeof optVal)) == 0;
+        return ::setsockopt(fd, IPPROTO_TCP, TCP_CORK, &optVal, static_cast<socklen_t>(sizeof(optVal))) == 0;
     }
 
     // 地址复用
-    bool ReuseAddr(bool on)
+    auto ReuseAddr(bool on) -> bool
     {
         int optval = on ? 1 : 0;
         return ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, static_cast<socklen_t>(sizeof optval)) == 0;
     }
 
     // 端口复用
-    bool ReusePort(bool on)
+    auto ReusePort(bool on) -> bool
     {
         int optval = on ? 1 : 0;
         return ::setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &optval, static_cast<socklen_t>(sizeof optval)) == 0;
     }
 
     // 读数据
-    ssize_t Read(void *buf, size_t count) { return ::recv(fd, buf, count, 0); }
+    auto Read(void *buf, size_t count) -> int { return ::recv(fd, buf, count, 0); }
 
-    ssize_t Readv(const struct iovec *iov, int iovcnt) { return ::readv(fd, iov, iovcnt); }
+    auto Readv(const struct iovec *iov, int iovcnt) -> int { return ::readv(fd, iov, iovcnt); }
 
     // 写数据
-    ssize_t Write(const void *buf, size_t count) { return ::send(fd, buf, count, 0); }
+    auto Write(const void *buf, size_t count) -> int { return ::send(fd, buf, count, 0); }
 
-    ssize_t Writev(const struct iovec *iov, int iovcnt) { return ::writev(fd, iov, iovcnt); }
+    auto Writev(const struct iovec *iov, int iovcnt) -> int { return ::writev(fd, iov, iovcnt); }
 
     //优雅关闭读写双半闭
-    bool Shutdown() { return ::shutdown(fd, SHUT_RDWR) == 0; }
+    auto Shutdown() -> bool { return ::shutdown(fd, SHUT_RDWR) == 0; }
 
     // 关闭读
-    bool CloseRead() { return ::shutdown(fd, SHUT_RD) == 0; }
+    auto CloseRead() -> bool { return ::shutdown(fd, SHUT_RD) == 0; }
 
     // 关闭写
-    bool CloseWrite() { return ::shutdown(fd, SHUT_WR) == 0; }
+    auto CloseWrite() -> bool { return ::shutdown(fd, SHUT_WR) == 0; }
 
     //关闭
-    bool Close() { return ::close(fd) == 0; }
+    auto Close() -> bool { return ::close(fd) == 0; }
 
     // 远程地址和端口
     auto Remote() -> std::pair<std::string, std::uint16_t>
@@ -196,11 +195,13 @@ public:
         socklen_t addrLen = sizeof(addr);
         std::memset(&addr, 0, addrLen);
 
-        if (::getpeername(fd, (struct sockaddr *)&addr, &addrLen) < 0)
+        if (::getpeername(fd, reinterpret_cast<struct sockaddr *>(&addr), &addrLen) < 0)
             return {"", 0};
+
         char *str{};
         if (::inet_ntop(AF_INET6, &addr.sin6_addr, str, INET6_ADDRSTRLEN) == nullptr)
             return {"", 0};
+
         auto port = ::ntohs(addr.sin6_port);
 
         std::string ip(str, INET6_ADDRSTRLEN);
@@ -215,19 +216,20 @@ public:
         socklen_t addrLen = sizeof(addr);
         std::memset(&addr, 0, addrLen);
 
-        if (::getsockname(fd, (struct sockaddr *)&addr, &addrLen) < 0)
+        if (::getsockname(fd, reinterpret_cast<struct sockaddr *>(&addr), &addrLen) < 0)
             return {"", 0};
 
         char *str{};
         if (::inet_ntop(AF_INET6, &addr.sin6_addr, str, INET6_ADDRSTRLEN) == nullptr)
             return {"", 0};
+
         auto port = ::ntohs(addr.sin6_port);
         std::string ip{str, INET6_ADDRSTRLEN};
         return {ip, port};
     }
 
     // 获取原生socket
-    [[nodiscard]] auto NativeFD() const -> int { return fd; }
+    [[nodiscard]] auto Native() const -> int { return fd; }
 
 private:
     void GetTcpInfo() {}

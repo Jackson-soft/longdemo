@@ -1,6 +1,7 @@
 #pragma once
 
 #include "url.hpp"
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -23,7 +24,7 @@ public:
 
 private:
     std::string method;
-    URL *url;
+    std::unique_ptr<URL> url;
     int proto;  // Version
     std::unordered_map<std::string, std::string> headers;
     std::string body;

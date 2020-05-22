@@ -2,7 +2,6 @@
 
 #include "connect.hpp"
 #include "socket.hpp"
-#include "utils/noncopyable.hpp"
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -37,7 +36,8 @@ public:
             return false;
 
         listenFD = std::make_unique<Socket>();
-        if (!listenFD->NewSocket("tcp"))
+
+        if (!listenFD->Create("tcp"))
             return false;
 
         if (listenFD->Bind(8080))
@@ -46,20 +46,38 @@ public:
         return listenFD->Listen();
     }
 
-    auto Listen(const std::uint16_t port, std::string_view ip = {""}) -> bool {}
+    auto Listen(const std::uint16_t port, std::string_view ip = {""}) -> bool
+    {
+        if (port < 0)
+            return false;
+
+        listenFD = std::make_unique<Socket>();
+
+        if (!listenFD->Create("tcp"))
+            return false;
+
+        if (listenFD->Bind(port, ip))
+            return false;
+
+        return listenFD->Listen();
+    }
 
     auto Accept() -> std::shared_ptr<Conn> override
     {
         auto clientFD = listenFD->Accept();
 
-        return std::make_shared<TcpConn>(clientFD, "tcp");
+        return std::make_shared<TcpConn>(clientFD);
     }
 
     void Close() override { listenFD->Close(); }
 
     void Shutdown() override { listenFD->Shutdown(); }
 
+    auto Native() -> int {
+        return listenFD->Native();
+    }
+
 private:
-    std::shared_ptr<Socket> listenFD;
+    std::unique_ptr<Socket> listenFD;
 };
 }  // namespace Uranus::Net

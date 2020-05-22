@@ -10,14 +10,14 @@ TEST_CASE("test log")
     SUBCASE("test unmarshal log level")
     {
         std::string lvl = "infor";
-        auto ll         = Uranus::Log::Level::Unmarshal(lvl);
-        CHECK(ll == Uranus::Log::LogLevel::INFOR);
+        auto ll         = Uranus::Log::Unmarshal(lvl);
+        CHECK(ll == Uranus::Log::Level::INFOR);
     }
 
     SUBCASE("test marshal log level")
     {
-        auto ll  = Uranus::Log::LogLevel::INFOR;
-        auto lvl = Uranus::Log::Level::Marshal(ll);
+        auto ll  = Uranus::Log::Level::INFOR;
+        auto lvl = Uranus::Log::Marshal(ll);
         CHECK(lvl == "infor");
     }
 }

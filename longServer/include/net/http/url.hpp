@@ -33,7 +33,7 @@ public:
     URL()  = default;
     ~URL() = default;
 
-    auto Parse(const std::string_view rawurl) -> bool
+    auto Parse(std::string_view rawurl) -> bool
     {
         if (rawurl.empty())
             return false;

@@ -18,12 +18,6 @@ public:
     Codec()  = default;
     ~Codec() = default;
 
-    static auto Get() -> std::shared_ptr<Codec>
-    {
-        static std::shared_ptr<Codec> it = std::make_shared<Codec>();
-        return it;
-    }
-
     // 编码
     auto EnCode(const google::protobuf::Message &msg) -> std::string
     {
@@ -77,13 +71,11 @@ public:
 
 private:
     //  根据 protobuf 的 typename  创建 message
-    std::shared_ptr<google::protobuf::Message> createMsg(const std::string &typeName)
+    auto createMsg(const std::string &typeName) -> std::shared_ptr<google::protobuf::Message>
     {
-        const google::protobuf::Descriptor *descriptor
-            = google::protobuf::DescriptorPool::generated_pool()->FindMessageTypeByName(typeName);
+        auto descriptor = google::protobuf::DescriptorPool::generated_pool()->FindMessageTypeByName(typeName);
         if (descriptor) {
-            const google::protobuf::Message *ptototype
-                = google::protobuf::MessageFactory::generated_factory()->GetPrototype(descriptor);
+            auto ptototype = google::protobuf::MessageFactory::generated_factory()->GetPrototype(descriptor);
             if (ptototype) {
                 std::shared_ptr<google::protobuf::Message> result(ptototype->New());
                 return result;

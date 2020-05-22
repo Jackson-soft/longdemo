@@ -69,7 +69,7 @@ public:
         // Find the first '?'
         auto sParams   = dsn.substr(backslash.end() - dsn.begin(), dsn.end() - backslash.end());
         auto tQuestion = boost::find_first(sParams, "?");
-        DBName         = sParams.substr(0, tQuestion.begin() - sParams.begin());
+        // DBName         = sParams.substr(0, tQuestion.begin() - sParams.begin());
 
         return parseParams(sParams.substr(tQuestion.end() - sParams.begin(), sParams.end() - tQuestion.end()));
     }
@@ -86,17 +86,18 @@ public:
 
     [[nodiscard]] std::uint16_t Port() const { return port; }
 
-    [[nodiscard]] const std::string &DBName() const { return DBName; }
+    [[nodiscard]] const std::string &DBName() const { return dbName; }
 
     [[nodiscard]] const std::map<std::string, std::string> &Params() const { return params; }
 
 private:
-    auto parseParams(const std::string_view params) -> bool
+    auto parseParams(std::string_view args) -> bool
     {
-        if (params.empty())
+        if (args.empty())
             return false;
+
         std::vector<std::string> vParam;
-        boost::split(vParam, params, boost::is_any_of("&"));
+        boost::split(vParam, args, boost::is_any_of("&"));
         if (vParam.empty())
             return false;
 
@@ -116,8 +117,8 @@ private:
     std::string network;  // 网络类型 tcp/unix
     std::string address;
     std::string host;
-    std::uint16_t port{};
-    std::string DBName;
+    std::uint16_t port;
+    std::string dbName;
     std::map<std::string, std::string> params;
 };
 }  // namespace Uranus::Database

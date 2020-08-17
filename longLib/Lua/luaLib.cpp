@@ -7,7 +7,7 @@ extern "C" {
 int luaopen_luaLib(lua_State *luaEnv);
 }
 
-int averageFunc(lua_State *luaEnv)
+auto averageFunc(lua_State *luaEnv) -> int
 {
     int n = lua_gettop(luaEnv);
     int sum{0};
@@ -18,17 +18,18 @@ int averageFunc(lua_State *luaEnv)
     return 1;
 }
 
-int sayHello(lua_State *luaEnv)
+auto sayHello(lua_State *luaEnv) -> int
 {
     std::cout << "Hello" << std::endl;
     return 0;
 }
 
 //导出函数列表
-const struct luaL_Reg myLib[] = {{"averageFunc", averageFunc}, {"sayHello", sayHello}, {NULL, NULL}};
+static const struct luaL_Reg myLib[] = {{"averageFunc", averageFunc}, {"sayHello", sayHello}, {nullptr, nullptr}};
 
 int luaopen_luaLib(lua_State *luaEnv)
 {
-    luaL_register(luaEnv, "luaLib", myLib);
+    lua_newtable(luaEnv);
+    luaL_setfuncs(luaEnv, myLib, 0);
     return 1;
 }

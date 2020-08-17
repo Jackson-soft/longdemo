@@ -1,7 +1,7 @@
 #pragma once
 
 #include "doctest.h"
-#include "log/log_level.hpp"
+#include "log/level.hpp"
 #include "log/logger.hpp"
 #include <string>
 

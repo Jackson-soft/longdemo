@@ -16,15 +16,13 @@
 #include <unistd.h>
 #include <utility>
 
-namespace Uranus
+namespace Uranus::Net
 {
-namespace Net
-{
-class Socket : public Utils::Noncopyable
+class Socket: public Utils::Noncopyable
 {
 public:
     Socket() = default;
-    Socket(const int fd) : mSocket(fd) {}
+    Socket(const int fd): mSocket(fd) {}
 
     // move constructor
     Socket(const Socket &&obj) {}
@@ -191,10 +189,8 @@ public:
 private:
     void GetTcpInfo() {}
 
-private:
     int mSocket{0};  //
 
     std::string mNet{""};
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

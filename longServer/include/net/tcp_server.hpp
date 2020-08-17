@@ -6,17 +6,17 @@
 #include <thread>
 #include <unistd.h>
 
-namespace Uranus
+namespace Uranus::Net
 {
 // Tcp 服务器
-class TcpServer : public Utils::Noncopyable
+class TcpServer: public Utils::Noncopyable
 {
 public:
     TcpServer() = default;
 
     ~TcpServer() = default;
 
-    TcpServer(unsigned int workNum = 0) : mWorkers(workNum), mRunning(true)
+    TcpServer(unsigned int workNum = 0): mWorkers(workNum), mRunning(true)
     {
         if (mWorkers == 0) {
             mWorkers = std::thread::hardware_concurrency();
@@ -61,11 +61,9 @@ private:
         }
     }
 
-private:
     unsigned short mPort;   // 端口
     std::string_view mIP;   // ip地址
     unsigned int mWorkers;  // 工作进程数量
-
     std::atomic_bool mRunning{true};
 };
-}  // namespace Uranus
+}  // namespace Uranus::Net

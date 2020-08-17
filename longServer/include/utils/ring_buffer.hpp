@@ -1,20 +1,20 @@
 #pragma once
 
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <mutex>
 #include <shared_mutex>
 #include <vector>
 
-namespace Uranus
+namespace Uranus::Utils
 {
 // 环形缓存
 template<typename T>
-class RingBuffer : public Utils::Noncopyable
+class RingBuffer: public Noncopyable
 {
 public:
-    RingBuffer() : RingBuffer(16) {}
+    RingBuffer(): RingBuffer(16) {}
 
-    explicit RingBuffer(int size) : mMaxSize(size) { mData.reserve(mMaxSize); }
+    explicit RingBuffer(int size): mMaxSize(size) { mData.reserve(mMaxSize); }
 
     ~RingBuffer() { Clear(); }
 
@@ -53,4 +53,4 @@ private:
     int mWriteIndex{0};
     int mReadIndex{0};
 };
-}  // namespace Uranus
+}  // namespace Uranus::Utils

@@ -9,13 +9,10 @@
 #include <unistd.h>
 
 // 连接器
-namespace Uranus
+namespace Uranus::Net
 {
-namespace Net
-{
-
 // 连接器类
-class Dialer : Utils::Noncopyable, std::enable_shared_from_this<Dialer>
+class Dialer: Utils::Noncopyable, std::enable_shared_from_this<Dialer>
 {
 public:
     Dialer() = default;
@@ -62,5 +59,4 @@ private:
 
     std::chrono::duration<int> mKeepAlive;
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

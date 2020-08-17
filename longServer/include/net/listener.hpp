@@ -5,9 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 // 监听器接口
 class Listener
@@ -23,7 +21,7 @@ public:
     virtual const std::string &Address() const = 0;
 };
 
-class TcpListener : public Listener
+class TcpListener: public Listener
 {
 public:
     TcpListener() = default;
@@ -39,5 +37,4 @@ public:
 private:
     Socket mSocket;
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

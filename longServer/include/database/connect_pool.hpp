@@ -9,10 +9,10 @@
 #include <mutex>
 #include <string_view>
 
-namespace Uranus
+namespace Uranus::Database
 {
 template<typename T>
-class ConnectPool : public Uranus::Noncopyable
+class ConnectPool: public Uranus::Noncopyable
 {
 public:
     static ConnectPool<T> *Get()
@@ -21,11 +21,11 @@ public:
         return &connPool;
     }
 
-    void Initalize(const std::string_view conn, const int maxConn = 10, const int maxIdle = 5)
+    void Initalize(std::string_view conn, const int maxConn = 10, const int maxIdle = 5)
     {
         mConnect = conn;
-        mMaxIdle = maxIdle;
         mMaxConn = maxConn;
+        mMaxIdle = maxIdle;
     }
 
     std::shared_ptr<T> Get()
@@ -66,7 +66,6 @@ private:
         return conn->connect(mConnect);
     }
 
-private:
     std::mutex mMutex;
     std::string mConnect;  // 连接
     int mMaxIdle{0};       // 最大空闲数
@@ -76,4 +75,4 @@ private:
     std::once_flag mFlag;
     std::deque<std::shared_ptr<T>> mPool;
 };
-}  // namespace Uranus
+}  // namespace Uranus::Database

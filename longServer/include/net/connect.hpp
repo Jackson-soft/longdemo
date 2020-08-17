@@ -3,9 +3,7 @@
 #include "address.hpp"
 #include "socket.hpp"
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 // connection 接口
 class Conn
@@ -34,5 +32,4 @@ public:
     //远程网络地址
     std::string RemoteAddr() const { return ""; }
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

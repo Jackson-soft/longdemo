@@ -13,7 +13,7 @@ template<typename T>
 class MinHeap
 {
 public:
-    MinHeap() : MinHeap(30) {}
+    MinHeap(): MinHeap(30) {}
 
     //这是做一下预分配内存
     explicit MinHeap(int capacity) { mArray.reserve(capacity); }
@@ -21,10 +21,10 @@ public:
     ~MinHeap() { mArray.clear(); }
 
     //插入新元素
-    bool Push(const T &elem)
+    auto Push(const T &elem) -> bool
     {
         //独享写锁
-        std::unique_lock<std::shared_mutex> lock(mMutex);
+        std::unique_lock<std::mutex> lock(mMutex);
         mArray.emplace_back(elem);
         up(mArray.size() - 1);
         return true;

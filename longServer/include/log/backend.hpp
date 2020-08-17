@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/time_util.hpp"
+#include "utils/time.hpp"
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -10,9 +10,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Log
+namespace Uranus::Log
 {
 // Backend 日志输出后端接口
 class Backend
@@ -21,24 +19,24 @@ public:
     Backend()          = default;
     virtual ~Backend() = default;
 
-    virtual void Write(const std::string_view buf) = 0;
-    virtual void Close()                           = 0;
+    virtual void Write(std::string_view buf) = 0;
+    virtual void Close()                     = 0;
 };
 
 // 终端输出后端
-class ConsoleBackend : public Backend
+class ConsoleBackend: public Backend
 {
 };
 
 // 文件输出后端
-class FileBackend : public Backend
+class FileBackend: public Backend
 {
 public:
     FileBackend() = default;
     ~FileBackend() override { Close(); }
 
     //初始化各项参数
-    bool InitBackend(const std::string_view path,
+    bool InitBackend(std::string_view path,
                      int64_t maxSize           = 0,
                      std::string_view prefix   = "",
                      std::string_view fileLink = "")
@@ -66,7 +64,7 @@ public:
             }
         }
 
-        mCurrentDay = Utils::TimeUtil::CurrentDay();
+        mCurrentDay = Utils::CurrentDay();
 
         if (mChang) {
             createFile();
@@ -75,7 +73,7 @@ public:
         return true;
     }
 
-    void Write(const std::string_view buf) override
+    void Write(std::string_view buf) override
     {
         doIncise();
         mFile.write(buf.data(), buf.size());
@@ -102,7 +100,7 @@ private:
     //检查日期
     void checkData()
     {
-        auto tDay = Utils::TimeUtil::CurrentDay();
+        auto tDay = Utils::CurrentDay();
         if (tDay != mCurrentDay) {
             mCurrentDay = tDay;
             mIndex      = 1;
@@ -143,5 +141,4 @@ private:
     std::string mCurrentDay{""};                //当前日期
     bool mChang{true};                          //日志文件是否需要切割
 };
-}  // namespace Log
-}  // namespace Uranus
+}  // namespace Uranus::Log

@@ -2,20 +2,18 @@
 
 #include "backend.hpp"
 #include "formatter.hpp"
-#include "log_level.hpp"
-#include "utils/util.hpp"
+#include "level.hpp"
+#include "utils/noncopyable.hpp"
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Log
+namespace Uranus::Log
 {
 // Logger 日志的主类
-class Logger : public Utils::Noncopyable
+class Logger: public Utils::Noncopyable
 {
 public:
     Logger() = default;
@@ -29,7 +27,7 @@ public:
     }
 
     //单例实例
-    static std::shared_ptr<Logger> GetInstance()
+    static std::shared_ptr<Logger> Instance()
     {
         static auto logger = std::make_shared<Logger>();
         return logger;
@@ -46,7 +44,7 @@ public:
     }
 
     //日志输出对外接口
-    void Inforln(const std::string_view msg) { return outPut(LogLevel::INFOR, msg); }
+    void Inforln(std::string_view msg) { return outPut(LogLevel::INFOR, msg); }
 
     void Run()
     {
@@ -60,10 +58,10 @@ public:
 
 private:
     //输出
-    void outPut(LogLevel level, std::string_view msg)
+    void outPut(LogLevel lvl, std::string_view msg)
     {
         std::lock_guard<std::mutex> locker(mutex);
-        if (level >= level) {
+        if (lvl >= level) {
             buffer.push(formatter->Format(msg));
         }
     }
@@ -77,5 +75,4 @@ private:
 };
 
 #define LOG_INFO Logger::GetInstance().Inforln()
-}  // namespace Log
-}  // namespace Uranus
+}  // namespace Uranus::Log

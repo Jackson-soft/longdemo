@@ -20,7 +20,7 @@
  *
  */
 
-namespace Uranus
+namespace Uranus::Database
 {
 class DSN
 {
@@ -28,7 +28,7 @@ public:
     DSN()  = default;
     ~DSN() = default;
 
-    bool Parse(const std::string_view dsn)
+    bool Parse(std::string_view dsn)
     {
         if (dsn.empty())
             return false;
@@ -92,7 +92,7 @@ public:
     [[nodiscard]] const std::map<std::string, std::string> &Params() const { return mParams; }
 
 private:
-    bool parseParams(const std::string_view params)
+    bool parseParams(std::string_view params)
     {
         if (params.empty())
             return false;
@@ -112,7 +112,6 @@ private:
         return true;
     }
 
-private:
     std::string mUser;
     std::string mPasswd;
     std::string mNet;  // 网络类型 tcp/unix
@@ -122,4 +121,4 @@ private:
     std::string mDBName;
     std::map<std::string, std::string> mParams;
 };
-}  // namespace Uranus
+}  // namespace Uranus::Database

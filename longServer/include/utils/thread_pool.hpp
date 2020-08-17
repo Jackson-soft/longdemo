@@ -1,7 +1,7 @@
 #pragma once
 
+#include "utils/noncopyable.hpp"
 #include "utils/sync_queue.hpp"
-#include "utils/util.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
@@ -14,15 +14,16 @@
 #include <utility>
 #include <vector>
 
-namespace Uranus
+namespace Uranus::Utils
 {
-class ThreadPool : public Utils::Noncopyable
+class ThreadPool: public Noncopyable
 {
 public:
     using Task = std::function<void()>;
-    ThreadPool() : ThreadPool(0) {}
 
-    ThreadPool(std::uint32_t num) : mThreadNum(num)
+    ThreadPool(): ThreadPool(0) {}
+
+    ThreadPool(std::uint32_t num): mThreadNum(num)
     {
         if (!mThreadNum) {
             // 线程池大小配置为CPU核数
@@ -77,12 +78,11 @@ private:
         }
     }
 
-private:
-    SyncQueue<Task> mTasks;                              //任务队列
+    SyncQueue<Task> mTasks{};                            //任务队列
     std::vector<std::shared_ptr<std::thread>> mThreads;  //线程对象
     std::uint32_t mThreadNum;                            //线程数
     std::mutex mMutex;                                   //锁
     std::condition_variable mCondition;                  //条件变量
     std::atomic_bool mRunning{true};                     //是否在运行
 };
-}  // namespace Uranus
+}  // namespace Uranus::Utils

@@ -6,24 +6,25 @@
 #include <cstdint>
 #include <functional>
 
-namespace Uranus
+namespace Uranus::Utils
 {
 //定时器
-class Timer : Utils::Noncopyable
+class Timer: Noncopyable
 {
 public:
     using Action = std::function<void()>;
-    static Timer &Get()
+
+    static auto Get() -> Timer &
     {
         static Timer timer;
         return timer;
     }
 
     // 单次
-    std::uint32_t OnceTimer(double interval, Action func) { return 0; }
+    auto OnceTimer(double interval, Action func) -> std::uint32_t { return 0; }
 
     // 循环
-    std::uint32_t LoopTimer(double interval, Action fucn) { return 0; }
+    auto LoopTimer(double interval, Action fucn) -> std::uint32_t { return 0; }
 
     //取消定时器
     void Stop(std::uint32_t id) {}
@@ -37,16 +38,15 @@ public:
     }
 
 private:
-    Timer() {}
+    Timer() = default;
 
-    Timer(std::chrono::duration<int> tick) : mTick(tick) {}
+    Timer(std::chrono::duration<int> tick): mTick(tick) {}
 
-    ~Timer() {}
+    ~Timer() = default;
 
     //定时器循环
     void exec() {}
 
-private:
     std::chrono::duration<int> mTick{1};  //定时器的粒度
 };
-}  // namespace Uranus
+}  // namespace Uranus::Utils

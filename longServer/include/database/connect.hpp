@@ -19,12 +19,12 @@
 #include <mysql/mysql.h>
 #endif
 
-namespace Uranus
+namespace Uranus::Database
 {
 class DBConn
 {
 public:
-    DBConn() : mMysql(nullptr) {}
+    DBConn(): mMysql(nullptr) {}
 
     ~DBConn() { Close(); }
 
@@ -349,4 +349,4 @@ public:
 private:
     ::MYSQL *mMysql;
 };
-}  // namespace Uranus
+}  // namespace Uranus::Database

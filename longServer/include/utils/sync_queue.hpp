@@ -2,21 +2,21 @@
 
 // 同步队列
 
-#include "utils/util.hpp"
+#include "noncopyable.hpp"
 #include <mutex>
 #include <queue>
 #include <utility>
 
-namespace Uranus
+namespace Uranus::Utils
 {
 template<typename T>
-class SyncQueue : public Utils::Noncopyable
+class SyncQueue: public Noncopyable
 {
 public:
     SyncQueue()  = default;
     ~SyncQueue() = default;
 
-    bool Empty()
+    auto Empty() -> bool
     {
         std::lock_guard<std::mutex> locker(mMutex);
         return mQueue.empty();
@@ -62,4 +62,4 @@ private:
     std::mutex mMutex;
     std::queue<T> mQueue;
 };
-}  // namespace Uranus
+}  // namespace Uranus::Utils

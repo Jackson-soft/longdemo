@@ -4,9 +4,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus
-{
-namespace Net
+namespace Uranus::Net
 {
 //网络地址接口
 class Address
@@ -28,7 +26,7 @@ public:
 };
 
 // ipv6地址类
-class IPv6Addr : public Address
+class IPv6Addr: public Address
 {
 public:
     IPv6Addr()           = default;
@@ -51,6 +49,7 @@ public:
         mNetwork = net;
         return true;
     }
+
     const std::string &Network() const override { return mNetwork; }
 
     const std::string &String() const override { return ""; }
@@ -62,7 +61,7 @@ private:
 };
 
 // Unix地址类
-class UnixAddr : public Address
+class UnixAddr: public Address
 {
 public:
     UnixAddr() {}
@@ -84,5 +83,4 @@ private:
     std::string mNetwork{""};
     std::string mAddress{""};
 };
-}  // namespace Net
-}  // namespace Uranus
+}  // namespace Uranus::Net

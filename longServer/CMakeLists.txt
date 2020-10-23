@@ -18,7 +18,8 @@ find_package(fmt REQUIRED)
 set(Example server)
 add_executable(${Example} src/main.cpp)
 # 添加头文件目录
-include_directories(${Example} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${Example}
+                           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(${Example} PRIVATE ${Boost_LIBRARIES} fmt::fmt)
 
 set(unit_test my_test)

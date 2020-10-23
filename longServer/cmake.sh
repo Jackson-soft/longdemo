@@ -4,8 +4,8 @@ set -u
 dir="build"
 
 if [ -d $dir ]; then
-    ninja -C $dir -j 6
-    exit 0
+	ninja -C $dir -j 4
+	exit 0
 fi
 
 mkdir -p $dir
@@ -17,5 +17,5 @@ ninja -C $dir -j 6
 lnFile="compile_commands.json"
 
 if [ ! -f $lnFile ]; then
-    ln -s $dir/$lnFile .
+	ln -s $dir/$lnFile .
 fi

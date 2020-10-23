@@ -1,4 +1,4 @@
-#include "net/tcp_server.hpp"
+#include <cstdlib>
 #include <iostream>
 
-auto main() -> int { return 0; }
+auto main() -> int { return EXIT_SUCCESS; }

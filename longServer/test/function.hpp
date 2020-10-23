@@ -8,7 +8,7 @@
 TEST_CASE("test remove")
 {
     std::vector<int> a{2, 34, 5, 6, 8};
-    a.at(2) = std::move(a.back());
+    a.at(2) = a.back();
     a.pop_back();
 
     CHECK(a.size() == 4);

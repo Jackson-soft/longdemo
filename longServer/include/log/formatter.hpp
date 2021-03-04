@@ -7,7 +7,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus::Log
+namespace uranus::log
 {
 // Formatter 日志格式化前端接口
 class Formatter
@@ -34,7 +34,7 @@ public:
     {
         std::string retData{""};
         std::sprintf(
-            retData.data(), "%s [%s] %s:%d :: ", Utils::CurrentDay().data(), mLevel.data(), __FILE__, __LINE__);
+            retData.data(), "%s [%s] %s:%d :: ", utils::CurrentDay().data(), mLevel.data(), __FILE__, __LINE__);
         if (!mData.empty()) {
             for (const auto &i : mData) {
                 std::sprintf(retData.data(), "%s%s:%s,", retData.data(), i.first.data(), i.second.data());
@@ -50,4 +50,4 @@ private:
     std::map<std::string, std::string> mData;  // 附加信息
     std::string mLevel;                        // 日志级别
 };
-}  // namespace Uranus::Log
+}  // namespace uranus::log

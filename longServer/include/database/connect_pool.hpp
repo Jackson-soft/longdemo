@@ -9,10 +9,10 @@
 #include <mutex>
 #include <string_view>
 
-namespace Uranus::Database
+namespace uranus::database
 {
 template<typename T>
-class ConnectPool: public Uranus::Noncopyable
+class ConnectPool: public uranus::Noncopyable
 {
 public:
     static ConnectPool<T> *Get()
@@ -75,4 +75,4 @@ private:
     std::once_flag mFlag;
     std::deque<std::shared_ptr<T>> mPool;
 };
-}  // namespace Uranus::Database
+}  // namespace uranus::database

@@ -4,7 +4,7 @@
 #include <pqxx/connection.hxx>
 #include <string_view>
 
-namespace Uranus::Database
+namespace uranus::database
 {
 class Postgres
 {
@@ -19,4 +19,4 @@ public:
 private:
     pqxx::connection conn;
 };
-}  // namespace Uranus::Database
+}  // namespace uranus::database

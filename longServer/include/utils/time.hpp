@@ -7,7 +7,7 @@
 #include <sstream>
 #include <string>
 
-namespace Uranus::Utils
+namespace uranus::utils
 {
 //时间操作
 inline auto NowTime() -> std::tm
@@ -55,4 +55,4 @@ inline auto MilUnixTime() -> std::int64_t
 
     return tmp.count();
 }
-}  // namespace Uranus::Utils
+}  // namespace uranus::utils

@@ -7,9 +7,9 @@
 #include <cstdint>
 #include <string_view>
 
-namespace Uranus::Net
+namespace uranus::net
 {
-class TcpClient: public Utils::Noncopyable
+class TcpClient: public utils::Noncopyable
 {
 public:
     TcpClient()  = default;
@@ -18,6 +18,6 @@ public:
     bool Dial(std::string_view ip, std::uint32_t port) { return false; }
 
 private:
-    Net::Dialer dialer;
+    net::Dialer dialer;
 };
-}  // namespace Uranus::Net
+}  // namespace uranus::net

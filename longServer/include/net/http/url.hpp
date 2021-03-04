@@ -25,9 +25,9 @@ scheme              path
 
 */
 
-namespace Uranus
+namespace uranus
 {
-namespace Http
+namespace http
 {
 class URL
 {
@@ -73,5 +73,5 @@ private:
     std::string rawQuery;
     std::string fragment;
 };
-}  // namespace Http
-}  // namespace Uranus
+}  // namespace http
+}  // namespace uranus

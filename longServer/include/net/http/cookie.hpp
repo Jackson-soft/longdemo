@@ -2,9 +2,9 @@
 
 #include <string>
 
-namespace Uranus
+namespace uranus
 {
-namespace Http
+namespace http
 {
 class Cookie
 {
@@ -25,5 +25,5 @@ private:
     bool httpOnly;
     std::string raw;
 };
-}  // namespace Http
-}  // namespace Uranus
+}  // namespace http
+}  // namespace uranus

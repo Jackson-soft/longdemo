@@ -10,7 +10,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus::Log
+namespace uranus::log
 {
 // Backend 日志输出后端接口
 class Backend
@@ -64,7 +64,7 @@ public:
             }
         }
 
-        mCurrentDay = Utils::CurrentDay();
+        mCurrentDay = utils::CurrentDay();
 
         if (mChang) {
             createFile();
@@ -100,7 +100,7 @@ private:
     //检查日期
     void checkData()
     {
-        auto tDay = Utils::CurrentDay();
+        auto tDay = utils::CurrentDay();
         if (tDay != mCurrentDay) {
             mCurrentDay = tDay;
             mIndex      = 1;
@@ -141,4 +141,4 @@ private:
     std::string mCurrentDay{""};                //当前日期
     bool mChang{true};                          //日志文件是否需要切割
 };
-}  // namespace Uranus::Log
+}  // namespace uranus::log

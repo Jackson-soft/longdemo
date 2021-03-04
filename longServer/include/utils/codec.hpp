@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LogHelper.hpp"
+#include "logHelper.hpp"
 #include "Utility.hpp"
 #include <arpa/inet.h>
 #include <boost/core/noncopyable.hpp>
@@ -11,17 +11,18 @@
 #include <memory>
 #include <string>
 
-namespace Uranus
+namespace uranus
 {
 //  数据包封包解包
-class Codec : public boost::noncopyable
+class Codec: public boost::noncopyable
 {
 public:
     Codec()  = default;
     ~Codec() = default;
 
-    static std::shared_ptr<Codec> Get(){
-        static  std::shared_ptr<Codec> it = std::make_shared<Codec>();
+    static std::shared_ptr<Codec> Get()
+    {
+        static std::shared_ptr<Codec> it = std::make_shared<Codec>();
         return it;
     }
 
@@ -99,4 +100,4 @@ private:
     // 最小的数据包长度
     const std::uint32_t mMinDataLen{2 * mHeaderLen};
 };
-}  // namespace Uranus
+}  // namespace uranus

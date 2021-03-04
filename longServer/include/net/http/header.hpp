@@ -4,9 +4,9 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus
+namespace uranus
 {
-namespace Http
+namespace http
 {
 class Header
 {
@@ -23,5 +23,5 @@ public:
 private:
     std::map<std::string, std::string> header;
 };
-}  // namespace Http
-}  // namespace Uranus
+}  // namespace http
+}  // namespace uranus

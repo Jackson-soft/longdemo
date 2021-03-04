@@ -3,9 +3,9 @@
 #include <string>
 #include <unordered_map>
 
-namespace Uranus
+namespace uranus
 {
-namespace Http
+namespace http
 {
 class Response
 {
@@ -19,5 +19,5 @@ private:
     std::unordered_map<std::string, std::string> headers_;
 };
 
-}  // namespace Http
-}  // namespace Uranus
+}  // namespace http
+}  // namespace uranus

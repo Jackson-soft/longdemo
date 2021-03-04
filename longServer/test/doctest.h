@@ -2951,7 +2951,7 @@ typedef timer_large_integer::type ticks_t;
         std::set<decltype(subcasesStack)> subcasesPassed;
         int                               subcasesCurrentMaxLevel;
         bool                              should_reenter;
-        std::atomic<bool>                 shouldLogCurrentException;
+        std::atomic<bool>                 shouldlogCurrentException;
 
         void resetRunData() {
             numTestCases                = 0;
@@ -3460,7 +3460,7 @@ namespace detail {
 
 #ifndef DOCTEST_CONFIG_NO_EXCEPTIONS
     DOCTEST_NORETURN void throwException() {
-        g_cs->shouldLogCurrentException = false;
+        g_cs->shouldlogCurrentException = false;
         throw TestFailureException();
     } // NOLINT(cert-err60-cpp)
 #else // DOCTEST_CONFIG_NO_EXCEPTIONS
@@ -3579,13 +3579,13 @@ namespace detail {
 #else
             if(std::uncaught_exception()
 #endif
-            && g_cs->shouldLogCurrentException) {
+            && g_cs->shouldlogCurrentException) {
                 DOCTEST_ITERATE_THROUGH_REPORTERS(
                         test_case_exception, {"exception thrown in subcase - will translate later "
                                               "when the whole test case has been exited (cannot "
                                               "translate while there is an active exception)",
                                               false});
-                g_cs->shouldLogCurrentException = false;
+                g_cs->shouldlogCurrentException = false;
             }
             DOCTEST_ITERATE_THROUGH_REPORTERS(subcase_end, DOCTEST_EMPTY);
         }
@@ -5149,7 +5149,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
     struct ConsoleReporter : public IReporter
     {
         std::ostream&                 s;
-        bool                          hasLoggedCurrentTestStart;
+        bool                          hasloggedCurrentTestStart;
         std::vector<SubcaseSignature> subcasesStack;
         size_t                        currentSubcaseLevel;
         std::mutex                    mutex;
@@ -5219,7 +5219,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         }
 
         void logTestStart() {
-            if(hasLoggedCurrentTestStart)
+            if(hasloggedCurrentTestStart)
                 return;
 
             separator_to_stream();
@@ -5247,7 +5247,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
 
             s << "\n";
 
-            hasLoggedCurrentTestStart = true;
+            hasloggedCurrentTestStart = true;
         }
 
         void printVersion() {
@@ -5480,7 +5480,7 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
         }
 
         void test_case_start(const TestCaseData& in) override {
-            hasLoggedCurrentTestStart = false;
+            hasloggedCurrentTestStart = false;
             tc                        = &in;
             subcasesStack.clear();
             currentSubcaseLevel = 0;
@@ -5549,13 +5549,13 @@ DOCTEST_CLANG_SUPPRESS_WARNING_POP
             std::lock_guard<std::mutex> lock(mutex);
             subcasesStack.push_back(subc);
             ++currentSubcaseLevel;
-            hasLoggedCurrentTestStart = false;
+            hasloggedCurrentTestStart = false;
         }
 
         void subcase_end() override {
             std::lock_guard<std::mutex> lock(mutex);
             --currentSubcaseLevel;
-            hasLoggedCurrentTestStart = false;
+            hasloggedCurrentTestStart = false;
         }
 
         void log_assert(const AssertData& rb) override {
@@ -6099,7 +6099,7 @@ int Context::run() {
                 p->subcasesCurrentMaxLevel = 0;
                 p->subcasesStack.clear();
 
-                p->shouldLogCurrentException = true;
+                p->shouldlogCurrentException = true;
 
                 // reset stuff for logging with INFO()
                 p->stringifiedContexts.clear();

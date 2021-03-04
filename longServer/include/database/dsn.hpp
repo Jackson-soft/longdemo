@@ -20,7 +20,7 @@
  *
  */
 
-namespace Uranus::Database
+namespace uranus::database
 {
 class DSN
 {
@@ -50,13 +50,13 @@ public:
         // [protocol[(address)]]
         // Find the first '('
         auto tOpenParen = boost::find_first(dsn, "(");
-        mNet            = dsn.substr(tAt.end() - dsn.begin(), tOpenParen.begin() - tAt.end());
+        mnet            = dsn.substr(tAt.end() - dsn.begin(), tOpenParen.begin() - tAt.end());
 
         // dsn[i-1] must be == ')' if an address is specified
         auto tCloseParen = boost::find_last(dsn, ")");
         mAddress         = dsn.substr(tOpenParen.end() - dsn.begin(), tCloseParen.begin() - tOpenParen.end());
 
-        if (mNet != "unix") {
+        if (mnet != "unix") {
             std::vector<std::string> vAddress;
             boost::split(vAddress, mAddress, boost::is_any_of(":"));
 
@@ -79,7 +79,7 @@ public:
 
     [[nodiscard]] const std::string &Passwd() const { return mPasswd; }
 
-    [[nodiscard]] const std::string &Net() const { return mNet; }
+    [[nodiscard]] const std::string &net() const { return mnet; }
 
     const std::string &Address() { return mAddress; }
 
@@ -114,11 +114,11 @@ private:
 
     std::string mUser;
     std::string mPasswd;
-    std::string mNet;  // 网络类型 tcp/unix
+    std::string mnet;  // 网络类型 tcp/unix
     std::string mAddress;
     std::string mHost;
     std::uint32_t mPort{};
     std::string mDBName;
     std::map<std::string, std::string> mParams;
 };
-}  // namespace Uranus::Database
+}  // namespace uranus::database

@@ -5,9 +5,9 @@
 #include <string_view>
 #include <unordered_map>
 
-namespace Uranus
+namespace uranus
 {
-namespace Http
+namespace http
 {
 class Request
 {
@@ -33,5 +33,5 @@ private:
     std::string host_;
     std::unordered_map<std::string, std::string> form_;
 };
-}  // namespace Http
-}  // namespace Uranus
+}  // namespace http
+}  // namespace uranus

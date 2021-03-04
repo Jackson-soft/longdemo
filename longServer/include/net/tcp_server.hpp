@@ -6,10 +6,10 @@
 #include <thread>
 #include <unistd.h>
 
-namespace Uranus::Net
+namespace uranus::net
 {
 // Tcp 服务器
-class TcpServer: public Utils::Noncopyable
+class TcpServer: public utils::Noncopyable
 {
 public:
     TcpServer() = default;
@@ -66,4 +66,4 @@ private:
     unsigned int mWorkers;  // 工作进程数量
     std::atomic_bool mRunning{true};
 };
-}  // namespace Uranus::Net
+}  // namespace uranus::net

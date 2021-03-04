@@ -10,10 +10,10 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus::Log
+namespace uranus::log
 {
 // Logger 日志的主类
-class Logger: public Utils::Noncopyable
+class Logger: public utils::Noncopyable
 {
 public:
     Logger() = default;
@@ -27,14 +27,14 @@ public:
     }
 
     //单例实例
-    static std::shared_ptr<Logger> Instance()
+    static std::shared_ptr<Logger> get()
     {
-        static auto logger = std::make_shared<Logger>();
-        return logger;
+        static auto Logger = std::make_shared<Logger>();
+        return Logger;
     }
 
     //初始化，只需要调一次
-    bool Set(const LogLevel &lvl, std::unique_ptr<Formatter> fmt, std::unique_ptr<Backend> backend)
+    bool set(const logLevel &lvl, std::unique_ptr<Formatter> fmt, std::unique_ptr<Backend> backend)
     {
         std::lock_guard<std::mutex> locker(mutex);
         level = lvl;
@@ -44,9 +44,9 @@ public:
     }
 
     //日志输出对外接口
-    void Inforln(std::string_view msg) { return outPut(LogLevel::INFOR, msg); }
+    void infoln(std::string_view msg) { return outPut(LogLevel::INFOR, msg); }
 
-    void Run()
+    void run()
     {
         while (true) {
             if (buffer.size() > 0) {
@@ -58,7 +58,7 @@ public:
 
 private:
     //输出
-    void outPut(LogLevel lvl, std::string_view msg)
+    void outPut(logLevel lvl, std::string_view msg)
     {
         std::lock_guard<std::mutex> locker(mutex);
         if (lvl >= level) {
@@ -74,5 +74,5 @@ private:
     std::queue<std::string> buffer;        //环型缓存
 };
 
-#define LOG_INFO Logger::GetInstance().Inforln()
-}  // namespace Uranus::Log
+#define LOG_INFO Logger::GetInstance().infoln()
+}  // namespace uranus::log

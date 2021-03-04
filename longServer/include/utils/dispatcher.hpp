@@ -5,7 +5,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace Uranus::Utils
+namespace uranus::utils
 {
 // 消息分发器
 class Dispatcher
@@ -40,4 +40,4 @@ public:
 private:
     std::unordered_map<const google::protobuf::Descriptor *, PBCallBack> mCallBackMap;
 };
-}  // namespace Uranus::Utils
+}  // namespace uranus::utils

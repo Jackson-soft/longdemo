@@ -5,7 +5,7 @@
 
 TEST_CASE("socket test")
 {
-    Uranus::Net::Socket fd;
+    uranus::net::Socket fd;
     fd.NewSocket();
     CHECK(fd.GetNativeFD() > 0);
     CHECK(fd.Listen());

@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-namespace Uranus
+namespace uranus
 {
 template<typename T>
 class MinHeap
@@ -97,4 +97,4 @@ private:
     // mutable声明可变数据成员
     mutable std::shared_mutex mMutex;
 };
-}  // namespace Uranus
+}  // namespace uranus

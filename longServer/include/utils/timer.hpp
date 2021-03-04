@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace Uranus::Utils
+namespace uranus::utils
 {
 //定时器
 class Timer: Noncopyable
@@ -49,4 +49,4 @@ private:
 
     std::chrono::duration<int> mTick{1};  //定时器的粒度
 };
-}  // namespace Uranus::Utils
+}  // namespace uranus::utils

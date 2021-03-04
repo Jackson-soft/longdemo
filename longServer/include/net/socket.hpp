@@ -16,9 +16,9 @@
 #include <unistd.h>
 #include <utility>
 
-namespace Uranus::Net
+namespace uranus::net
 {
-class Socket: public Utils::Noncopyable
+class Socket: public utils::Noncopyable
 {
 public:
     Socket() = default;
@@ -31,7 +31,7 @@ public:
     Socket(const Socket &obj)
     {
         mSocket = obj.mSocket;
-        mNet    = obj.mNet;
+        mnet    = obj.mnet;
     }
 
     ~Socket() { Close(); }
@@ -41,9 +41,9 @@ public:
         if (network.empty()) {
             return false;
         } else if (network == "tcp") {
-            mSocket = ::socket(AF_INET6, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
+            mSocket = ::socket(AF_Inet6, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
         } else if (network == "udp") {
-            mSocket = ::socket(AF_INET6, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
+            mSocket = ::socket(AF_Inet6, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
         } else if (network == "unix") {
             mSocket = ::socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
         } else {
@@ -54,7 +54,7 @@ public:
             return false;
         }
 
-        mNet = std::move(network);
+        mnet = std::move(network);
 
         return SetReusePort(true);
     }
@@ -71,11 +71,11 @@ public:
         struct sockaddr_in6 addr;
 
         std::memset(&addr, 0, sizeof(addr));
-        addr.sin6_family = AF_INET6;
+        addr.sin6_family = AF_Inet6;
         addr.sin6_port   = ::htons(port);
 
         if (!ip.empty()) {
-            if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
+            if (::inet_pton(AF_Inet6, ip.data(), &addr.sin6_addr) < 0)
                 return false;
         } else {
             addr.sin6_addr = in6addr_any;
@@ -93,11 +93,11 @@ public:
         struct sockaddr_in6 addr;
 
         std::memset(&addr, 0, sizeof(addr));
-        addr.sin6_family = AF_INET6;
+        addr.sin6_family = AF_Inet6;
         addr.sin6_port   = ::htons(port);
 
         if (!ip.empty()) {
-            if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
+            if (::inet_pton(AF_Inet6, ip.data(), &addr.sin6_addr) < 0)
                 return false;
         } else {
             addr.sin6_addr = in6addr_any;
@@ -191,6 +191,6 @@ private:
 
     int mSocket{0};  //
 
-    std::string mNet{""};
+    std::string mnet{""};
 };
-}  // namespace Uranus::Net
+}  // namespace uranus::net

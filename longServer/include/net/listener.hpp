@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus::Net
+namespace uranus::net
 {
 // 监听器接口
 class Listener
@@ -37,4 +37,4 @@ public:
 private:
     Socket mSocket;
 };
-}  // namespace Uranus::Net
+}  // namespace uranus::net

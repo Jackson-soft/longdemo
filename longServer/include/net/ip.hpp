@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace Uranus::Net
+namespace uranus::net
 {
 // IP interface
 class IP
@@ -58,4 +58,4 @@ private:
     // ipv6 长度是16  std::byte == std::uint8_t
     std::array<std::uint8_t, 16> mIP;
 };
-}  // namespace Uranus::Net
+}  // namespace uranus::net

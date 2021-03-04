@@ -7,7 +7,7 @@
 #include <queue>
 #include <utility>
 
-namespace Uranus::Utils
+namespace uranus::utils
 {
 template<typename T>
 class SyncQueue: public Noncopyable
@@ -62,4 +62,4 @@ private:
     std::mutex mMutex;
     std::queue<T> mQueue;
 };
-}  // namespace Uranus::Utils
+}  // namespace uranus::utils

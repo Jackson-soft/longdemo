@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-namespace Uranus::Utils
+namespace uranus::utils
 {
 class ThreadPool: public Noncopyable
 {
@@ -50,7 +50,7 @@ public:
 
     //提交任务到队列
     template<typename F, typename... Args>
-    auto AddTask(F &&f, Args &&... args) -> std::future<std::result_of_t<F(Args...)>>
+    auto AddTask(F &&f, Args &&...args) -> std::future<std::result_of_t<F(Args...)>>
     {
         if (!mRunning.load()) {
             throw std::runtime_error("task executor have closed commit.");
@@ -85,4 +85,4 @@ private:
     std::condition_variable mCondition;                  //条件变量
     std::atomic_bool mRunning{true};                     //是否在运行
 };
-}  // namespace Uranus::Utils
+}  // namespace uranus::utils

@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <vector>
 
-namespace Uranus::Utils
+namespace uranus::utils
 {
 // Reactor 模式
 // 消息循环的epoll实现
@@ -95,4 +95,4 @@ private:
 
     std::atomic_bool running{true};
 };
-}  // namespace Uranus::Utils
+}  // namespace uranus::utils

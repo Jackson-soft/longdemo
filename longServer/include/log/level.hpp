@@ -4,7 +4,7 @@
 #include <map>
 #include <string_view>
 
-namespace Uranus::Log
+namespace uranus::log
 {
 //日志等级枚举类
 enum class LogLevel {
@@ -59,4 +59,4 @@ public:
         return LogLevel::NULL_LEVEL;
     }
 };
-}  // namespace Uranus::Log
+}  // namespace uranus::log

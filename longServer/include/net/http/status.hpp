@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Uranus
+namespace uranus
 {
-namespace Http
+namespace http
 {
 enum class Status {
     StatusContinue           = 100,  // RFC 7231, 6.2.1
@@ -70,7 +70,7 @@ enum class Status {
     StatusInsufficientStorage           = 507,  // RFC 4918, 11.5
     StatusLoopDetected                  = 508,  // RFC 5842, 7.2
     StatusNotExtended                   = 510,  // RFC 2774, 7
-    StatusNetworkAuthenticationRequired = 511,  // RFC 6585, 6
+    StatusnetworkAuthenticationRequired = 511,  // RFC 6585, 6
 };
 }
-}  // namespace Uranus
+}  // namespace uranus

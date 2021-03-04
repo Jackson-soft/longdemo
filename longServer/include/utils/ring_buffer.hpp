@@ -5,7 +5,7 @@
 #include <shared_mutex>
 #include <vector>
 
-namespace Uranus::Utils
+namespace uranus::utils
 {
 // 环形缓存
 template<typename T>
@@ -53,4 +53,4 @@ private:
     int mWriteIndex{0};
     int mReadIndex{0};
 };
-}  // namespace Uranus::Utils
+}  // namespace uranus::utils

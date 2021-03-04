@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-namespace uranus
+namespace uranus::utils
 {
 template<typename T>
 class MinHeap
@@ -21,7 +21,7 @@ public:
     ~MinHeap() { mArray.clear(); }
 
     //插入新元素
-    auto Push(const T &elem) -> bool
+    auto push(const T &elem) -> bool
     {
         //独享写锁
         std::unique_lock<std::mutex> lock(mMutex);
@@ -31,7 +31,7 @@ public:
     }
 
     //获取堆顶元素
-    T Pop()
+    T pop()
     {
         //共享读锁
         std::shared_lock<std::shared_mutex> lock(mMutex);
@@ -48,9 +48,9 @@ public:
         // return xxx;
     }
 
-    bool Empty() { return mArray.empty(); }
+    bool isEmpty() { return mArray.empty(); }
 
-    size_t Size() { return mArray.size(); }
+    size_t size() { return mArray.size(); }
 
     T &operator[](int i) { return mArray[i]; }
 

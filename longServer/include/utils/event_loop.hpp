@@ -1,8 +1,8 @@
 #pragma once
 
-#include "util.hpp"
+#include "noncopyable.hpp"
 
-namespace uranus
+namespace uranus::utils
 {
 //这个基类定义事件循环的接口
 class EventLoop: public utils::Noncopyable

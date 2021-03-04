@@ -2,9 +2,7 @@
 
 #include <string>
 
-namespace uranus
-{
-namespace http
+namespace uranus::http
 {
 class Cookie
 {
@@ -13,7 +11,7 @@ public:
     ~Cookie() = default;
 
 public:
-    std::string &String() { return ""; }
+    std::string &string() { return ""; }
 
 private:
     std::string name;
@@ -25,5 +23,4 @@ private:
     bool httpOnly;
     std::string raw;
 };
-}  // namespace http
-}  // namespace uranus
+}  // namespace uranus::http

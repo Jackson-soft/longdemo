@@ -25,9 +25,7 @@ scheme              path
 
 */
 
-namespace uranus
-{
-namespace http
+namespace uranus::http
 {
 class URL
 {
@@ -36,7 +34,7 @@ public:
     ~URL() = default;
 
 public:
-    auto Parse(const std::string_view rawurl) -> bool
+    auto parse(const std::string_view rawurl) -> bool
     {
         if (rawurl.empty())
             return false;
@@ -58,12 +56,12 @@ public:
 
         return false;
     }
-    bool Query() { return false; }
+    bool query() { return false; }
 
-    auto IsAbs() -> bool { return !scheme.empty(); }
+    auto isAbs() -> bool { return !scheme.empty(); }
 
     //
-    std::string &String() { return ""; }
+    std::string &string() { return ""; }
 
 private:
     std::string scheme;
@@ -73,5 +71,4 @@ private:
     std::string rawQuery;
     std::string fragment;
 };
-}  // namespace http
-}  // namespace uranus
+}  // namespace uranus::http

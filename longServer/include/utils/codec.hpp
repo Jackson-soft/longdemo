@@ -1,7 +1,7 @@
 #pragma once
 
-#include "logHelper.hpp"
 #include "Utility.hpp"
+#include "logHelper.hpp"
 #include <arpa/inet.h>
 #include <boost/core/noncopyable.hpp>
 #include <cstdint>
@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-namespace uranus
+namespace uranus::utils
 {
 //  数据包封包解包
 class Codec: public boost::noncopyable
@@ -100,4 +100,4 @@ private:
     // 最小的数据包长度
     const std::uint32_t mMinDataLen{2 * mHeaderLen};
 };
-}  // namespace uranus
+}  // namespace uranus::utils

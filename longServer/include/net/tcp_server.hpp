@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <atomic>
 #include <string_view>
 #include <thread>

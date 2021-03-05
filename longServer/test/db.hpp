@@ -1,6 +1,6 @@
 #pragma once
 
 //#include "db_conn.hpp"
-#include "doctest.h"
+#include "doctest/doctest.h"
 
 TEST_CASE("mariadb test") {}

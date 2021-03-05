@@ -1,0 +1,11 @@
+[requires]
+boost/[>=1.75.0]
+fmt/[>=7.1.3]
+doctest/[>=2.4.4]
+
+[generators]
+cmake_find_package
+
+[options]
+fmt:header_only=True
+boost:header_only=True

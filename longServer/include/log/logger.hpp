@@ -29,12 +29,12 @@ public:
     //单例实例
     static std::shared_ptr<Logger> get()
     {
-        static auto Logger = std::make_shared<Logger>();
-        return Logger;
+        static auto logger = std::make_shared<Logger>();
+        return logger;
     }
 
     //初始化，只需要调一次
-    bool set(const logLevel &lvl, std::unique_ptr<Formatter> fmt, std::unique_ptr<Backend> backend)
+    bool set(const LogLevel &lvl, std::unique_ptr<Formatter> fmt, std::unique_ptr<Backend> backend)
     {
         std::lock_guard<std::mutex> locker(mutex);
         level = lvl;
@@ -44,7 +44,7 @@ public:
     }
 
     //日志输出对外接口
-    void infoln(std::string_view msg) { return outPut(LogLevel::INFOR, msg); }
+    void infoln(std::string_view msg) { return outPut(LogLevel::INFO, msg); }
 
     void run()
     {
@@ -58,7 +58,7 @@ public:
 
 private:
     //输出
-    void outPut(logLevel lvl, std::string_view msg)
+    void outPut(LogLevel lvl, std::string_view msg)
     {
         std::lock_guard<std::mutex> locker(mutex);
         if (lvl >= level) {

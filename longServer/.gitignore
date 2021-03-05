@@ -72,6 +72,6 @@ Thumbs.db
 *.exe
 .vscode/
 build/
-.clangd/
+.cache/
 *.out
 compile_commands.json

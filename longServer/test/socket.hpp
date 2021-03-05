@@ -1,6 +1,6 @@
 #pragma once
 
-#include "doctest.h"
+#include "doctest/doctest.h"
 #include "net/socket.hpp"
 
 TEST_CASE("socket test")

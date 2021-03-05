@@ -10,7 +10,7 @@ namespace uranus::log
 enum class LogLevel {
     TRACE,
     DEBUG,
-    INFOR,
+    INFO,
     WARN,
     ERROR,
     FATAL,
@@ -29,7 +29,7 @@ public:
         std::map<LogLevel, std::string> levelMap{
             {LogLevel::TRACE, "trace"},
             {LogLevel::DEBUG, "debug"},
-            {LogLevel::INFOR, "infor"},
+            {LogLevel::INFO, "info"},
             {LogLevel::WARN, "warn"},
             {LogLevel::ERROR, "error"},
             {LogLevel::FATAL, "fatal"},
@@ -48,7 +48,7 @@ public:
         boost::algorithm::to_lower(str);
         std::map<std::string, LogLevel> levelMap{{"trace", LogLevel::TRACE},
                                                  {"debug", LogLevel::DEBUG},
-                                                 {"infor", LogLevel::INFOR},
+                                                 {"info", LogLevel::INFO},
                                                  {"warn", LogLevel::WARN},
                                                  {"error", LogLevel::ERROR},
                                                  {"fatal", LogLevel::FATAL}};

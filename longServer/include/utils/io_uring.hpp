@@ -10,7 +10,7 @@ class IOUring: public EventLoop
 public:
     IOUring() = default;
 
-    ~IOUring() = default;
+    ~IOUring() override = default;
 
 private:
     struct io_uring_params params;

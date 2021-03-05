@@ -29,11 +29,11 @@ public:
     ~DBConn() { Close(); }
 
 public:
-    bool Connect(const std::string_view host,
+    auto connect(const std::string_view host,
                  const std::string_view user,
                  const std::string_view pwd,
                  const std::string_view db,
-                 const std::uint32_t port = 3306)
+                 const std::uint32_t port = 3306) -> bool
     {
         if (host.empty() || user.empty()) {
             return false;
@@ -55,7 +55,7 @@ public:
     }
 
     // 重连
-    bool Reconnect()
+    auot reconnect()->bool
     {
         // 调用该接口必须在mysql_init后设置MYSQL_OPT_RECONNECT
         return int(0) == ::mariadb_reconnect(mMysql);
@@ -74,7 +74,7 @@ public:
         return ::mysql_optionsv(mMysql, MYSQL_OPT_CONNECT_TIMEOUT, (void *)&timeout) == 0;
     }
 
-    std::uint64_t Insert(const std::string_view sql, const std::vector<std::any> &args)
+    std::uint64_t insert(const std::string_view sql, const std::vector<std::any> &args)
     {
         if (sql.empty())
             return 0;

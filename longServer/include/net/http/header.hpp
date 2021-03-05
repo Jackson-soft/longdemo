@@ -4,9 +4,7 @@
 #include <string>
 #include <string_view>
 
-namespace uranus
-{
-namespace http
+namespace uranus::http
 {
 class Header
 {
@@ -14,14 +12,12 @@ public:
     Header()  = default;
     ~Header() = default;
 
-public:
-    void Add(const std::string_view key, const std::string_view value) {}
-    void Delete(const std::string_view key) {}
-    std::string &Get(const std::string_view key) { return ""; }
-    void Set(const std::string_view key, const std::string_view value) {}
+    void add(std::string_view key, std::string_view value) {}
+    void delete (std::string_view key) {}
+    std::string &get(std::string_view key) { return ""; }
+    void set(std::string_view key, std::string_view value) {}
 
 private:
-    std::map<std::string, std::string> header;
+    std::map<std::string, std::string> header_;
 };
-}  // namespace http
-}  // namespace uranus
+}  // namespace uranus::http

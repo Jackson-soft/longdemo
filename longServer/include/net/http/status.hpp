@@ -1,8 +1,6 @@
 #pragma once
 
-namespace uranus
-{
-namespace http
+namespace uranus::http
 {
 enum class Status {
     StatusContinue           = 100,  // RFC 7231, 6.2.1
@@ -73,4 +71,3 @@ enum class Status {
     StatusnetworkAuthenticationRequired = 511,  // RFC 6585, 6
 };
 }
-}  // namespace uranus

@@ -3,9 +3,7 @@
 #include "header.hpp"
 #include <string>
 
-namespace uranus
-{
-namespace http
+namespace uranus::http
 {
 class Server
 {
@@ -14,12 +12,11 @@ public:
     ~Server() = default;
 
 public:
-    void Close() {}
-    void Shutdown() {}
-    void Run() {}
+    void close() {}
+    void shutdown() {}
+    void run() {}
 
 private:
-    std::string address;
+    std::string address_;
 };
-}  // namespace http
-}  // namespace uranus
+}  // namespace uranus::http

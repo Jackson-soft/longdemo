@@ -5,9 +5,7 @@
 #include "types.hpp"
 #include <string_view>
 
-namespace uranus
-{
-namespace http
+namespace uranus::http
 {
 class Client
 {
@@ -16,7 +14,7 @@ public:
     ~Client() = default;
 
 public:
-    Response *Get(const std::string_view rawurl)
+    Response *get(const std::string_view rawurl)
     {
         if (rawurl.empty())
             return nullptr;
@@ -25,7 +23,7 @@ public:
         return do();
     }
 
-    void Post(const std::string_view rawurl)
+    void post(const std::string_view rawurl)
     {
         if (rawurl.empty())
             return;
@@ -36,7 +34,6 @@ private:
     Request *newRequest(uranus::http::Method method, const std::string_view url) { return nullptr; }
 
 private:
-    int timeOut;
+    int timeOut_;
 };
-}  // namespace http
-}  // namespace uranus
+}  // namespace uranus::http

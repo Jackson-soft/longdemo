@@ -1,7 +1,7 @@
 #pragma once
 // 连接池
 
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
 #include <chrono>
 #include <condition_variable>
 #include <deque>
@@ -12,35 +12,35 @@
 namespace uranus::database
 {
 template<typename T>
-class ConnectPool: public uranus::Noncopyable
+class ConnectPool: public utils::Noncopyable
 {
 public:
-    static ConnectPool<T> *Get()
+    static ConnectPool<T> *get()
     {
         static ConnectPool<T> connPool;
         return &connPool;
     }
 
-    void Initalize(std::string_view conn, const int maxConn = 10, const int maxIdle = 5)
+    void initalize(std::string_view conn, const int maxConn = 10, const int maxIdle = 5)
     {
-        mConnect = conn;
-        mMaxConn = maxConn;
-        mMaxIdle = maxIdle;
+        connect_ = conn;
+        maxConn_ = maxConn;
+        maxIdle_ = maxIdle;
     }
 
-    std::shared_ptr<T> Get()
+    auto get() -> std::shared_ptr<T>
     {
-        std::unique_lock<std::mutex> lock(mMutex);
-        while (mPool.empty()) {
-            if (mCondition.wait_for(lock, std::chrono::seconds(3)) == std::cv_status::timeout) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        while (pool_.empty()) {
+            if (condition_.wait_for(lock, std::chrono::seconds(3)) == std::cv_status::timeout) {
                 return nullptr;
             }
         }
 
-        int numFree = mPool.size();
+        int free = pool_.size();
 
-        auto conn = mPool.front();
-        mPool.pop_front();
+        auto conn = pool_.front();
+        pool_.pop_front();
     }
 
     void Put(std::shared_ptr<T> conn)
@@ -49,8 +49,8 @@ public:
             return;
         }
 
-        std::unique_lock<std::mutex> lock(mMutex);
-        mPool.push_back(conn);
+        std::unique_lock<std::mutex> lock(mutex_);
+        pool_.push_back(conn);
     }
 
 private:
@@ -63,16 +63,16 @@ private:
     auto creatConn()
     {
         auto conn = std::make_shared<T>();
-        return conn->connect(mConnect);
+        return conn->connect(connect_);
     }
 
-    std::mutex mMutex;
-    std::string mConnect;  // 连接
-    int mMaxIdle{0};       // 最大空闲数
-    int mMaxConn{10};      // 最大连接数
-    int mNumOpen{0};       //打开的连接数
-    std::condition_variable mCondition;
-    std::once_flag mFlag;
-    std::deque<std::shared_ptr<T>> mPool;
+    std::mutex mutex_;
+    std::string connect_;  // 连接
+    int maxIdle_{0};       // 最大空闲数
+    int maxConn_{10};      // 最大连接数
+    int numOpen_{0};       //打开的连接数
+    std::condition_variable condition_;
+    std::once_flag flag_;
+    std::deque<std::shared_ptr<T>> pool_;
 };
 }  // namespace uranus::database

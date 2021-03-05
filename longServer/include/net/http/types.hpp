@@ -1,11 +1,8 @@
 #pragma once
 
-namespace uranus
-{
-namespace http
+namespace uranus::http
 {
 enum class Method { Get = 0, Post, Head, Put, Delete, Options, Invalid };
 
 enum class Version { Unknown = 0, http10, http11, http20 };
-}  // namespace http
-}  // namespace uranus
+}  // namespace uranus::http

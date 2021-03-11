@@ -9,9 +9,10 @@ cmake_install.cmake
 build/
 .vscode
 .idea/
-.ccls-cache/
+.cache/
 
 cmake-build-debug/
 .DS_Store
-.clangd/
 *.so
+compile_commands.json
+*.sum

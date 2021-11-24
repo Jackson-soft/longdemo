@@ -9,24 +9,22 @@
 
 namespace uranus::utils {
 template<typename T>
-class MinHeap {
+class MinHeap
+{
 public:
     MinHeap() : MinHeap(30) {}
 
     //这是做一下预分配内存
-    explicit MinHeap(int capacity)
-    {
+    explicit MinHeap(int capacity) {
         mArray.reserve(capacity);
     }
 
-    ~MinHeap()
-    {
+    ~MinHeap() {
         mArray.clear();
     }
 
     //插入新元素
-    auto push(const T &elem) -> bool
-    {
+    auto push(const T &elem) -> bool {
         //独享写锁
         std::unique_lock<std::mutex> lock(mMutex);
         mArray.emplace_back(elem);
@@ -35,10 +33,9 @@ public:
     }
 
     //获取堆顶元素
-    T pop()
-    {
+    T pop() {
         //共享读锁
-        std::shared_lock<std::shared_mutex> lock(mMutex);
+        std::shared_lock<std::mutex> lock(mMutex);
         if (!mArray.empty()) {
             //出堆的数据
             T mMin = mArray.front();
@@ -52,47 +49,41 @@ public:
         // return xxx;
     }
 
-    bool isEmpty()
-    {
+    auto isEmpty() -> bool {
         return mArray.empty();
     }
 
-    size_t size()
-    {
+    auto size() -> size_t {
         return mArray.size();
     }
 
-    T &operator[](int i)
-    {
+    auto operator[](int i) -> T & {
         return mArray[i];
     }
 
 private:
     //上浮
-    void up(int index)
-    {
-        int n, p;
+    void up(int index) {
+        int n = 0;
+        int p = 0;
         while (index > 0) {
             n = index % 2;
             if (n == 0) {
                 p = (index - 2) / 2;
-            }
-            else {
+            } else {
                 p = (index - 1) / 2;
             }
             if (mArray[index] < mArray[p]) {
                 std::swap(mArray[index], mArray[p]);
                 index = p;
-            }
-            else {
+            } else {
                 break;
             }
         }
     }
 
     //下沉
-    void down(int index)
-    {
+    void down(int index) {
         int size = mArray.size();
         while (2 * index + 1 <= size - 1) {
             if (mArray[index] > mArray[2 * index + 1]) {
@@ -101,16 +92,14 @@ private:
                     std::swap(mArray[index], mArray[2 * index + 2]);
                 }
                 index = 2 * index + 1;
-            }
-            else {
+            } else {
                 break;
             }
         }
     }
 
-private:
-    std::vector<T>            mArray;
+    std::vector<T>           mArray;
     // mutable声明可变数据成员
-    mutable std::shared_mutex mMutex;
+    mutable std::timed_mutex mMutex;
 };
 }  // namespace uranus::utils

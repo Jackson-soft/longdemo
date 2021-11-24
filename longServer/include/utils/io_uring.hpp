@@ -5,10 +5,10 @@
 #include <liburing.h>
 
 namespace uranus::utils {
-class IOUring : public EventLoop {
+class IOUring : public EventLoop
+{
 public:
     IOUring()           = default;
-
     ~IOUring() override = default;
 
 private:

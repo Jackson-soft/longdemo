@@ -1,10 +1,8 @@
 #pragma once
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 // 文件工具类
-class File
-{
+class File {
 public:
     File()  = default;
     ~File() = default;

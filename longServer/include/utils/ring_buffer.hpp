@@ -1,29 +1,34 @@
 #pragma once
 
 #include "utils/noncopyable.hpp"
+
 #include <mutex>
 #include <shared_mutex>
 #include <vector>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 // 环形缓存
 template<typename T>
-class RingBuffer: public Noncopyable
-{
+class RingBuffer : public Noncopyable {
 public:
-    RingBuffer(): RingBuffer(16) {}
+    RingBuffer() : RingBuffer(16) {}
 
-    explicit RingBuffer(int size): mMaxSize(size) { mData.reserve(mMaxSize); }
+    explicit RingBuffer(int size) : mMaxSize(size)
+    {
+        mData.reserve(mMaxSize);
+    }
 
-    ~RingBuffer() { Clear(); }
+    ~RingBuffer()
+    {
+        Clear();
+    }
 
     //读取
     T Read()
     {
         std::shared_lock<std::shared_mutex> lock(mMutex);
 
-        int nTmp = mReadIndex;
+        int                                 nTmp = mReadIndex;
         mReadIndex++;
         mReadIndex = mReadIndex >= mMaxSize ? 0 : mReadIndex;
         return mData[nTmp];
@@ -48,9 +53,9 @@ public:
 
 private:
     mutable std::shared_mutex mMutex;
-    std::vector<T> mData;
-    int mMaxSize;
-    int mWriteIndex{0};
-    int mReadIndex{0};
+    std::vector<T>            mData;
+    int                       mMaxSize{};
+    int                       mWriteIndex{0};
+    int                       mReadIndex{0};
 };
 }  // namespace uranus::utils

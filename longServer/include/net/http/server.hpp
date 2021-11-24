@@ -1,12 +1,11 @@
 #pragma once
 
 #include "header.hpp"
+
 #include <string>
 
-namespace uranus::http
-{
-class Server
-{
+namespace uranus::http {
+class Server {
 public:
     Server()  = default;
     ~Server() = default;

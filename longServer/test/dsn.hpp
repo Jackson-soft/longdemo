@@ -1,6 +1,7 @@
 #pragma once
 
 #include "database/dsn.hpp"
-#include "doctest.h"
+
+#include <doctest/doctest.h>
 
 TEST_CASE("DSN test") {}

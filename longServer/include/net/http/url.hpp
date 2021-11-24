@@ -25,19 +25,17 @@ scheme              path
 
 */
 
-namespace uranus::http
-{
-class URL
-{
+namespace uranus::http {
+class URL {
 public:
     URL()  = default;
     ~URL() = default;
 
-public:
     auto parse(const std::string_view rawurl) -> bool
     {
-        if (rawurl.empty())
+        if (rawurl.empty()) {
             return false;
+        }
         if (rawurl == "*") {
             path = "*";
             return true;
@@ -56,12 +54,22 @@ public:
 
         return false;
     }
-    bool query() { return false; }
 
-    auto isAbs() -> bool { return !scheme.empty(); }
+    auto query() -> bool
+    {
+        return false;
+    }
+
+    auto isAbs() -> bool
+    {
+        return !scheme.empty();
+    }
 
     //
-    std::string &string() { return ""; }
+    auto string() -> std::string &
+    {
+        return "";
+    }
 
 private:
     std::string scheme;

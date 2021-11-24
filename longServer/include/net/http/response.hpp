@@ -3,17 +3,15 @@
 #include <string>
 #include <unordered_map>
 
-namespace uranus::http
-{
-class Response
-{
+namespace uranus::http {
+class Response {
 public:
     Response()  = default;
     ~Response() = default;
 
 private:
-    int statusCode_;
-    std::string body_;
+    int                                          statusCode_;
+    std::string                                  body_;
     std::unordered_map<std::string, std::string> headers_;
 };
 

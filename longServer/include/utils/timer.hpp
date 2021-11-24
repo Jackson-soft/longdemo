@@ -1,16 +1,15 @@
 #pragma once
 
 #include "utils/min_heap.hpp"
-#include "utils/util.hpp"
+#include "utils/noncopyable.hpp"
+
 #include <chrono>
 #include <cstdint>
 #include <functional>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 //定时器
-class Timer: Noncopyable
-{
+class Timer : Noncopyable {
 public:
     using Action = std::function<void()>;
 
@@ -21,10 +20,16 @@ public:
     }
 
     // 单次
-    auto OnceTimer(double interval, Action func) -> std::uint32_t { return 0; }
+    auto OnceTimer(double interval, Action func) -> std::uint32_t
+    {
+        return 0;
+    }
 
     // 循环
-    auto LoopTimer(double interval, Action fucn) -> std::uint32_t { return 0; }
+    auto LoopTimer(double interval, Action fucn) -> std::uint32_t
+    {
+        return 0;
+    }
 
     //取消定时器
     void Stop(std::uint32_t id) {}
@@ -40,12 +45,12 @@ public:
 private:
     Timer() = default;
 
-    Timer(std::chrono::duration<int> tick): mTick(tick) {}
+    Timer(std::chrono::duration<int> tick) : mTick(tick) {}
 
     ~Timer() = default;
 
     //定时器循环
-    void exec() {}
+    void                       exec() {}
 
     std::chrono::duration<int> mTick{1};  //定时器的粒度
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event_loop.hpp"
+
 #include <atomic>
 #include <cassert>
 #include <cstring>
@@ -8,17 +9,15 @@
 #include <unistd.h>
 #include <vector>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 // Reactor 模式
 // 消息循环的epoll实现
-class Epoller: public EventLoop
-{
+class Epoller : public EventLoop {
 public:
     // 委托构造
-    Epoller(): Epoller(0) {}
+    Epoller() : Epoller(0) {}
 
-    Epoller(int timeout_): epoll_(::epoll_create1(EPOLL_CLOEXEC)), timeout_(timeout_)
+    Epoller(int timeout_) : epoll_(::epoll_create1(EPOLL_CLOEXEC)), timeout_(timeout_)
     {
         assert(epoll_ != -1);
         events_.reserve(16);
@@ -74,9 +73,11 @@ public:
                     continue;
                     //} else if (events_.at(i).data.fd == fd) {
                     // accept
-                } else if (events_.at(i).events & EPOLLIN) {
+                }
+                else if (events_.at(i).events & EPOLLIN) {
                     // read
-                } else if (events_.at(i).events & EPOLLOUT) {
+                }
+                else if (events_.at(i).events & EPOLLOUT) {
                     // write
                 }
             }
@@ -84,16 +85,19 @@ public:
         return 0;
     }
 
-    void stop() { running_.store(false, std::memory_order_release); }
+    void stop()
+    {
+        running_.store(false, std::memory_order_release);
+    }
 
 private:
     // epoll文件描述符
-    int epoll_{0};
+    int                             epoll_{0};
 
-    int timeout_{0};
+    int                             timeout_{0};
 
     std::vector<struct epoll_event> events_;
 
-    std::atomic_bool running_{true};
+    std::atomic_bool                running_{true};
 };
 }  // namespace uranus::utils

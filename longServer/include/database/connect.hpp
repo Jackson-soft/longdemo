@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dsn.hpp"
+
 #include <any>
 #include <boost/algorithm/string/replace.hpp>
 #include <cstdint>
@@ -19,21 +20,22 @@
 #include <mysql/mysql.h>
 #endif
 
-namespace uranus::database
-{
-class DBConn
-{
+namespace uranus::database {
+class DBConn {
 public:
-    DBConn(): mMysql(nullptr) {}
+    DBConn() : mMysql(nullptr) {}
 
-    ~DBConn() { Close(); }
+    ~DBConn()
+    {
+        Close();
+    }
 
 public:
     auto connect(const std::string_view host,
                  const std::string_view user,
                  const std::string_view pwd,
                  const std::string_view db,
-                 const std::uint32_t port = 3306) -> bool
+                 const std::uint32_t    port = 3306) -> bool
     {
         if (host.empty() || user.empty()) {
             return false;
@@ -62,10 +64,16 @@ public:
     }
 
     // error information
-    std::tuple<std::uint32_t, std::string> Error() { return {::mysql_errno(mMysql), ::mysql_error(mMysql)}; }
+    std::tuple<std::uint32_t, std::string> Error()
+    {
+        return {::mysql_errno(mMysql), ::mysql_error(mMysql)};
+    }
 
     // ping
-    bool Ping() { return 0 == ::mysql_ping(mMysql); }
+    bool Ping()
+    {
+        return 0 == ::mysql_ping(mMysql);
+    }
 
     bool Timeout(std::uint32_t timeout)
     {
@@ -100,17 +108,20 @@ public:
             if (typeid(char) == it.type()) {
                 bind.buffer_type = MYSQL_TYPE_TINY;
                 bind.buffer      = reinterpret_cast<void *>(std::any_cast<char>(it));
-            } else if (typeid(const char *) == it.type()) {
+            }
+            else if (typeid(const char *) == it.type()) {
                 bind.buffer_type   = MYSQL_TYPE_STRING;
                 auto tmp           = std::any_cast<const char *>(it);
                 bind.buffer        = (void *)tmp;
                 bind.buffer_length = std::strlen(tmp);
-            } else if (typeid(std::string) == it.type()) {
+            }
+            else if (typeid(std::string) == it.type()) {
                 bind.buffer_type   = MYSQL_TYPE_STRING;
                 auto tmp           = std::any_cast<std::string>(it);
                 bind.buffer        = tmp.data();
                 bind.buffer_length = tmp.size();
-            } else if (typeid(int) == it.type()) {
+            }
+            else if (typeid(int) == it.type()) {
                 bind.buffer_type = MYSQL_TYPE_LONG;
                 bind.buffer      = reinterpret_cast<void *>(std::any_cast<int>(it));
             }
@@ -246,7 +257,8 @@ public:
         auto numRows = ::mysql_num_rows(tResult);
         if (numRows > 0) {
             result.reserve(numRows);
-        } else
+        }
+        else
             return false;
 
         // 数据表字段名
@@ -255,7 +267,7 @@ public:
             return false;
 
         // 列数
-        auto numFields = ::mysql_num_fields(tResult);
+        auto                               numFields = ::mysql_num_fields(tResult);
 
         // 字段数据
         std::map<std::string, std::string> element;
@@ -274,8 +286,8 @@ public:
     }
 
     bool QueryForMap(std::map<std::string, std::string> &result,
-                     const std::string_view sql,
-                     const std::vector<std::string> &args = {})
+                     const std::string_view              sql,
+                     const std::vector<std::string>     &args = {})
     {
         if (sql.empty())
             return false;
@@ -320,8 +332,7 @@ public:
         if (0 != ::mysql_stmt_store_result(stmt))
             return false;
 
-        while (::mysql_stmt_fetch(stmt) == 0) {
-        }
+        while (::mysql_stmt_fetch(stmt) == 0) {}
 
         ::mysql_stmt_free_result(stmt);
         ::mysql_stmt_close(stmt);
@@ -329,13 +340,16 @@ public:
     }
 
     bool QueryForMapSlice(std::vector<std::map<std::string, std::string>> &result,
-                          const std::string_view sql,
-                          const std::vector<std::string> &args)
+                          const std::string_view                           sql,
+                          const std::vector<std::string>                  &args)
     {
         return false;
     }
 
-    int Shutdown() { return ::mysql_shutdown(mMysql, SHUTDOWN_DEFAULT); }
+    int Shutdown()
+    {
+        return ::mysql_shutdown(mMysql, SHUTDOWN_DEFAULT);
+    }
 
     // 关闭连接并释放内存
     void Close()

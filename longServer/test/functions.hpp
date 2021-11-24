@@ -1,6 +1,6 @@
 #pragma once
 
-#include "doctest/doctest.h"
+#include <doctest/doctest.h>
 #include <utility>
 #include <vector>
 

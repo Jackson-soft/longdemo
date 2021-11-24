@@ -3,12 +3,11 @@
 #include "request.hpp"
 #include "response.hpp"
 #include "types.hpp"
+
 #include <string_view>
 
-namespace uranus::http
-{
-class Client
-{
+namespace uranus::http {
+class Client {
 public:
     Client()  = default;
     ~Client() = default;
@@ -30,8 +29,14 @@ public:
     }
 
 private:
-    Response *do() { return nullptr; }
-    Request *newRequest(uranus::http::Method method, const std::string_view url) { return nullptr; }
+    Response *do()
+    {
+        return nullptr;
+    }
+    Request *newRequest(uranus::http::Method method, const std::string_view url)
+    {
+        return nullptr;
+    }
 
 private:
     int timeOut_;

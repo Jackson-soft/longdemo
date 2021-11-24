@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils/time.hpp"
+
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -10,40 +11,40 @@
 #include <string>
 #include <string_view>
 
-namespace uranus::log
-{
+namespace uranus::log {
 // Backend 日志输出后端接口
-class Backend
-{
+class Backend {
 public:
-    Backend()          = default;
-    virtual ~Backend() = default;
+    Backend()                                = default;
+    virtual ~Backend()                       = default;
 
     virtual void Write(std::string_view buf) = 0;
     virtual void Close()                     = 0;
 };
 
 // 终端输出后端
-class ConsoleBackend: public Backend
-{
+class ConsoleBackend : public Backend {
 };
 
 // 文件输出后端
-class FileBackend: public Backend
-{
+class FileBackend : public Backend {
 public:
     FileBackend() = default;
-    ~FileBackend() override { Close(); }
+    ~FileBackend() override
+    {
+        Close();
+    }
 
     //初始化各项参数
     bool InitBackend(std::string_view path,
-                     int64_t maxSize           = 0,
+                     int64_t          maxSize  = 0,
                      std::string_view prefix   = "",
                      std::string_view fileLink = "")
     {
         if (path.size() <= 0) {
             return false;
-        } else {
+        }
+        else {
             mPath = path;
         }
 
@@ -131,14 +132,14 @@ private:
     }
 
 private:
-    std::fstream mFile;                         //文件流
-    std::string mPath{""};                      //存放日志文件的目录
-    std::string mLink{""};                      //当前写入的日志文件链接
-    std::string mPrefix{"zlog"};                //日志名称前缀
+    std::fstream  mFile;                        //文件流
+    std::string   mPath{""};                    //存放日志文件的目录
+    std::string   mLink{""};                    //当前写入的日志文件链接
+    std::string   mPrefix{"zlog"};              //日志名称前缀
     std::uint64_t mMaxSize{500 * 1024 * 1024};  //日志文件大小限制
-    std::string mAppellation{""};               //日志文件的名称
+    std::string   mAppellation{""};             //日志文件的名称
     std::uint32_t mIndex{1};                    //日志文件序号
-    std::string mCurrentDay{""};                //当前日期
-    bool mChang{true};                          //日志文件是否需要切割
+    std::string   mCurrentDay{""};              //当前日期
+    bool          mChang{true};                 //日志文件是否需要切割
 };
 }  // namespace uranus::log

@@ -2,6 +2,7 @@
 
 #include "utils/noncopyable.hpp"
 #include "utils/sync_queue.hpp"
+
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
@@ -14,16 +15,14 @@
 #include <utility>
 #include <vector>
 
-namespace uranus::utils
-{
-class ThreadPool: public Noncopyable
-{
+namespace uranus::utils {
+class ThreadPool : public Noncopyable {
 public:
     using Task = std::function<void()>;
 
-    ThreadPool(): ThreadPool(0) {}
+    ThreadPool() : ThreadPool(0) {}
 
-    ThreadPool(std::uint32_t num): mThreadNum(num)
+    ThreadPool(std::uint32_t num) : mThreadNum(num)
     {
         if (!mThreadNum) {
             // 线程池大小配置为CPU核数
@@ -57,9 +56,11 @@ public:
         }
         using resType = std::result_of_t<F(Args...)>;
         std::unique_lock<std::mutex> tLock(mMutex);
-        auto task = std::make_shared<std::packaged_task<resType()>>(
+        auto                         task = std::make_shared<std::packaged_task<resType()>>(
             std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-        mTasks.Emplace([task]() { (*task)(); });
+        mTasks.Emplace([task]() {
+            (*task)();
+        });
         mCondition.notify_one();
         std::future<resType> ret = task.get()->get_future();
         return ret;
@@ -71,18 +72,20 @@ private:
     {
         while (mRunning.load()) {
             std::unique_lock<std::mutex> tLock(mMutex);
-            mCondition.wait(tLock, [this]() { return !mTasks.Empty(); });
+            mCondition.wait(tLock, [this]() {
+                return !mTasks.Empty();
+            });
             Task task{std::move(mTasks.Front())};
             mTasks.Pop();  //删掉队列的头元素
             task();
         }
     }
 
-    SyncQueue<Task> mTasks{};                            //任务队列
-    std::vector<std::shared_ptr<std::thread>> mThreads;  //线程对象
-    std::uint32_t mThreadNum;                            //线程数
-    std::mutex mMutex;                                   //锁
-    std::condition_variable mCondition;                  //条件变量
-    std::atomic_bool mRunning{true};                     //是否在运行
+    SyncQueue<Task>                           mTasks{};        //任务队列
+    std::vector<std::shared_ptr<std::thread>> mThreads;        //线程对象
+    std::uint32_t                             mThreadNum;      //线程数
+    std::mutex                                mMutex;          //锁
+    std::condition_variable                   mCondition;      //条件变量
+    std::atomic_bool                          mRunning{true};  //是否在运行
 };
 }  // namespace uranus::utils

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "doctest/doctest.h"
 #include "utils/time.hpp"
+
+#include <doctest/doctest.h>
 
 TEST_CASE("time test")
 {

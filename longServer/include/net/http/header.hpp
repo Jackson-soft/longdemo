@@ -4,17 +4,21 @@
 #include <string>
 #include <string_view>
 
-namespace uranus::http
-{
-class Header
-{
+namespace uranus::http {
+class Header {
 public:
     Header()  = default;
     ~Header() = default;
 
     void add(std::string_view key, std::string_view value) {}
+
     void delete (std::string_view key) {}
-    std::string &get(std::string_view key) { return ""; }
+
+    std::string &get(std::string_view key)
+    {
+        return "";
+    }
+
     void set(std::string_view key, std::string_view value) {}
 
 private:

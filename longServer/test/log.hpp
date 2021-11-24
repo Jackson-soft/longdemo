@@ -3,6 +3,7 @@
 #include "doctest/doctest.h"
 #include "log/level.hpp"
 #include "log/logger.hpp"
+
 #include <string>
 
 TEST_CASE("test log")
@@ -10,7 +11,7 @@ TEST_CASE("test log")
     SUBCASE("test unmarshal log level")
     {
         std::string lvl = "info";
-        auto ll         = uranus::log::Level::Unmarshal(lvl);
+        auto        ll  = uranus::log::Level::Unmarshal(lvl);
         CHECK(ll == uranus::log::LogLevel::INFO);
     }
 

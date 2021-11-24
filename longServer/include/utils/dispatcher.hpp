@@ -5,16 +5,14 @@
 #include <memory>
 #include <unordered_map>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 // 消息分发器
-class Dispatcher
-{
+class Dispatcher {
 public:
     using PBCallBack = std::function<void(const std::shared_ptr<google::protobuf::Message> &message)>;
 
-    Dispatcher()  = default;
-    ~Dispatcher() = default;
+    Dispatcher()     = default;
+    ~Dispatcher()    = default;
 
     static auto Get() -> std::shared_ptr<Dispatcher>
     {

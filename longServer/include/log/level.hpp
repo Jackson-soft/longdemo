@@ -4,8 +4,7 @@
 #include <map>
 #include <string_view>
 
-namespace uranus::log
-{
+namespace uranus::log {
 //日志等级枚举类
 enum class LogLevel {
     TRACE,
@@ -17,8 +16,7 @@ enum class LogLevel {
     NULL_LEVEL,
 };
 
-class Level
-{
+class Level {
 public:
     Level()  = default;
     ~Level() = default;
@@ -52,7 +50,7 @@ public:
                                                  {"warn", LogLevel::WARN},
                                                  {"error", LogLevel::ERROR},
                                                  {"fatal", LogLevel::FATAL}};
-        auto iter = levelMap.find(str);
+        auto                            iter = levelMap.find(str);
         if (iter != levelMap.end()) {
             return iter->second;
         }

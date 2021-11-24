@@ -20,10 +20,8 @@
  *
  */
 
-namespace uranus::database
-{
-class DSN
-{
+namespace uranus::database {
+class DSN {
 public:
     DSN()  = default;
     ~DSN() = default;
@@ -35,22 +33,22 @@ public:
 
         // [user[:password]@][net[(addr)]]/dbname[?param1=value1&paramN=valueN]
         // Find the last '/' (since the password or the net addr might contain a '/')
-        auto backslash = boost::find_last(dsn, "/");
+        auto backslash   = boost::find_last(dsn, "/");
 
         // [username[:password]@][protocol[(address)]]
         // Find the last '@'
-        auto tAt = boost::find_last(dsn, "@");
+        auto tAt         = boost::find_last(dsn, "@");
 
         // username[:password]
         // Find the first ':'
-        auto tColon = boost::find_first(dsn, ":");
-        mUser       = dsn.substr(0, tColon.begin() - dsn.begin());
-        mPasswd     = dsn.substr(tColon.end() - dsn.begin(), tAt.begin() - tColon.end());
+        auto tColon      = boost::find_first(dsn, ":");
+        mUser            = dsn.substr(0, tColon.begin() - dsn.begin());
+        mPasswd          = dsn.substr(tColon.end() - dsn.begin(), tAt.begin() - tColon.end());
 
         // [protocol[(address)]]
         // Find the first '('
-        auto tOpenParen = boost::find_first(dsn, "(");
-        mnet            = dsn.substr(tAt.end() - dsn.begin(), tOpenParen.begin() - tAt.end());
+        auto tOpenParen  = boost::find_first(dsn, "(");
+        mnet             = dsn.substr(tAt.end() - dsn.begin(), tOpenParen.begin() - tAt.end());
 
         // dsn[i-1] must be == ')' if an address is specified
         auto tCloseParen = boost::find_last(dsn, ")");
@@ -75,21 +73,45 @@ public:
         return parseParams(sParams.substr(tQuestion.end() - sParams.begin(), sParams.end() - tQuestion.end()));
     }
 
-    [[nodiscard]] const std::string &User() const { return mUser; }
+    [[nodiscard]] const std::string &User() const
+    {
+        return mUser;
+    }
 
-    [[nodiscard]] const std::string &Passwd() const { return mPasswd; }
+    [[nodiscard]] const std::string &Passwd() const
+    {
+        return mPasswd;
+    }
 
-    [[nodiscard]] const std::string &net() const { return mnet; }
+    [[nodiscard]] const std::string &net() const
+    {
+        return mnet;
+    }
 
-    const std::string &Address() { return mAddress; }
+    const std::string &Address()
+    {
+        return mAddress;
+    }
 
-    [[nodiscard]] const std::string &Host() const { return mHost; }
+    [[nodiscard]] const std::string &Host() const
+    {
+        return mHost;
+    }
 
-    [[nodiscard]] std::uint32_t Port() const { return mPort; }
+    [[nodiscard]] std::uint32_t Port() const
+    {
+        return mPort;
+    }
 
-    [[nodiscard]] const std::string &DBName() const { return mDBName; }
+    [[nodiscard]] const std::string &DBName() const
+    {
+        return mDBName;
+    }
 
-    [[nodiscard]] const std::map<std::string, std::string> &Params() const { return mParams; }
+    [[nodiscard]] const std::map<std::string, std::string> &Params() const
+    {
+        return mParams;
+    }
 
 private:
     bool parseParams(std::string_view params)
@@ -112,13 +134,13 @@ private:
         return true;
     }
 
-    std::string mUser;
-    std::string mPasswd;
-    std::string mnet;  // 网络类型 tcp/unix
-    std::string mAddress;
-    std::string mHost;
-    std::uint32_t mPort{};
-    std::string mDBName;
+    std::string                        mUser;
+    std::string                        mPasswd;
+    std::string                        mnet;  // 网络类型 tcp/unix
+    std::string                        mAddress;
+    std::string                        mHost;
+    std::uint32_t                      mPort{};
+    std::string                        mDBName;
     std::map<std::string, std::string> mParams;
 };
 }  // namespace uranus::database

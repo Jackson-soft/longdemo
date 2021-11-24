@@ -3,15 +3,14 @@
 // 同步队列
 
 #include "noncopyable.hpp"
+
 #include <mutex>
 #include <queue>
 #include <utility>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 template<typename T>
-class SyncQueue: public Noncopyable
-{
+class SyncQueue : public Noncopyable {
 public:
     SyncQueue()  = default;
     ~SyncQueue() = default;
@@ -59,7 +58,7 @@ public:
     }
 
 private:
-    std::mutex mMutex;
+    std::mutex    mMutex;
     std::queue<T> mQueue;
 };
 }  // namespace uranus::utils

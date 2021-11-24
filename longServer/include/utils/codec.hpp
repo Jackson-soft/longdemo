@@ -2,6 +2,7 @@
 
 #include "Utility.hpp"
 #include "logHelper.hpp"
+
 #include <arpa/inet.h>
 #include <boost/core/noncopyable.hpp>
 #include <cstdint>
@@ -11,11 +12,9 @@
 #include <memory>
 #include <string>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 //  数据包封包解包
-class Codec: public boost::noncopyable
-{
+class Codec : public boost::noncopyable {
 public:
     Codec()  = default;
     ~Codec() = default;
@@ -29,14 +28,14 @@ public:
     // 编码
     std::string EnCode(const google::protobuf::Message &msg)
     {
-        std::string data;
+        std::string   data;
 
-        auto typeName       = msg.GetTypeName();
-        std::string strData = msg.SerializeAsString();
+        auto          typeName = msg.GetTypeName();
+        std::string   strData  = msg.SerializeAsString();
 
         // 除消息头4位之外的其他数据的长度
-        std::uint32_t len  = mHeaderLen + typeName.size() + strData.size();
-        std::uint32_t be32 = htonl(len);
+        std::uint32_t len      = mHeaderLen + typeName.size() + strData.size();
+        std::uint32_t be32     = htonl(len);
         data.append(reinterpret_cast<char *>(&be32), sizeof be32);  // len
 
         // type name len
@@ -55,20 +54,20 @@ public:
     {
         if (data.size() >= mMinDataLen) {
             // body len
-            auto nLen = data.size();
+            auto         nLen = data.size();
 
             // typeNameLen
-            std::string sTypeNameLen(data.data(), mHeaderLen);
-            auto nTypeNameLen = Utility::ToUInt(sTypeNameLen.data());
+            std::string  sTypeNameLen(data.data(), mHeaderLen);
+            auto         nTypeNameLen = Utility::ToUInt(sTypeNameLen.data());
 
             // typeName
-            std::string sTypeName(data, mHeaderLen, nTypeNameLen);
+            std::string  sTypeName(data, mHeaderLen, nTypeNameLen);
 
             // protoData
             std::int32_t nDataLen = nLen - mHeaderLen - nTypeNameLen;
-            std::string sData(data, mHeaderLen + nTypeNameLen, nDataLen);
+            std::string  sData(data, mHeaderLen + nTypeNameLen, nDataLen);
 
-            auto result = createMsg(sTypeName);
+            auto         result = createMsg(sTypeName);
             if (result) {
                 result->ParseFromString(sData);
                 return result;

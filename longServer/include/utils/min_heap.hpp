@@ -7,18 +7,22 @@
 #include <utility>
 #include <vector>
 
-namespace uranus::utils
-{
+namespace uranus::utils {
 template<typename T>
-class MinHeap
-{
+class MinHeap {
 public:
-    MinHeap(): MinHeap(30) {}
+    MinHeap() : MinHeap(30) {}
 
     //这是做一下预分配内存
-    explicit MinHeap(int capacity) { mArray.reserve(capacity); }
+    explicit MinHeap(int capacity)
+    {
+        mArray.reserve(capacity);
+    }
 
-    ~MinHeap() { mArray.clear(); }
+    ~MinHeap()
+    {
+        mArray.clear();
+    }
 
     //插入新元素
     auto push(const T &elem) -> bool
@@ -48,11 +52,20 @@ public:
         // return xxx;
     }
 
-    bool isEmpty() { return mArray.empty(); }
+    bool isEmpty()
+    {
+        return mArray.empty();
+    }
 
-    size_t size() { return mArray.size(); }
+    size_t size()
+    {
+        return mArray.size();
+    }
 
-    T &operator[](int i) { return mArray[i]; }
+    T &operator[](int i)
+    {
+        return mArray[i];
+    }
 
 private:
     //上浮
@@ -63,13 +76,15 @@ private:
             n = index % 2;
             if (n == 0) {
                 p = (index - 2) / 2;
-            } else {
+            }
+            else {
                 p = (index - 1) / 2;
             }
             if (mArray[index] < mArray[p]) {
                 std::swap(mArray[index], mArray[p]);
                 index = p;
-            } else {
+            }
+            else {
                 break;
             }
         }
@@ -86,15 +101,16 @@ private:
                     std::swap(mArray[index], mArray[2 * index + 2]);
                 }
                 index = 2 * index + 1;
-            } else {
+            }
+            else {
                 break;
             }
         }
     }
 
 private:
-    std::vector<T> mArray;
+    std::vector<T>            mArray;
     // mutable声明可变数据成员
     mutable std::shared_mutex mMutex;
 };
-}  // namespace uranus
+}  // namespace uranus::utils

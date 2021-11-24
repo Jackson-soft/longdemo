@@ -4,17 +4,16 @@
 #include "formatter.hpp"
 #include "level.hpp"
 #include "utils/noncopyable.hpp"
+
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
 #include <string_view>
 
-namespace uranus::log
-{
+namespace uranus::log {
 // Logger 日志的主类
-class Logger: public utils::Noncopyable
-{
+class Logger : public utils::Noncopyable {
 public:
     Logger() = default;
 
@@ -44,7 +43,10 @@ public:
     }
 
     //日志输出对外接口
-    void infoln(std::string_view msg) { return outPut(LogLevel::INFO, msg); }
+    void infoln(std::string_view msg)
+    {
+        return outPut(LogLevel::INFO, msg);
+    }
 
     void run()
     {
@@ -67,11 +69,11 @@ private:
     }
 
 private:
-    std::mutex mutex;
-    LogLevel level;
+    std::mutex                 mutex;
+    LogLevel                   level;
     std::unique_ptr<Formatter> formatter;  //格式化前端
-    std::unique_ptr<Backend> backend;      //输出后端
-    std::queue<std::string> buffer;        //环型缓存
+    std::unique_ptr<Backend>   backend;    //输出后端
+    std::queue<std::string>    buffer;     //环型缓存
 };
 
 #define LOG_INFO Logger::GetInstance().infoln()

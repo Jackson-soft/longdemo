@@ -12,23 +12,22 @@
 
 namespace uranus::database {
 template<typename T>
-class ConnectPool : public utils::Noncopyable {
+class ConnectPool : public utils::Noncopyable
+{
 public:
-    static auto get() -> ConnectPool<T> *
-    {
+    static auto Get() -> ConnectPool<T> * {
         static ConnectPool<T> connPool;
         return &connPool;
     }
 
-    void initalize(std::string_view conn, const int maxConn = 10, const int maxIdle = 5)
-    {
+    void Initalize(std::string_view conn, const int maxConn = 10, const int maxIdle = 5) {
         connect_ = conn;
         maxConn_ = maxConn;
         maxIdle_ = maxIdle;
     }
 
-    auto get() -> std::shared_ptr<T>
-    {
+    // 获取
+    auto Pop() -> std::shared_ptr<T> {
         std::unique_lock<std::mutex> lock(mutex_);
         while (pool_.empty()) {
             if (condition_.wait_for(lock, std::chrono::seconds(3)) == std::cv_status::timeout) {
@@ -42,8 +41,8 @@ public:
         pool_.pop_front();
     }
 
-    void Put(std::shared_ptr<T> conn)
-    {
+    // 归还
+    void Push(std::shared_ptr<T> conn) {
         if (!conn) {
             return;
         }
@@ -57,10 +56,9 @@ private:
     ~ConnectPool()                   = default;
 
     ConnectPool(const ConnectPool &) = delete;
-    ConnectPool &operator=(const ConnectPool &) = delete;
+    auto operator=(const ConnectPool &) -> ConnectPool & = delete;
 
-    auto         creatConn()
-    {
+    auto creatConn() {
         auto conn = std::make_shared<T>();
         return conn->connect(connect_);
     }

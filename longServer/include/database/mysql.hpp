@@ -1,12 +1,14 @@
 #pragma once
 
-#include "dsn.hpp"
+#include "database/dsn.hpp"
 
 #include <any>
 #include <boost/algorithm/string/replace.hpp>
 #include <cstdint>
 #include <cstring>
+#include <fmt/format.h>
 #include <memory>
+#include <mysql.h>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -14,83 +16,75 @@
 #include <typeinfo>
 #include <utility>
 
-#ifdef __APPLE__
-#include <mariadb/mysql.h>
-#else
-#include <mysql/mysql.h>
-#endif
-
 namespace uranus::database {
-class DBConn {
+class MySQL
+{
 public:
-    DBConn() : mMysql(nullptr) {}
+    MySQL() = default;
 
-    ~DBConn()
-    {
+    ~MySQL() {
         Close();
     }
 
-public:
-    auto connect(const std::string_view host,
-                 const std::string_view user,
-                 const std::string_view pwd,
-                 const std::string_view db,
-                 const std::uint32_t    port = 3306) -> bool
-    {
+    auto Connect(std::string_view    host,
+                 std::string_view    user,
+                 std::string_view    pwd,
+                 std::string_view    db,
+                 const std::uint32_t port = 3306) -> bool {
         if (host.empty() || user.empty()) {
             return false;
         }
-        mMysql = ::mysql_init(nullptr);
-        if (!mMysql)
+        mysql_ = ::mysql_init(nullptr);
+        if (mysql_ == nullptr) {
             return false;
+        }
 
         char reconnect = 1;
         // 启用重新连接，必须在调用mysql_real_connect前设置
-        if (0 != ::mysql_optionsv(mMysql, MYSQL_OPT_RECONNECT, (void *)&reconnect))
+        if (0 != ::mysql_options(mysql_, MYSQL_OPT_RECONNECT, (void *)&reconnect)) {
             return false;
+        }
 
-        if (0 != ::mysql_optionsv(mMysql, MYSQL_SET_CHARSET_NAME, (void *)"utf8mb4"))
+        if (0 != ::mysql_options(mysql_, MYSQL_SET_CHARSET_NAME, (void *)"utf8mb4")) {
             return false;
+        }
 
-        mMysql = ::mysql_real_connect(mMysql, host.data(), user.data(), pwd.data(), db.data(), port, nullptr, 0);
-        return mMysql != nullptr;
+        mysql_ = ::mysql_real_connect(mysql_, host.data(), user.data(), pwd.data(), db.data(), port, nullptr, 0);
+        return mysql_ != nullptr;
     }
 
-    // 重连
-    auot reconnect()->bool
-    {
-        // 调用该接口必须在mysql_init后设置MYSQL_OPT_RECONNECT
-        return int(0) == ::mariadb_reconnect(mMysql);
+    auto Connect(std::string_view dsn) -> bool {
+        if (dsn.empty()) {
+            return false;
+        }
+        return false;
     }
 
     // error information
-    std::tuple<std::uint32_t, std::string> Error()
-    {
-        return {::mysql_errno(mMysql), ::mysql_error(mMysql)};
+    auto Error() -> std::tuple<std::uint32_t, std::string> {
+        return {::mysql_errno(mysql_), ::mysql_error(mysql_)};
     }
 
     // ping
-    bool Ping()
-    {
-        return 0 == ::mysql_ping(mMysql);
+    auto Ping() -> bool {
+        return 0 == ::mysql_ping(mysql_);
     }
 
-    bool Timeout(std::uint32_t timeout)
-    {
-        if (timeout <= 0)
+    auto Timeout(std::uint32_t timeout) -> bool {
+        if (timeout <= 0) {
             return false;
-        return ::mysql_optionsv(mMysql, MYSQL_OPT_CONNECT_TIMEOUT, (void *)&timeout) == 0;
+        }
+        return ::mysql_options(mysql_, MYSQL_OPT_CONNECT_TIMEOUT, (void *)&timeout) == 0;
     }
 
-    std::uint64_t insert(const std::string_view sql, const std::vector<std::any> &args)
-    {
-        if (sql.empty())
+    auto Insert(const std::string_view sql, const std::vector<std::any> &args) -> std::uint64_t {
+        if (sql.empty()) {
             return 0;
+        }
 
-        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mMysql);
+        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mysql_);
         if (0 != ::mysql_stmt_prepare(stmt, sql.data(), sql.size())) {
             auto [code, message] = Error();
-            GLOG_ERRORF("mysql_stmt_prepare code: {}, error: {}", code, message);
             return 0;
         }
 
@@ -108,35 +102,30 @@ public:
             if (typeid(char) == it.type()) {
                 bind.buffer_type = MYSQL_TYPE_TINY;
                 bind.buffer      = reinterpret_cast<void *>(std::any_cast<char>(it));
-            }
-            else if (typeid(const char *) == it.type()) {
+            } else if (typeid(const char *) == it.type()) {
                 bind.buffer_type   = MYSQL_TYPE_STRING;
-                auto tmp           = std::any_cast<const char *>(it);
+                const auto *tmp    = std::any_cast<const char *>(it);
                 bind.buffer        = (void *)tmp;
                 bind.buffer_length = std::strlen(tmp);
-            }
-            else if (typeid(std::string) == it.type()) {
+            } else if (typeid(std::string) == it.type()) {
                 bind.buffer_type   = MYSQL_TYPE_STRING;
                 auto tmp           = std::any_cast<std::string>(it);
                 bind.buffer        = tmp.data();
                 bind.buffer_length = tmp.size();
-            }
-            else if (typeid(int) == it.type()) {
+            } else if (typeid(int) == it.type()) {
                 bind.buffer_type = MYSQL_TYPE_LONG;
                 bind.buffer      = reinterpret_cast<void *>(std::any_cast<int>(it));
             }
             vBinds.emplace_back(bind);
         }
 
-        if (0 != ::mysql_stmt_bind_param(stmt, vBinds.data())) {
+        if (::mysql_stmt_bind_param(stmt, vBinds.data())) {
             auto [code, message] = Error();
-            GLOG_ERRORF("mysql_stmt_bind_param code: {}, error: {}", code, message);
             return 0;
         }
 
         if (0 != ::mysql_stmt_execute(stmt)) {
             auto [code, message] = Error();
-            GLOG_ERRORF("mysql_stmt_execute code: {}, error: {}", code, message);
             return 0;
         }
 
@@ -146,8 +135,7 @@ public:
         return result;
     }
 
-    std::uint64_t Insert(std::string &sql, const std::vector<std::string> &args)
-    {
+    auto Insert(std::string &sql, const std::vector<std::string> &args) -> std::uint64_t {
         if (sql.empty()) {
             return 0;
         }
@@ -157,33 +145,30 @@ public:
             boost::algorithm::replace_first(strSQL, "?", fmt::format("'{}'", it));
         }
 
-        if (0 != ::mysql_real_query(mMysql, strSQL.data(), strSQL.size())) {
+        if (0 != ::mysql_real_query(mysql_, strSQL.data(), strSQL.size())) {
             return 0;
         }
-        return ::mysql_insert_id(mMysql);
+        return ::mysql_insert_id(mysql_);
     }
 
     /*
      *  返回受到影响的行
      *  返回0则出错，非0则成功
      */
-    std::uint64_t Insert(const std::string_view sql, const std::vector<std::string> &args)
-    {
-        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mMysql);
-        if (!stmt) {
+    auto Insert(const std::string_view sql, const std::vector<std::string> &args) -> std::uint64_t {
+        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mysql_);
+        if (stmt == nullptr) {
             return 0;
         }
 
         if (0 != ::mysql_stmt_prepare(stmt, sql.data(), sql.size())) {
             auto [code, message] = Error();
-            GLOG_ERRORF("mysql_stmt_prepare code: {}, error: {}", code, message);
             return 0;
         }
 
         auto paramCount = ::mysql_stmt_param_count(stmt);
 
         if (args.size() != paramCount) {
-            GLOG_ERRORF("parameter count is {},but args is {}", paramCount, args.size());
             return 0;
         }
 
@@ -198,15 +183,13 @@ public:
             vBinds.emplace_back(bind);
         }
 
-        if (0 != ::mysql_stmt_bind_param(stmt, vBinds.data())) {
+        if (::mysql_stmt_bind_param(stmt, vBinds.data())) {
             auto [code, msg] = Error();
-            GLOG_ERRORF("mysql_stmt_bind_param code: {}, message: {}", code, msg);
             return 0;
         }
 
         if (0 != ::mysql_stmt_execute(stmt)) {
             auto [code, msg] = Error();
-            GLOG_ERRORF("mysql_stmt_execute code: {}, message: {}", code, msg);
             return 0;
         }
 
@@ -217,22 +200,25 @@ public:
     }
 
     // 执行SQL语句，返回影响到的行数
-    std::uint64_t Execute(const std::string_view sql, const std::vector<std::string_view> &args = {})
-    {
-        if (sql.empty())
+    auto Execute(const std::string_view sql, const std::vector<std::string_view> &args = {}) -> std::uint64_t {
+        if (sql.empty()) {
             return 0;
+        }
 
-        auto stmt = ::mysql_stmt_init(mMysql);
-        if (!stmt)
+        auto *stmt = ::mysql_stmt_init(mysql_);
+        if (stmt == nullptr) {
             return 0;
+        }
 
-        if (0 != ::mysql_stmt_prepare(stmt, sql.data(), sql.size()))
+        if (0 != ::mysql_stmt_prepare(stmt, sql.data(), sql.size())) {
             return 0;
+        }
 
         auto paramCount = ::mysql_stmt_param_count(stmt);
 
-        if (paramCount != args.size())
+        if (paramCount != args.size()) {
             return 0;
+        }
 
         if (paramCount > 0) {
             std::vector<::MYSQL_BIND> vBinds;
@@ -241,37 +227,40 @@ public:
         return 0;
     }
 
-    bool Query(std::vector<std::map<std::string, std::string>> &result, const std::string_view sql)
-    {
-        if (sql.empty())
+    auto Query(std::vector<std::map<std::string, std::string>> &result, const std::string_view sql) -> bool {
+        if (sql.empty()) {
             return false;
+        }
         result.clear();
-        if (0 != ::mysql_real_query(mMysql, sql.data(), sql.size()))
+        if (0 != ::mysql_real_query(mysql_, sql.data(), sql.size())) {
             return false;
+        }
 
-        auto tResult = ::mysql_store_result(mMysql);
-        if (!tResult)
+        auto *tResult = ::mysql_store_result(mysql_);
+        if (tResult == nullptr) {
             return false;
+        }
 
         // 行数
         auto numRows = ::mysql_num_rows(tResult);
         if (numRows > 0) {
             result.reserve(numRows);
-        }
-        else
+        } else {
             return false;
+        }
 
         // 数据表字段名
-        auto fields = ::mysql_fetch_fields(tResult);
-        if (!fields)
+        auto *fields = ::mysql_fetch_fields(tResult);
+        if (fields == nullptr) {
             return false;
+        }
 
         // 列数
         auto                               numFields = ::mysql_num_fields(tResult);
 
         // 字段数据
         std::map<std::string, std::string> element;
-        while (auto row = ::mysql_fetch_row(tResult)) {
+        while (auto *row = ::mysql_fetch_row(tResult)) {
             element.clear();
             for (unsigned int i = 0; i < numFields; i++) {
                 std::string key   = fields[i].name;
@@ -285,15 +274,15 @@ public:
         return true;
     }
 
-    bool QueryForMap(std::map<std::string, std::string> &result,
+    auto QueryForMap(std::map<std::string, std::string> &result,
                      const std::string_view              sql,
-                     const std::vector<std::string>     &args = {})
-    {
-        if (sql.empty())
+                     const std::vector<std::string>     &args = {}) -> bool {
+        if (sql.empty()) {
             return false;
+        }
         result.clear();
-        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mMysql);
-        if (!stmt) {
+        ::MYSQL_STMT *stmt = ::mysql_stmt_init(mysql_);
+        if (stmt == nullptr) {
             return false;
         }
 
@@ -308,8 +297,9 @@ public:
         }
 
         std::vector<::MYSQL_BIND> vBinds;
-        if (paramCount > 0)
+        if (paramCount > 0) {
             vBinds.reserve(paramCount);
+        }
 
         for (const auto &i : args) {
             ::MYSQL_BIND iBind;
@@ -319,18 +309,18 @@ public:
             vBinds.push_back(iBind);
         }
 
-        if (0 != ::mysql_stmt_bind_result(stmt, vBinds.data())) {
+        if (::mysql_stmt_bind_result(stmt, vBinds.data())) {
             return false;
         }
 
         if (0 != ::mysql_stmt_execute(stmt)) {
             auto info = Error();
-            GLOG_ERRORF("{},{}", std::get<std::string>(info));
             return false;
         }
 
-        if (0 != ::mysql_stmt_store_result(stmt))
+        if (0 != ::mysql_stmt_store_result(stmt)) {
             return false;
+        }
 
         while (::mysql_stmt_fetch(stmt) == 0) {}
 
@@ -339,28 +329,25 @@ public:
         return true;
     }
 
-    bool QueryForMapSlice(std::vector<std::map<std::string, std::string>> &result,
-                          const std::string_view                           sql,
-                          const std::vector<std::string>                  &args)
-    {
+    auto QueryForMapSlice(std::vector<std::map<std::string, std::string>> &result,
+                          std::string_view                                 sql,
+                          const std::vector<std::string>                  &args) -> bool {
         return false;
     }
 
-    int Shutdown()
-    {
-        return ::mysql_shutdown(mMysql, SHUTDOWN_DEFAULT);
+    auto Shutdown() -> int {
+        return ::mysql_shutdown(mysql_, SHUTDOWN_DEFAULT);
     }
 
     // 关闭连接并释放内存
-    void Close()
-    {
-        if (!mMysql) {
-            ::mysql_close(mMysql);
-            mMysql = nullptr;
+    void Close() {
+        if (!mysql_) {
+            ::mysql_close(mysql_);
+            mysql_ = nullptr;
         }
     }
 
 private:
-    ::MYSQL *mMysql;
+    ::MYSQL *mysql_{};
 };
 }  // namespace uranus::database

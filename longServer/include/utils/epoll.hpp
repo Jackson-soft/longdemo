@@ -85,11 +85,8 @@ public:
 private:
     // epoll文件描述符
     int                             epoll_{0};
-
     int                             timeout_{0};
-
     std::vector<struct epoll_event> events_;
-
     std::atomic_bool                running_{true};
 };
 }  // namespace uranus::utils

@@ -1,100 +1,104 @@
 #pragma once
 
+#include "fmt/core.h"
+
 #include <cstdint>
 #include <string>
 #include <string_view>
 
 namespace uranus::net {
 //网络地址接口
-class Address {
+class Address
+{
 public:
-    Address()                                        = default;
-    virtual ~Address()                               = default;
+    Address()                          = default;
+    virtual ~Address()                 = default;
 
-    virtual Address                         &operator=(const Address &obj) = 0;         // copy
-    virtual Address                         &operator=(Address &&obj)             = 0;  // move
-    virtual bool                             operator==(const Address &obj) const = 0;
-    virtual bool                             operator!=(const Address &obj) const = 0;
+    virtual auto               operator=(const Address &obj) -> Address &= 0;      // copy
+    virtual auto               operator=(Address &&obj) noexcept -> Address &= 0;  // move
+    virtual auto               operator==(const Address &obj) const -> bool = 0;
+    virtual auto               operator!=(const Address &obj) const -> bool = 0;
 
     //网络类型： tcp,udp,unix
-    [[nodiscard]] virtual const std::string &network() const                      = 0;
+    [[nodiscard]] virtual auto Network() const -> const std::string       & = 0;
 
     //网络地址： ipv4:127.0.0.1:80; ipv6:2000:0000:0000:0000:0001:2345:6789:abcd::5060
-    [[nodiscard]] virtual const std::string &String() const                       = 0;
+    [[nodiscard]] virtual auto String() const -> std::string                = 0;
 };
 
 // ipv6地址类
-class IPv6Addr : public Address {
+class IPv6Addr : public Address
+{
 public:
     IPv6Addr()           = default;
     ~IPv6Addr() override = default;
 
-    IPv6Addr(const IPv6Addr &obj) {}  // 复制构造函
-    IPv6Addr(IPv6Addr &&obj) {}       // 移动构造函数
+    IPv6Addr(const IPv6Addr &obj) {}      // 复制构造函
+    IPv6Addr(IPv6Addr &&obj) noexcept {}  // 移动构造函数
 
-    IPv6Addr &operator=(const IPv6Addr &obj) {}  // copy
-    IPv6Addr &operator=(IPv6Addr &&obj) {}       // move
-    bool      operator==(const IPv6Addr &obj) const
-    {
+    auto operator=(const IPv6Addr &obj) -> IPv6Addr & {}      // copy
+    auto operator=(IPv6Addr &&obj) noexcept -> IPv6Addr & {}  // move
+    auto operator==(const IPv6Addr &obj) const -> bool {
         return false;
     }
-    bool operator!=(const IPv6Addr &obj) const
-    {
+    auto operator!=(const IPv6Addr &obj) const -> bool {
         return false;
     }
 
     // 解析地址
-    bool ResolveAddr(std::string_view addr, std::string_view net = "tcp")
-    {
+    auto ResolveAddr(std::string_view addr, std::string_view net = "tcp") -> bool {
         if (net != "tcp" || net != "udp") {
             return false;
         }
-        mnetwork = net;
+        if (addr.empty()) {
+            return false;
+        }
+        network_ = net;
         return true;
     }
 
-    const std::string &network() const override
-    {
-        return mnetwork;
+    auto IsLoopback() -> bool {
+        return false;
     }
 
-    const std::string &String() const override
-    {
-        return "";
+    [[nodiscard]] auto Network() const -> const std::string & override {
+        return network_;
+    }
+
+    [[nodiscard]] auto String() const -> std::string override {
+        return fmt::format("{}:{}", host_, port_);
     }
 
 private:
-    std::string   mnetwork{""};
-    std::string   mIP{""};
-    std::uint16_t mPort{0};
+    std::string   network_;
+    std::string   host_;
+    std::uint16_t port_{0};
 };
 
 // Unix地址类
-class UnixAddr : public Address {
+class UnixAddr : public Address
+{
 public:
-    UnixAddr() {}
-    ~UnixAddr() override {}
+    UnixAddr()           = default;
+    ~UnixAddr() override = default;
 
-    UnixAddr(const std::string_view net, const std::string_view addr)
-    {
+    explicit UnixAddr(std::string_view addr, std::string_view net = "unix") {
         if ((net == "unix" || net == "unixgram" || net == "unixpacket") && (!addr.empty())) {
-            mnetwork = net;
-            mAddress = addr;
+            network_ = net;
+            address_ = addr;
         }
     }
 
-    std::string &network() override
-    {
-        return mnetwork;
+    [[nodiscard]] auto Network() const -> const std::string & override {
+        return network_;
     }
 
-    std::string &String() override
-    {
-        return mAddress;
+    [[nodiscard]] auto String() const -> std::string override {
+        return address_;
     }
 
 private:
-    std::string mnetwork{""};
-    std::string mAddress{""};
+    std::string network_;
+    std::string address_;
 };
 }  // namespace uranus::net

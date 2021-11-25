@@ -9,25 +9,23 @@
 
 namespace uranus::utils {
 //定时器
-class Timer : Noncopyable {
+class Timer : Noncopyable
+{
 public:
     using Action = std::function<void()>;
 
-    static auto Get() -> Timer &
-    {
+    static auto Get() -> Timer & {
         static Timer timer;
         return timer;
     }
 
     // 单次
-    auto OnceTimer(double interval, Action func) -> std::uint32_t
-    {
+    auto OnceTimer(double interval, Action func) -> std::uint32_t {
         return 0;
     }
 
     // 循环
-    auto LoopTimer(double interval, Action fucn) -> std::uint32_t
-    {
+    auto LoopTimer(double interval, Action fucn) -> std::uint32_t {
         return 0;
     }
 
@@ -35,8 +33,7 @@ public:
     void Stop(std::uint32_t id) {}
 
     //异步等待
-    void AsyncWait()
-    {
+    void AsyncWait() {
         while (true) {
             this->exec();
         }
@@ -44,8 +41,7 @@ public:
 
 private:
     Timer() = default;
-
-    Timer(std::chrono::duration<int> tick) : mTick(tick) {}
+    explicit Timer(std::chrono::duration<int> tick) : mTick(tick) {}
 
     ~Timer() = default;
 

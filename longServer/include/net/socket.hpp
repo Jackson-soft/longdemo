@@ -18,41 +18,34 @@
 #include <utility>
 
 namespace uranus::net {
-class Socket : public utils::Noncopyable {
+class Socket : public utils::Noncopyable
+{
 public:
     Socket() = default;
-    Socket(const int fd) : socket_(fd) {}
+    explicit Socket(const int fd) : socket_(fd) {}
 
     // move constructor
-    Socket(const Socket &&obj) {}
+    Socket(const Socket &&obj) noexcept {}
 
     // copy constructor
-    Socket(const Socket &obj)
-    {
-        socket_  = obj.socket_;
-        network_ = obj.network_;
-    }
+    Socket(const Socket &obj) : socket_(obj.socket_), network_(obj.network_) {}
 
-    ~Socket()
-    {
+    ~Socket() {
         Close();
     }
 
-    bool newSocket(const std::string_view network = "tcp")
-    {
+    auto NewSocket(std::string_view network = "tcp") -> bool {
         if (network.empty()) {
             return false;
         }
-        else if (network == "tcp") {
+
+        if (network == "tcp") {
             socket_ = ::socket(AF_INET6, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
-        }
-        else if (network == "udp") {
+        } else if (network == "udp") {
             socket_ = ::socket(AF_INET6, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
-        }
-        else if (network == "unix") {
+        } else if (network == "unix") {
             socket_ = ::socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
-        }
-        else {
+        } else {
             return false;
         }
 
@@ -60,48 +53,22 @@ public:
             return false;
         }
 
-        network_ = std::move(network);
+        network_ = network;
 
         return SetReusePort(true);
     }
 
     //监听服务器
-    auto listen() -> bool
-    {
+    [[nodiscard]] auto Listen() const -> bool {
         return ::listen(socket_, SOMAXCONN) == 0;
     }
 
     // 绑定
-    bool Bind(const std::uint64_t port, const std::string_view ip = {""})
-    {
+    [[nodiscard]] auto Bind(const std::uint64_t port, std::string_view ip = {""}) const -> bool {
         if (port <= 0) {
             return false;
         }
-        struct sockaddr_in6 addr;
-
-        std::memset(&addr, 0, sizeof(addr));
-        addr.sin6_family = AF_INET6;
-        addr.sin6_port   = ::htons(port);
-
-        if (!ip.empty()) {
-            if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0)
-                return false;
-        }
-        else {
-            addr.sin6_addr = in6addr_any;
-        }
-
-        return ::bind(socket_, reinterpret_cast<struct sockaddr *>(&addr), static_cast<socklen_t>(sizeof(addr))) == 0;
-    }
-
-    //连接目标服务器
-    [[nodiscard]] auto Connect(const std::string_view ip, const std::uint64_t port) const -> bool
-    {
-        if (port <= 0) {
-            return false;
-        }
-        struct sockaddr_in6 addr {
-        };
+        struct sockaddr_in6 addr {};
 
         std::memset(&addr, 0, sizeof(addr));
         addr.sin6_family = AF_INET6;
@@ -111,8 +78,29 @@ public:
             if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0) {
                 return false;
             }
+        } else {
+            addr.sin6_addr = in6addr_any;
         }
-        else {
+
+        return ::bind(socket_, reinterpret_cast<struct sockaddr *>(&addr), static_cast<socklen_t>(sizeof(addr))) == 0;
+    }
+
+    //连接目标服务器
+    [[nodiscard]] auto Connect(const std::string_view ip, const std::uint64_t port) const -> bool {
+        if (port <= 0) {
+            return false;
+        }
+        struct sockaddr_in6 addr {};
+
+        std::memset(&addr, 0, sizeof(addr));
+        addr.sin6_family = AF_INET6;
+        addr.sin6_port   = ::htons(port);
+
+        if (!ip.empty()) {
+            if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0) {
+                return false;
+            }
+        } else {
             addr.sin6_addr = in6addr_any;
         }
 
@@ -121,9 +109,8 @@ public:
     }
 
     // 返回接收的socket文件描述符
-    int Accept()
-    {
-        struct sockaddr_in6 addr;
+    auto Accept() -> int {
+        struct sockaddr_in6 addr {};
         socklen_t           socklen = sizeof(addr);
         std::memset(&addr, 0, socklen);
 
@@ -131,15 +118,13 @@ public:
     }
 
     // 0成功，-1失败
-    bool SetKeeplive(bool on)
-    {
+    [[nodiscard]] auto SetKeeplive(bool on) const -> bool {
         int optVal = on ? 1 : 0;
         return ::setsockopt(socket_, SOL_SOCKET, SO_KEEPALIVE, &optVal, static_cast<socklen_t>(sizeof(optVal))) == 0;
     }
 
     // 设置非阻塞
-    int SetNonBlock()
-    {
+    auto SetNonBlock() const -> int {
         int nFlag = ::fcntl(socket_, F_GETFL, 0);
         if (nFlag == -1) {
             return nFlag;
@@ -148,81 +133,68 @@ public:
     }
 
     // Nagle 算法(小包合并成大包)
-    bool SetNoDelay(bool on)
-    {
+    bool SetNoDelay(bool on) {
         int optval = on ? 1 : 0;
         return ::setsockopt(socket_, IPPROTO_TCP, TCP_NODELAY, &optval, static_cast<socklen_t>(sizeof optval)) == 0;
     }
 
-    bool SetCork(bool on)
-    {
+    bool SetCork(bool on) {
         int optVal = on ? 1 : 0;
         return ::setsockopt(socket_, IPPROTO_TCP, TCP_CORK, &optVal, static_cast<socklen_t>(sizeof optVal)) == 0;
     }
 
     // 地址复用
-    bool SetReuseAddr(bool on)
-    {
+    bool SetReuseAddr(bool on) {
         int optval = on ? 1 : 0;
         return ::setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &optval, static_cast<socklen_t>(sizeof optval)) == 0;
     }
 
     // 端口复用
-    bool SetReusePort(bool on)
-    {
+    bool SetReusePort(bool on) {
         int optval = on ? 1 : 0;
         return ::setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, &optval, static_cast<socklen_t>(sizeof optval)) == 0;
     }
 
     // 读数据
-    ssize_t Read(void *buf, size_t count)
-    {
+    ssize_t Read(void *buf, size_t count) {
         return ::recv(socket_, buf, count, 0);
     }
 
-    ssize_t Readv(const struct iovec *iov, int iovcnt)
-    {
+    ssize_t Readv(const struct iovec *iov, int iovcnt) {
         return ::readv(socket_, iov, iovcnt);
     }
 
     // 写数据
-    ssize_t Write(const void *buf, size_t count)
-    {
+    ssize_t Write(const void *buf, size_t count) {
         return ::send(socket_, buf, count, 0);
     }
 
-    ssize_t Writev(const struct iovec *iov, int iovcnt)
-    {
+    ssize_t Writev(const struct iovec *iov, int iovcnt) {
         return ::writev(socket_, iov, iovcnt);
     }
 
     //优雅关闭读写双半闭
-    bool ShutDown()
-    {
+    bool ShutDown() {
         return ::shutdown(socket_, SHUT_RDWR) == 0;
     }
 
     // 关闭读
-    bool CloseRead()
-    {
+    bool CloseRead() {
         return ::shutdown(socket_, SHUT_RD) == 0;
     }
 
     // 关闭写
-    bool CloseWrite()
-    {
+    bool CloseWrite() {
         return ::shutdown(socket_, SHUT_WR) == 0;
     }
 
     //关闭
-    bool Close()
-    {
+    auto Close() -> bool {
         return ::close(socket_) == 0;
     }
 
     // 获取原生socket
-    int getNativeFD() const
-    {
+    [[nodiscard]] auto NativeFD() const -> int {
         return socket_;
     }
 
@@ -230,7 +202,6 @@ private:
     void        getTcpInfo() {}
 
     int         socket_{0};  //
-
-    std::string network_{""};
+    std::string network_;
 };
 }  // namespace uranus::net

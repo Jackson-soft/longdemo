@@ -16,14 +16,14 @@ enum class LogLevel {
     NULL_LEVEL,
 };
 
-class Level {
+class Level
+{
 public:
     Level()  = default;
     ~Level() = default;
 
     //将日志等级解析成字符串
-    static auto Marshal(const LogLevel &lvl) -> std::string
-    {
+    static auto Marshal(const LogLevel &lvl) -> std::string {
         std::map<LogLevel, std::string> levelMap{
             {LogLevel::TRACE, "trace"},
             {LogLevel::DEBUG, "debug"},
@@ -41,8 +41,7 @@ public:
     }
 
     //将字符串解析成日志等级
-    static auto Unmarshal(std::string &str) -> LogLevel
-    {
+    static auto Unmarshal(std::string &str) -> LogLevel {
         boost::algorithm::to_lower(str);
         std::map<std::string, LogLevel> levelMap{{"trace", LogLevel::TRACE},
                                                  {"debug", LogLevel::DEBUG},

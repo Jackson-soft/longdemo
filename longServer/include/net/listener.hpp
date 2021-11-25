@@ -7,7 +7,8 @@
 
 namespace uranus::net {
 // 监听器接口
-class Listener {
+class Listener
+{
 public:
     Listener()                                                        = default;
     virtual ~Listener()                                               = default;
@@ -19,28 +20,26 @@ public:
     [[nodiscard]] virtual auto Address() const -> const std::string & = 0;
 };
 
-class TcpListener : public Listener {
+class TcpListener : public Listener
+{
 public:
     TcpListener()           = default;
 
     ~TcpListener() override = default;
 
-    int Accept() override
-    {
+    auto Accept() -> int override {
         return 0;
     }
 
-    void Close() override
-    {
-        mSocket.Close();
+    void Close() override {
+        socket_.Close();
     }
 
-    const std::string &Address() const override
-    {
+    auto Address() const -> const std::string & override {
         return "";
     }
 
 private:
-    Socket mSocket;
+    net::Socket socket_;
 };
 }  // namespace uranus::net

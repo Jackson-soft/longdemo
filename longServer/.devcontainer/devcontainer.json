@@ -2,13 +2,7 @@
 	"name": "C++",
 	"dockerFile": "Dockerfile",
 	"extensions": [
-		"ms-vscode.cpptools",
-		"ms-vscode.cmake-tools",
-		"visualstudioexptteam.vscodeintellicode",
-		"twxs.cmake",
-		"xaver.clang-format",
-		"lfs.vscode-emacs-friendly",
-		"tabnine.tabnine-vscode"
+		"ms-vscode.cmake-tools"
 	],
 	"runArgs": [
 		"--cap-add=SYS_PTRACE",

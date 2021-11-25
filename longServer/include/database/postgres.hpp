@@ -1,26 +1,28 @@
 #pragma once
 
 #include <cstdint>
-#include <pqxx/connection.hxx>
+#include <pqxx/pqxx>
 #include <string_view>
 
 namespace uranus::database {
-class Postgres {
+class Postgres
+{
 public:
     Postgres()  = default;
     ~Postgres() = default;
 
-    auto connect(std::string_view dsn) -> bool
-    {
+    auto Connect(std::string_view dsn) -> bool {
+        if (dsn.empty()) {
+            return false;
+        }
         return false;
     }
 
-    auto insert(std::string_view query) -> std::int64_t
-    {
+    auto Insert(std::string_view query) -> std::int64_t {
         return 0;
     }
 
 private:
-    pqxx::connection conn;
+    pqxx::connection conn_;
 };
 }  // namespace uranus::database

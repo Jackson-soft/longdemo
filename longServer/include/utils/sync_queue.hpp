@@ -10,55 +10,49 @@
 
 namespace uranus::utils {
 template<typename T>
-class SyncQueue : public Noncopyable {
+class SyncQueue : public Noncopyable
+{
 public:
     SyncQueue()  = default;
     ~SyncQueue() = default;
 
-    auto Empty() -> bool
-    {
-        std::lock_guard<std::mutex> locker(mMutex);
-        return mQueue.empty();
+    auto Empty() -> bool {
+        std::lock_guard<std::mutex> locker(mutex_);
+        return queue_.empty();
     }
 
-    void Push(T &&value)
-    {
-        std::lock_guard<std::mutex> locker(mMutex);
-        mQueue.push(std::move(value));
+    void Push(T &&value) {
+        std::lock_guard<std::mutex> locker(mutex_);
+        queue_.push(std::move(value));
     }
 
-    void Push(const T &value)
-    {
-        std::lock_guard<std::mutex> locker(mMutex);
-        mQueue.push(value);
+    void Push(const T &value) {
+        std::lock_guard<std::mutex> locker(mutex_);
+        queue_.push(value);
     }
 
-    void Emplace(T &&value)
-    {
-        std::lock_guard<std::mutex> locker(mMutex);
-        mQueue.emplace(value);
+    void Emplace(T &&value) {
+        std::lock_guard<std::mutex> locker(mutex_);
+        queue_.emplace(value);
     }
 
-    void Pop()
-    {
-        std::lock_guard<std::mutex> locker(mMutex);
-        mQueue.pop();
+    void Pop() {
+        std::lock_guard<std::mutex> locker(mutex_);
+        queue_.pop();
     }
 
-    T &Front()
-    {
-        std::lock_guard<std::mutex> locker(mMutex);
-        return mQueue.front();
+    auto Front() -> T & {
+        std::lock_guard<std::mutex> locker(mutex_);
+        return queue_.front();
     }
 
-    T &Back()
-    {
-        std::lock_guard<std::mutex> locker(mMutex);
-        return mQueue.back();
+    auto Back() -> T & {
+        std::lock_guard<std::mutex> locker(mutex_);
+        return queue_.back();
     }
 
 private:
-    std::mutex    mMutex;
-    std::queue<T> mQueue;
+    std::mutex    mutex_;
+    std::queue<T> queue_;
 };
 }  // namespace uranus::utils

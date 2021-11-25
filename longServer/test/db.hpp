@@ -1,6 +1,9 @@
 #pragma once
 
-//#include "db_conn.hpp"
+#include "database/dsn.hpp"
+#include "database/mysql.hpp"
+#include "database/postgres.hpp"
+
 #include <doctest/doctest.h>
 
-TEST_CASE("mariadb test") {}
+TEST_CASE("mysql test") {}

@@ -9,23 +9,21 @@
 namespace uranus::utils {
 // 环形缓存
 template<typename T>
-class RingBuffer : public Noncopyable {
+class RingBuffer : public Noncopyable
+{
 public:
     RingBuffer() : RingBuffer(16) {}
 
-    explicit RingBuffer(int size) : mMaxSize(size)
-    {
+    explicit RingBuffer(int size) : mMaxSize(size) {
         mData.reserve(mMaxSize);
     }
 
-    ~RingBuffer()
-    {
+    ~RingBuffer() {
         Clear();
     }
 
     //读取
-    T Read()
-    {
+    auto Read() -> T {
         std::shared_lock<std::shared_mutex> lock(mMutex);
 
         int                                 nTmp = mReadIndex;
@@ -35,8 +33,7 @@ public:
     }
 
     // 写入
-    void Write(const T &value)
-    {
+    void Write(const T &value) {
         std::unique_lock<std::shared_mutex> lock(mMutex);
 
         mData[mWriteIndex] = value;
@@ -45,8 +42,7 @@ public:
     }
 
     // 清除
-    void Clear() noexcept
-    {
+    void Clear() noexcept {
         std::unique_lock<std::shared_mutex> lock(mMutex);
         mData.clear();
     }

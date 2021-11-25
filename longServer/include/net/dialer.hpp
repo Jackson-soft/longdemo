@@ -1,5 +1,6 @@
 #pragma once
 
+#include "net/socket.hpp"
 #include "utils/noncopyable.hpp"
 
 #include <chrono>
@@ -12,68 +13,58 @@
 // 连接器
 namespace uranus::net {
 // 连接器类
-class Dialer : utils::Noncopyable, std::enable_shared_from_this<Dialer> {
+class Dialer : utils::Noncopyable, std::enable_shared_from_this<Dialer>
+{
 public:
     Dialer() = default;
-    ~Dialer()
-    {
+    ~Dialer() {
         Close();
     }
 
     //连接到网络地址
-    bool Dial(const std::string_view network, const std::string_view ip, const unsigned short port)
-    {
+    auto Dial(const std::string_view network, const std::string_view ip, const unsigned short port) -> bool {
         if (network.empty() || ip.empty() || port <= 0) {
             return false;
         }
-        mRemoteAddr = std::move(ip);
-        mPort       = port;
+        remoteAddr_ = ip;
+        port_       = port;
 
-        if (!mSocket.NewSocket(network))
+        if (!socket_.NewSocket(network)) {
             return false;
+        }
 
-        return mSocket.Connect(ip, port) == 0 ? true : false;
+        return socket_.Connect(ip, port);
     }
 
-    int Read()
-    {
+    auto Read() -> int {
         return 0;
     }
 
-    int Write()
-    {
+    auto Write() -> int {
         return 0;
     }
 
-    bool SetKeepAlive(bool on)
-    {
-        return mSocket.SetKeeplive(on) == 0 ? true : false;
+    auto SetKeepAlive(bool on) -> bool {
+        return socket_.SetKeeplive(on);
     }
 
-    void Close()
-    {
-        mSocket.Close();
+    void Close() {
+        socket_.Close();
     }
 
-    int Shutdown()
-    {
-        return mSocket.ShutDown();
+    auto Shutdown() -> bool {
+        return socket_.ShutDown();
     }
 
 private:
     // Socket对象
-    Socket                     mSocket;
-
-    std::chrono::duration<int> mTimeout;
-
+    net::Socket                socket_;
+    std::chrono::duration<int> timeout_;
     //客户端地址
-    std::string                mLocalAddr{""};
-
+    std::string                localAddr_;
     //远程地址
-    std::string                mRemoteAddr{""};
-
-    unsigned short             mPort{0};
-
-    std::chrono::duration<int> mKeepAlive;
+    std::string                remoteAddr_;
+    unsigned short             port_{0};
+    std::chrono::duration<int> keepAlive_;
 };
 }  // namespace uranus::net

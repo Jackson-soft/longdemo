@@ -21,15 +21,16 @@
  */
 
 namespace uranus::database {
-class DSN {
+class DSN
+{
 public:
     DSN()  = default;
     ~DSN() = default;
 
-    bool Parse(std::string_view dsn)
-    {
-        if (dsn.empty())
+    auto Parse(std::string_view dsn) -> bool {
+        if (dsn.empty()) {
             return false;
+        }
 
         // [user[:password]@][net[(addr)]]/dbname[?param1=value1&paramN=valueN]
         // Find the last '/' (since the password or the net addr might contain a '/')
@@ -42,25 +43,25 @@ public:
         // username[:password]
         // Find the first ':'
         auto tColon      = boost::find_first(dsn, ":");
-        mUser            = dsn.substr(0, tColon.begin() - dsn.begin());
-        mPasswd          = dsn.substr(tColon.end() - dsn.begin(), tAt.begin() - tColon.end());
+        user_            = dsn.substr(0, tColon.begin() - dsn.begin());
+        password_        = dsn.substr(tColon.end() - dsn.begin(), tAt.begin() - tColon.end());
 
         // [protocol[(address)]]
         // Find the first '('
         auto tOpenParen  = boost::find_first(dsn, "(");
-        mnet             = dsn.substr(tAt.end() - dsn.begin(), tOpenParen.begin() - tAt.end());
+        network_         = dsn.substr(tAt.end() - dsn.begin(), tOpenParen.begin() - tAt.end());
 
         // dsn[i-1] must be == ')' if an address is specified
         auto tCloseParen = boost::find_last(dsn, ")");
-        mAddress         = dsn.substr(tOpenParen.end() - dsn.begin(), tCloseParen.begin() - tOpenParen.end());
+        address_         = dsn.substr(tOpenParen.end() - dsn.begin(), tCloseParen.begin() - tOpenParen.end());
 
-        if (mnet != "unix") {
+        if (network_ != "unix") {
             std::vector<std::string> vAddress;
-            boost::split(vAddress, mAddress, boost::is_any_of(":"));
+            boost::split(vAddress, address_, boost::is_any_of(":"));
 
             if (!vAddress.empty() && (vAddress.size() == 2)) {
-                mHost = vAddress.at(0);
-                mPort = static_cast<std::uint32_t>(std::atoi(vAddress.at(1).data()));
+                host_ = vAddress.at(0);
+                port_ = static_cast<std::uint32_t>(std::atoi(vAddress.at(1).data()));
             }
         }
 
@@ -68,79 +69,73 @@ public:
         // Find the first '?'
         auto sParams   = dsn.substr(backslash.end() - dsn.begin(), dsn.end() - backslash.end());
         auto tQuestion = boost::find_first(sParams, "?");
-        mDBName        = sParams.substr(0, tQuestion.begin() - sParams.begin());
+        schema_        = sParams.substr(0, tQuestion.begin() - sParams.begin());
 
         return parseParams(sParams.substr(tQuestion.end() - sParams.begin(), sParams.end() - tQuestion.end()));
     }
 
-    [[nodiscard]] const std::string &User() const
-    {
-        return mUser;
+    [[nodiscard]] auto User() const -> const std::string & {
+        return user_;
     }
 
-    [[nodiscard]] const std::string &Passwd() const
-    {
-        return mPasswd;
+    [[nodiscard]] auto Passwd() const -> const std::string & {
+        return password_;
     }
 
-    [[nodiscard]] const std::string &net() const
-    {
-        return mnet;
+    [[nodiscard]] auto net() const -> const std::string & {
+        return network_;
     }
 
-    const std::string &Address()
-    {
-        return mAddress;
+    auto Address() -> const std::string & {
+        return address_;
     }
 
-    [[nodiscard]] const std::string &Host() const
-    {
-        return mHost;
+    [[nodiscard]] auto Host() const -> const std::string & {
+        return host_;
     }
 
-    [[nodiscard]] std::uint32_t Port() const
-    {
-        return mPort;
+    [[nodiscard]] auto Port() const -> std::uint32_t {
+        return port_;
     }
 
-    [[nodiscard]] const std::string &DBName() const
-    {
-        return mDBName;
+    [[nodiscard]] auto DBName() const -> const std::string & {
+        return schema_;
     }
 
-    [[nodiscard]] const std::map<std::string, std::string> &Params() const
-    {
-        return mParams;
+    [[nodiscard]] auto Params() const -> const std::map<std::string, std::string> & {
+        return params_;
     }
 
 private:
-    bool parseParams(std::string_view params)
-    {
-        if (params.empty())
+    auto parseParams(std::string_view params) -> bool {
+        if (params.empty()) {
             return false;
+        }
         std::vector<std::string> vParam;
         boost::split(vParam, params, boost::is_any_of("&"));
-        if (vParam.empty())
+        if (vParam.empty()) {
             return false;
+        }
 
         for (const auto &it : vParam) {
             std::vector<std::string> vv;
             boost::split(vv, it, boost::is_any_of("="));
-            if (vv.size() != 2)
+            if (vv.size() != 2) {
                 continue;
-            mParams.emplace(vv.at(0), vv.at(1));
+            }
+            params_.emplace(vv.at(0), vv.at(1));
         }
 
         return true;
     }
 
-    std::string                        mUser;
-    std::string                        mPasswd;
-    std::string                        mnet;  // 网络类型 tcp/unix
-    std::string                        mAddress;
-    std::string                        mHost;
-    std::uint32_t                      mPort{};
-    std::string                        mDBName;
-    std::map<std::string, std::string> mParams;
+    std::string                        user_;
+    std::string                        password_;
+    std::string                        network_;  // 网络类型 tcp/unix
+    std::string                        address_;
+    std::string                        host_;
+    std::uint32_t                      port_;
+    std::string                        schema_;
+    std::map<std::string, std::string> params_;
 };
 }  // namespace uranus::database

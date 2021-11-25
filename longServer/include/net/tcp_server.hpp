@@ -9,31 +9,28 @@
 
 namespace uranus::net {
 // Tcp 服务器
-class TcpServer : public utils::Noncopyable {
+class TcpServer : public utils::Noncopyable
+{
 public:
     TcpServer()  = default;
-
     ~TcpServer() = default;
 
-    explicit TcpServer(unsigned int workNum = 0) : mWorkers(workNum), mRunning(true)
-    {
-        if (mWorkers == 0) {
-            mWorkers = std::thread::hardware_concurrency();
+    explicit TcpServer(unsigned int workNum = 0) : workers_(workNum), running_(true) {
+        if (workers_ == 0) {
+            workers_ = std::thread::hardware_concurrency();
         }
     }
 
     // 主循环
-    bool ListenTcp(unsigned short port, std::string_view ip = {""})
-    {
+    auto Listen(unsigned short port, std::string_view ip = {""}) -> bool {
         initServer();
-        while (1) {}
+        while (true) {}
     }
 
 private:
     // 初始化master,worker进程
-    auto initServer() -> bool
-    {
-        for (unsigned int i = 0; i < mWorkers; ++i) {
+    auto initServer() -> bool {
+        for (unsigned int i = 0; i < workers_; ++i) {
             auto pid = ::fork();
             switch (pid) {
                 case -1:
@@ -52,16 +49,15 @@ private:
     }
 
     // worker
-    void workerRun()
-    {
-        while (1) {
+    void workerRun() {
+        while (true) {
             /* code */
         }
     }
 
-    unsigned short   mPort{};   // 端口
-    std::string_view mIP;       // ip地址
-    unsigned int     mWorkers;  // 工作进程数量
-    std::atomic_bool mRunning{true};
+    unsigned short   port_{};   // 端口
+    std::string_view ip_{};     // ip地址
+    unsigned int     workers_;  // 工作进程数量
+    std::atomic_bool running_{true};
 };
 }  // namespace uranus::net

@@ -16,32 +16,32 @@ public:
 
     //这是做一下预分配内存
     explicit MinHeap(int capacity) {
-        mArray.reserve(capacity);
+        array_.reserve(capacity);
     }
 
     ~MinHeap() {
-        mArray.clear();
+        array_.clear();
     }
 
     //插入新元素
-    auto push(const T &elem) -> bool {
+    auto Push(const T &elem) -> bool {
         //独享写锁
-        std::unique_lock<std::mutex> lock(mMutex);
-        mArray.emplace_back(elem);
-        up(mArray.size() - 1);
+        std::unique_lock<std::mutex> lock(mutex_);
+        array_.emplace_back(elem);
+        up(array_.size() - 1);
         return true;
     }
 
     //获取堆顶元素
-    T pop() {
+    auto Pop() -> T {
         //共享读锁
-        std::shared_lock<std::mutex> lock(mMutex);
-        if (!mArray.empty()) {
+        std::shared_lock<std::mutex> lock(mutex_);
+        if (!array_.empty()) {
             //出堆的数据
-            T mMin = mArray.front();
+            T mMin = array_.front();
             //最后一个数据放到第一个根上面
-            std::swap(mArray.front(), mArray.back());
-            mArray.pop_back();
+            std::swap(array_.front(), array_.back());
+            array_.pop_back();
             down(0);
             return std::move(mMin);
         }
@@ -49,16 +49,16 @@ public:
         // return xxx;
     }
 
-    auto isEmpty() -> bool {
-        return mArray.empty();
+    auto IsEmpty() -> bool {
+        return array_.empty();
     }
 
-    auto size() -> size_t {
-        return mArray.size();
+    auto Size() -> size_t {
+        return array_.size();
     }
 
     auto operator[](int i) -> T & {
-        return mArray[i];
+        return array_[i];
     }
 
 private:
@@ -73,8 +73,8 @@ private:
             } else {
                 p = (index - 1) / 2;
             }
-            if (mArray[index] < mArray[p]) {
-                std::swap(mArray[index], mArray[p]);
+            if (array_[index] < array_[p]) {
+                std::swap(array_[index], array_[p]);
                 index = p;
             } else {
                 break;
@@ -84,12 +84,12 @@ private:
 
     //下沉
     void down(int index) {
-        int size = mArray.size();
+        int size = array_.size();
         while (2 * index + 1 <= size - 1) {
-            if (mArray[index] > mArray[2 * index + 1]) {
-                std::swap(mArray[index], mArray[2 * index + 1]);
-                if (2 * index + 2 <= size - 1 && mArray[index] > mArray[2 * index + 2]) {
-                    std::swap(mArray[index], mArray[2 * index + 2]);
+            if (array_[index] > array_[2 * index + 1]) {
+                std::swap(array_[index], array_[2 * index + 1]);
+                if (2 * index + 2 <= size - 1 && array_[index] > array_[2 * index + 2]) {
+                    std::swap(array_[index], array_[2 * index + 2]);
                 }
                 index = 2 * index + 1;
             } else {
@@ -98,8 +98,7 @@ private:
         }
     }
 
-    std::vector<T>           mArray;
-    // mutable声明可变数据成员
-    mutable std::timed_mutex mMutex;
+    std::vector<T>           array_;
+    mutable std::timed_mutex mutex_;  // mutable声明可变数据成员
 };
 }  // namespace uranus::utils

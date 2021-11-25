@@ -9,17 +9,17 @@
 #include <string_view>
 
 namespace uranus::net {
-class TcpClient : public utils::Noncopyable {
+class TcpClient : public utils::Noncopyable
+{
 public:
     TcpClient()  = default;
     ~TcpClient() = default;
 
-    auto Dial(std::string_view ip, std::uint32_t port) -> bool
-    {
+    auto Dial(std::string_view ip, std::uint32_t port) -> bool {
         return false;
     }
 
 private:
-    net::Dialer dialer;
+    net::Dialer dialer_;
 };
 }  // namespace uranus::net

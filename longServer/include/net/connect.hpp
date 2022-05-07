@@ -7,8 +7,7 @@
 
 namespace uranus::net {
 // connection 接口
-class Conn
-{
+class Conn {
 public:
     Conn()                                 = default;
     virtual ~Conn()                        = default;
@@ -20,8 +19,7 @@ public:
     virtual auto RemoteAddr() -> Address   = 0;
 };
 
-class TcpConn
-{
+class TcpConn {
 public:
     //本地网络地址
     auto LocalAddr() const -> std::string {

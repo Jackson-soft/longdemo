@@ -7,8 +7,7 @@
 
 namespace uranus::net {
 // IP interface
-class IP
-{
+class IP {
 public:
     IP()                                           = default;
     virtual ~IP()                                  = default;
@@ -18,8 +17,7 @@ public:
 };
 
 // IPV6
-class IPV6 : public IP
-{
+class IPV6 : public IP {
 public:
     IPV6()           = default;
     ~IPV6() override = default;

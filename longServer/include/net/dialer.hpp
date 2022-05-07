@@ -13,8 +13,7 @@
 // 连接器
 namespace uranus::net {
 // 连接器类
-class Dialer : utils::Noncopyable, std::enable_shared_from_this<Dialer>
-{
+class Dialer : utils::Noncopyable, std::enable_shared_from_this<Dialer> {
 public:
     Dialer() = default;
     ~Dialer() {

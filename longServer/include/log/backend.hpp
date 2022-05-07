@@ -13,8 +13,7 @@
 
 namespace uranus::log {
 // Backend 日志输出后端接口
-class Backend
-{
+class Backend {
 public:
     Backend()                                = default;
     virtual ~Backend()                       = default;
@@ -24,13 +23,10 @@ public:
 };
 
 // 终端输出后端
-class ConsoleBackend : public Backend
-{
-};
+class ConsoleBackend : public Backend {};
 
 // 文件输出后端
-class FileBackend : public Backend
-{
+class FileBackend : public Backend {
 public:
     FileBackend() = default;
     ~FileBackend() override {

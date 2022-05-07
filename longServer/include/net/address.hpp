@@ -8,11 +8,10 @@
 
 namespace uranus::net {
 //网络地址接口
-class Address
-{
+class Address {
 public:
-    Address()                          = default;
-    virtual ~Address()                 = default;
+    Address()          = default;
+    virtual ~Address() = default;
 
     virtual auto               operator=(const Address &obj) -> Address &= 0;      // copy
     virtual auto               operator=(Address &&obj) noexcept -> Address &= 0;  // move
@@ -27,8 +26,7 @@ public:
 };
 
 // ipv6地址类
-class IPv6Addr : public Address
-{
+class IPv6Addr : public Address {
 public:
     IPv6Addr()           = default;
     ~IPv6Addr() override = default;
@@ -76,8 +74,7 @@ private:
 };
 
 // Unix地址类
-class UnixAddr : public Address
-{
+class UnixAddr : public Address {
 public:
     UnixAddr()           = default;
     ~UnixAddr() override = default;

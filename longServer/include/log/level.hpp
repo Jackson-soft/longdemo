@@ -16,8 +16,7 @@ enum class LogLevel {
     NULL_LEVEL,
 };
 
-class Level
-{
+class Level {
 public:
     Level()  = default;
     ~Level() = default;

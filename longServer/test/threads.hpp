@@ -2,6 +2,6 @@
 
 #include "utils/thread_pool.hpp"
 
-#include <doctest/doctest.h>
+#include <catch2/catch.hpp>
 
 TEST_CASE("thread pool") {}

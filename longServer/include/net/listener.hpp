@@ -7,8 +7,7 @@
 
 namespace uranus::net {
 // 监听器接口
-class Listener
-{
+class Listener {
 public:
     Listener()                                                        = default;
     virtual ~Listener()                                               = default;
@@ -20,8 +19,7 @@ public:
     [[nodiscard]] virtual auto Address() const -> const std::string & = 0;
 };
 
-class TcpListener : public Listener
-{
+class TcpListener : public Listener {
 public:
     TcpListener()           = default;
 

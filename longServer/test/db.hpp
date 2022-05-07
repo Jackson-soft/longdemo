@@ -2,8 +2,7 @@
 
 #include "database/dsn.hpp"
 #include "database/mysql.hpp"
-#include "database/postgres.hpp"
 
-#include <doctest/doctest.h>
+#include <catch2/catch.hpp>
 
 TEST_CASE("mysql test") {}

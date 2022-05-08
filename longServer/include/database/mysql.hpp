@@ -17,8 +17,7 @@
 #include <utility>
 
 namespace uranus::database {
-class MySQL
-{
+class MySQL {
 public:
     MySQL() = default;
 

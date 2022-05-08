@@ -10,19 +10,19 @@ namespace uranus::net {
 //网络地址接口
 class Address {
 public:
-    Address()          = default;
-    virtual ~Address() = default;
+    Address()                                                                 = default;
+    virtual ~Address()                                                        = default;
 
-    virtual auto               operator=(const Address &obj) -> Address &= 0;      // copy
-    virtual auto               operator=(Address &&obj) noexcept -> Address &= 0;  // move
-    virtual auto               operator==(const Address &obj) const -> bool = 0;
-    virtual auto               operator!=(const Address &obj) const -> bool = 0;
+    virtual auto               operator=(const Address &obj) -> Address                   &= 0;  // copy
+    virtual auto               operator=(Address &&obj) noexcept -> Address               &= 0;  // move
+    virtual auto               operator==(const Address &obj) const -> bool   = 0;
+    virtual auto               operator!=(const Address &obj) const -> bool   = 0;
 
     //网络类型： tcp,udp,unix
-    [[nodiscard]] virtual auto Network() const -> const std::string       & = 0;
+    [[nodiscard]] virtual auto Network() const -> const std::string         & = 0;
 
     //网络地址： ipv4:127.0.0.1:80; ipv6:2000:0000:0000:0000:0001:2345:6789:abcd::5060
-    [[nodiscard]] virtual auto String() const -> std::string                = 0;
+    [[nodiscard]] virtual auto String() const -> std::string                  = 0;
 };
 
 // ipv6地址类

@@ -2,11 +2,10 @@
 
 #include <string_view>
 namespace uranus::database {
-class DBConn
-{
+class DBConn {
 public:
     DBConn()                                     = default;
-    ~DBConn()                                    = default;
+    virtual ~DBConn()                            = default;
 
     virtual void Execute(std::string_view query) = 0;
     virtual void Prepare(std::string_view query) = 0;

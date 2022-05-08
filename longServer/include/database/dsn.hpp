@@ -21,8 +21,7 @@
  */
 
 namespace uranus::database {
-class DSN
-{
+class DSN {
 public:
     DSN()  = default;
     ~DSN() = default;
@@ -134,7 +133,7 @@ private:
     std::string                        network_;  // 网络类型 tcp/unix
     std::string                        address_;
     std::string                        host_;
-    std::uint32_t                      port_;
+    std::uint32_t                      port_{};
     std::string                        schema_;
     std::map<std::string, std::string> params_;
 };

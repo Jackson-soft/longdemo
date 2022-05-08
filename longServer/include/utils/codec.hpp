@@ -1,7 +1,8 @@
 #pragma once
 
+#include "utils/noncopyable.hpp"
+
 #include <arpa/inet.h>
-#include <boost/core/noncopyable.hpp>
 #include <cstdint>
 #include <cstring>
 #include <google/protobuf/descriptor.h>
@@ -11,8 +12,7 @@
 
 namespace uranus::utils {
 //  数据包封包解包
-class Codec : public boost::noncopyable
-{
+class Codec : public utils::Noncopyable {
 public:
     Codec()  = default;
     ~Codec() = default;
@@ -50,7 +50,7 @@ public:
 
             // typeNameLen
             std::string  sTypeNameLen(data.data(), headerLen_);
-            auto         nTypeNameLen = Utility::ToUInt(sTypeNameLen.data());
+            auto         nTypeNameLen = utils::ToUInt(sTypeNameLen.data());
 
             // typeName
             std::string  sTypeName(data, mHeaderLen, nTypeNameLen);

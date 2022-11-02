@@ -9,8 +9,7 @@
 #include <string_view>
 
 namespace uranus::net {
-class TcpClient : public utils::Noncopyable
-{
+class TcpClient : public utils::Noncopyable {
 public:
     TcpClient()  = default;
     ~TcpClient() = default;

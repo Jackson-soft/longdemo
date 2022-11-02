@@ -1,4 +1,4 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define CATCH_CONFIG_MAIN
 
 #include "db.hpp"
 #include "functions.hpp"

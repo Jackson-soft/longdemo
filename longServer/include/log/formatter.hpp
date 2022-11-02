@@ -10,8 +10,7 @@
 
 namespace uranus::log {
 // Formatter 日志格式化前端接口
-class Formatter
-{
+class Formatter {
 public:
     Formatter()                                                         = default;
     virtual ~Formatter()                                                = default;
@@ -21,8 +20,7 @@ public:
 };
 
 // 文件格式化前端
-class TextFormatter : public Formatter
-{
+class TextFormatter : public Formatter {
 public:
     TextFormatter() : TextFormatter("infor") {}
 

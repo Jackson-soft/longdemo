@@ -12,15 +12,14 @@
 
 namespace uranus::database {
 template<typename T>
-class ConnectPool : public utils::Noncopyable
-{
+class ConnectPool : public utils::Noncopyable {
 public:
     static auto Get() -> ConnectPool<T> * {
         static ConnectPool<T> connPool;
         return &connPool;
     }
 
-    void Initalize(std::string_view conn, const int maxConn = 10, const int maxIdle = 5) {
+    void Initalize(std::string_view conn, const int maxConn = 128, const int maxIdle = 4) {
         connect_ = conn;
         maxConn_ = maxConn;
         maxIdle_ = maxIdle;
@@ -52,10 +51,10 @@ public:
     }
 
 private:
-    ConnectPool()                    = default;
-    ~ConnectPool()                   = default;
+    ConnectPool()                                        = default;
+    ~ConnectPool()                                       = default;
 
-    ConnectPool(const ConnectPool &) = delete;
+    ConnectPool(const ConnectPool &)                     = delete;
     auto operator=(const ConnectPool &) -> ConnectPool & = delete;
 
     auto creatConn() {

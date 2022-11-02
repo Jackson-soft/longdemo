@@ -18,8 +18,7 @@
 #include <utility>
 
 namespace uranus::net {
-class Socket : public utils::Noncopyable
-{
+class Socket : public utils::Noncopyable {
 public:
     Socket() = default;
     explicit Socket(const int fd) : socket_(fd) {}

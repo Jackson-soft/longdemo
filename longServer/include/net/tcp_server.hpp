@@ -9,8 +9,7 @@
 
 namespace uranus::net {
 // Tcp 服务器
-class TcpServer : public utils::Noncopyable
-{
+class TcpServer : public utils::Noncopyable {
 public:
     TcpServer()  = default;
     ~TcpServer() = default;

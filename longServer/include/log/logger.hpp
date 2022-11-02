@@ -13,8 +13,7 @@
 
 namespace uranus::log {
 // Logger 日志的主类
-class Logger : public utils::Noncopyable
-{
+class Logger : public utils::Noncopyable {
 public:
     Logger() = default;
 

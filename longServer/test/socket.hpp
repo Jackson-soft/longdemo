@@ -1,14 +1,13 @@
 #pragma once
 
-#include "net/socket.hpp"
+#include "net/tcp_socket.hpp"
 
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("socket test")
-{
-    uranus::net::Socket fd;
-    fd.newSocket();
-    CHECK(fd.getNativeFD() > 0);
+TEST_CASE("socket test") {
+    uranus::net::TCPConn fd;
+    fd.Open();
+    CHECK(fd.Native() > 0);
     CHECK(fd.Listen());
     CHECK(fd.Bind(5005));
 }

@@ -16,17 +16,17 @@ namespace uranus::net {
 class Dialer : utils::Noncopyable, std::enable_shared_from_this<Dialer> {
 public:
     Dialer() = default;
+
     ~Dialer() {
         Close();
     }
 
-    //连接到网络地址
-    auto Dial(const std::string_view network, const std::string_view ip, const unsigned short port) -> bool {
+    // 连接到网络地址
+    auto Dial(std::string_view network, std::string_view ip, const unsigned short port) -> bool {
         if (network.empty() || ip.empty() || port <= 0) {
             return false;
         }
         remoteAddr_ = ip;
-        port_       = port;
 
         if (!socket_.NewSocket(network)) {
             return false;
@@ -59,11 +59,10 @@ private:
     // Socket对象
     net::Socket                socket_;
     std::chrono::duration<int> timeout_;
-    //客户端地址
-    std::string                localAddr_;
-    //远程地址
+    // 客户端地址
+    std::string localAddr_;
+    // 远程地址
     std::string                remoteAddr_;
-    unsigned short             port_{0};
     std::chrono::duration<int> keepAlive_;
 };
 }  // namespace uranus::net

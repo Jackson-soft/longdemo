@@ -28,10 +28,10 @@ set(unit_test my_test)
 add_executable(${unit_test} test/main.cpp)
 target_include_directories(
     ${unit_test} PRIVATE ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDES}
-                         ${fmt_INCLUDES} ${Catch2_INCLUDES})
+                         ${fmt_INCLUDES} ${catch2_INCLUDES})
 target_link_libraries(
     ${unit_test}
-    PRIVATE ${Catch2_LIBRARIES} ${Boost_LIBRARIES} ${fmt_LIBRARIES}
+    PRIVATE ${catch2_LIBS} ${Boost_LIBRARIES} ${fmt_LIBRARIES}
             ${libpqxx_LIBRARIES} ${MySQL_LIBRARIES})
 
 enable_testing()

@@ -1,9 +1,10 @@
 #pragma once
 
 // socket封装类,ipv6
-#include "utils/noncopyable.hpp"
+#include "net/connect.hpp"
 
 #include <arpa/inet.h>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <fcntl.h>
@@ -18,63 +19,58 @@
 #include <utility>
 
 namespace uranus::net {
-class Socket : public utils::Noncopyable {
+class UDPConn : public Conn {
 public:
-    Socket() = default;
-    explicit Socket(const int fd) : socket_(fd) {}
+    explicit UDPConn() = default;
 
     // move constructor
-    Socket(const Socket &&obj) noexcept {}
+    UDPConn(UDPConn &&obj) noexcept : socket_(obj.socket_) {}
 
     // copy constructor
-    Socket(const Socket &obj) : socket_(obj.socket_), network_(obj.network_) {}
+    UDPConn(const UDPConn &obj) = default;
 
-    ~Socket() {
+    auto operator=(const UDPConn &obj) -> UDPConn & {
+        if (this != &obj) {
+            socket_  = obj.socket_;
+            network_ = obj.network_;
+        }
+        return *this;
+    }
+
+    auto operator=(UDPConn &&obj) noexcept -> UDPConn & {
+        socket_  = obj.socket_;
+        network_ = obj.network_;
+        return *this;
+    }
+
+    ~UDPConn() override {
         Close();
     }
 
-    auto NewSocket(std::string_view network = "tcp") -> bool {
-        if (network.empty()) {
-            return false;
-        }
-
-        if (network == "tcp") {
-            socket_ = ::socket(AF_INET6, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
-        } else if (network == "udp") {
-            socket_ = ::socket(AF_INET6, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
-        } else if (network == "unix") {
-            socket_ = ::socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_IP);
-        } else {
-            return false;
-        }
-
-        if (socket_ <= 0) {
-            return false;
-        }
-
-        network_ = network;
-
-        return SetReusePort(true);
+    auto Open() -> bool {
+        socket_ = ::socket(AF_INET6, SOCK_DGRAM, IPPROTO_IP);
+        return socket_ > 0;
     }
 
-    //监听服务器
+    // 监听服务器
     [[nodiscard]] auto Listen() const -> bool {
         return ::listen(socket_, SOMAXCONN) == 0;
     }
 
     // 绑定
-    [[nodiscard]] auto Bind(const std::uint64_t port, std::string_view ip = {""}) const -> bool {
+    [[nodiscard]] auto Bind(const std::uint16_t port, std::string_view host = {""}) const -> bool {
         if (port <= 0) {
             return false;
         }
+
         struct sockaddr_in6 addr {};
 
         std::memset(&addr, 0, sizeof(addr));
         addr.sin6_family = AF_INET6;
         addr.sin6_port   = ::htons(port);
 
-        if (!ip.empty()) {
-            if (::inet_pton(AF_INET6, ip.data(), &addr.sin6_addr) < 0) {
+        if (!host.empty()) {
+            if (::inet_pton(AF_INET6, host.data(), &addr.sin6_addr) < 0) {
                 return false;
             }
         } else {
@@ -84,11 +80,12 @@ public:
         return ::bind(socket_, reinterpret_cast<struct sockaddr *>(&addr), static_cast<socklen_t>(sizeof(addr))) == 0;
     }
 
-    //连接目标服务器
-    [[nodiscard]] auto Connect(const std::string_view ip, const std::uint64_t port) const -> bool {
+    // 连接目标服务器
+    [[nodiscard]] auto Connect(std::string_view ip, const std::uint16_t port) const -> bool {
         if (port <= 0) {
             return false;
         }
+
         struct sockaddr_in6 addr {};
 
         std::memset(&addr, 0, sizeof(addr));
@@ -110,7 +107,8 @@ public:
     // 返回接收的socket文件描述符
     auto Accept() -> int {
         struct sockaddr_in6 addr {};
-        socklen_t           socklen = sizeof(addr);
+
+        socklen_t socklen = sizeof(addr);
         std::memset(&addr, 0, socklen);
 
         return ::accept4(socket_, reinterpret_cast<struct sockaddr *>(&addr), &socklen, SOCK_NONBLOCK | SOCK_CLOEXEC);
@@ -123,16 +121,16 @@ public:
     }
 
     // 设置非阻塞
-    auto SetNonBlock() const -> int {
+    [[nodiscard]] auto SetNonBlock() const -> int {
         int nFlag = ::fcntl(socket_, F_GETFL, 0);
         if (nFlag == -1) {
             return nFlag;
         }
-        return ::fcntl(socket_, F_SETFL, nFlag | O_NONBLOCK | FD_CLOEXEC);
+        return ::fcntl(socket_, F_SETFL, nFlag | O_NONBLOCK);
     }
 
     // Nagle 算法(小包合并成大包)
-    bool SetNoDelay(bool on) {
+    [[nodiscard]] auto SetNoDelay(bool on) const -> bool {
         int optval = on ? 1 : 0;
         return ::setsockopt(socket_, IPPROTO_TCP, TCP_NODELAY, &optval, static_cast<socklen_t>(sizeof optval)) == 0;
     }
@@ -172,35 +170,34 @@ public:
         return ::writev(socket_, iov, iovcnt);
     }
 
-    //优雅关闭读写双半闭
+    // 优雅关闭读写双半闭
     bool ShutDown() {
         return ::shutdown(socket_, SHUT_RDWR) == 0;
     }
 
     // 关闭读
-    bool CloseRead() {
+    [[nodiscard]] auto CloseRead() const -> bool {
         return ::shutdown(socket_, SHUT_RD) == 0;
     }
 
     // 关闭写
-    bool CloseWrite() {
+    [[nodiscard]] auto CloseWrite() const -> bool {
         return ::shutdown(socket_, SHUT_WR) == 0;
     }
 
-    //关闭
-    auto Close() -> bool {
+    // 关闭
+    [[nodiscard]] auto Close() const -> bool {
         return ::close(socket_) == 0;
     }
 
     // 获取原生socket
-    [[nodiscard]] auto NativeFD() const -> int {
+    [[nodiscard]] auto Native() const -> int {
         return socket_;
     }
 
 private:
-    void        getTcpInfo() {}
+    void getTcpInfo() {}
 
-    int         socket_{0};  //
-    std::string network_;
+    int socket_{0};
 };
 }  // namespace uranus::net

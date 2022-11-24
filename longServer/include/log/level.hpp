@@ -5,7 +5,7 @@
 #include <string_view>
 
 namespace uranus::log {
-//日志等级枚举类
+// 日志等级枚举类
 enum class LogLevel {
     TRACE,
     DEBUG,
@@ -21,7 +21,7 @@ public:
     Level()  = default;
     ~Level() = default;
 
-    //将日志等级解析成字符串
+    // 将日志等级解析成字符串
     static auto Marshal(const LogLevel &lvl) -> std::string {
         std::map<LogLevel, std::string> levelMap{
             {LogLevel::TRACE, "trace"},
@@ -39,7 +39,7 @@ public:
         return "";
     }
 
-    //将字符串解析成日志等级
+    // 将字符串解析成日志等级
     static auto Unmarshal(std::string &str) -> LogLevel {
         boost::algorithm::to_lower(str);
         std::map<std::string, LogLevel> levelMap{{"trace", LogLevel::TRACE},

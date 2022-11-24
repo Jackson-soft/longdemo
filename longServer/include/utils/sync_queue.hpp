@@ -10,8 +10,7 @@
 
 namespace uranus::utils {
 template<typename T>
-class SyncQueue : public Noncopyable
-{
+class SyncQueue : public Noncopyable {
 public:
     SyncQueue()  = default;
     ~SyncQueue() = default;

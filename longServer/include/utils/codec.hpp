@@ -24,13 +24,13 @@ public:
 
     // 编码
     [[nodiscard]] auto EnCode(const google::protobuf::Message &msg) const -> std::string {
-        std::string   data;
-        auto          typeName = msg.GetTypeName();
-        std::string   strData  = msg.SerializeAsString();
+        std::string data;
+        auto        typeName = msg.GetTypeName();
+        std::string strData  = msg.SerializeAsString();
 
         // 除消息头4位之外的其他数据的长度
-        std::uint32_t len      = headerLen_ + typeName.size() + strData.size();
-        std::uint32_t be32     = htonl(len);
+        std::uint32_t len  = headerLen_ + typeName.size() + strData.size();
+        std::uint32_t be32 = htonl(len);
         data.append(reinterpret_cast<char *>(&be32), sizeof be32);  // len
 
         // type name len
@@ -46,20 +46,20 @@ public:
     auto DeCode(const std::string &data) -> std::shared_ptr<google::protobuf::Message> {
         if (data.size() >= minDataLen_) {
             // body len
-            auto         nLen = data.size();
+            auto nLen = data.size();
 
             // typeNameLen
-            std::string  sTypeNameLen(data.data(), headerLen_);
-            auto         nTypeNameLen = utils::ToUInt(sTypeNameLen.data());
+            std::string sTypeNameLen(data.data(), headerLen_);
+            auto        nTypeNameLen = utils::ToUInt(sTypeNameLen.data());
 
             // typeName
-            std::string  sTypeName(data, mHeaderLen, nTypeNameLen);
+            std::string sTypeName(data, mHeaderLen, nTypeNameLen);
 
             // protoData
             std::int32_t nDataLen = nLen - mHeaderLen - nTypeNameLen;
             std::string  sData(data, mHeaderLen + nTypeNameLen, nDataLen);
 
-            auto         result = createMsg(sTypeName);
+            auto result = createMsg(sTypeName);
             if (result) {
                 result->ParseFromString(sData);
                 return result;

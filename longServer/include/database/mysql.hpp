@@ -176,7 +176,7 @@ public:
 
         for (const auto &i : args) {
             ::MYSQL_BIND bind;
-            bind.buffer_type   = MYSQL_TYPE_STRING;  //设置占位符的属性
+            bind.buffer_type   = MYSQL_TYPE_STRING;  // 设置占位符的属性
             bind.buffer        = const_cast<char *>(i.data());
             bind.buffer_length = i.size();
             vBinds.emplace_back(bind);
@@ -255,7 +255,7 @@ public:
         }
 
         // 列数
-        auto                               numFields = ::mysql_num_fields(tResult);
+        auto numFields = ::mysql_num_fields(tResult);
 
         // 字段数据
         std::map<std::string, std::string> element;

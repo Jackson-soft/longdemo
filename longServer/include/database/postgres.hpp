@@ -5,8 +5,7 @@
 #include <string_view>
 
 namespace uranus::database {
-class Postgres
-{
+class Postgres {
 public:
     Postgres()  = default;
     ~Postgres() = default;

@@ -1,6 +1,6 @@
 #pragma once
 
-//最小堆
+// 最小堆
 #include <algorithm>
 #include <mutex>
 #include <shared_mutex>
@@ -9,12 +9,11 @@
 
 namespace uranus::utils {
 template<typename T>
-class MinHeap
-{
+class MinHeap {
 public:
     MinHeap() : MinHeap(30) {}
 
-    //这是做一下预分配内存
+    // 这是做一下预分配内存
     explicit MinHeap(int capacity) {
         array_.reserve(capacity);
     }
@@ -23,30 +22,30 @@ public:
         array_.clear();
     }
 
-    //插入新元素
+    // 插入新元素
     auto Push(const T &elem) -> bool {
-        //独享写锁
+        // 独享写锁
         std::unique_lock<std::mutex> lock(mutex_);
         array_.emplace_back(elem);
         up(array_.size() - 1);
         return true;
     }
 
-    //获取堆顶元素
+    // 获取堆顶元素
     auto Pop() -> T {
-        //共享读锁
+        // 共享读锁
         std::shared_lock<std::mutex> lock(mutex_);
         if (!array_.empty()) {
-            //出堆的数据
+            // 出堆的数据
             T mMin = array_.front();
-            //最后一个数据放到第一个根上面
+            // 最后一个数据放到第一个根上面
             std::swap(array_.front(), array_.back());
             array_.pop_back();
             down(0);
             return std::move(mMin);
         }
-        //这里有一个警告，目前还没想到怎么去除
-        // return xxx;
+        // 这里有一个警告，目前还没想到怎么去除
+        //  return xxx;
     }
 
     auto IsEmpty() -> bool {
@@ -62,7 +61,7 @@ public:
     }
 
 private:
-    //上浮
+    // 上浮
     void up(int index) {
         int n = 0;
         int p = 0;
@@ -82,7 +81,7 @@ private:
         }
     }
 
-    //下沉
+    // 下沉
     void down(int index) {
         int size = array_.size();
         while (2 * index + 1 <= size - 1) {

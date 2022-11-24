@@ -33,22 +33,22 @@ public:
 
         // [user[:password]@][net[(addr)]]/dbname[?param1=value1&paramN=valueN]
         // Find the last '/' (since the password or the net addr might contain a '/')
-        auto backslash   = boost::find_last(dsn, "/");
+        auto backslash = boost::find_last(dsn, "/");
 
         // [username[:password]@][protocol[(address)]]
         // Find the last '@'
-        auto tAt         = boost::find_last(dsn, "@");
+        auto tAt = boost::find_last(dsn, "@");
 
         // username[:password]
         // Find the first ':'
-        auto tColon      = boost::find_first(dsn, ":");
-        user_            = dsn.substr(0, tColon.begin() - dsn.begin());
-        password_        = dsn.substr(tColon.end() - dsn.begin(), tAt.begin() - tColon.end());
+        auto tColon = boost::find_first(dsn, ":");
+        user_       = dsn.substr(0, tColon.begin() - dsn.begin());
+        password_   = dsn.substr(tColon.end() - dsn.begin(), tAt.begin() - tColon.end());
 
         // [protocol[(address)]]
         // Find the first '('
-        auto tOpenParen  = boost::find_first(dsn, "(");
-        network_         = dsn.substr(tAt.end() - dsn.begin(), tOpenParen.begin() - tAt.end());
+        auto tOpenParen = boost::find_first(dsn, "(");
+        network_        = dsn.substr(tAt.end() - dsn.begin(), tOpenParen.begin() - tAt.end());
 
         // dsn[i-1] must be == ')' if an address is specified
         auto tCloseParen = boost::find_last(dsn, ")");

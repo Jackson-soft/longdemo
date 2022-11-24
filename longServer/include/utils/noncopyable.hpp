@@ -2,13 +2,12 @@
 
 namespace uranus::utils {
 // 工具类
-class Noncopyable
-{
+class Noncopyable {
 public:
-    Noncopyable()                    = default;
-    ~Noncopyable()                   = default;
+    Noncopyable()  = default;
+    ~Noncopyable() = default;
 
-    Noncopyable(const Noncopyable &) = delete;
+    Noncopyable(const Noncopyable &)                     = delete;
     auto operator=(const Noncopyable &) -> Noncopyable & = delete;
 };
 }  // namespace uranus::utils

@@ -12,33 +12,29 @@ public:
     Client()  = default;
     ~Client() = default;
 
-public:
-    Response *get(const std::string_view rawurl)
-    {
-        if (rawurl.empty())
+    Response *get(const std::string_view rawurl) {
+        if (rawurl.empty()) {
             return nullptr;
+        }
         auto req = newRequest(uranus::http::Method::Get, rawurl);
 
         return do();
     }
 
-    void post(const std::string_view rawurl)
-    {
+    void post(const std::string_view rawurl) {
         if (rawurl.empty())
             return;
     }
 
 private:
-    Response *do()
-    {
-        return nullptr;
-    }
-    Request *newRequest(uranus::http::Method method, const std::string_view url)
-    {
+    Response *do() {
         return nullptr;
     }
 
-private:
-    int timeOut_;
+    Request *newRequest(uranus::http::Method method, const std::string_view url) {
+        return nullptr;
+    }
+
+    int timeout_;
 };
 }  // namespace uranus::http

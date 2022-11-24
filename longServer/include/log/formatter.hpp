@@ -1,9 +1,9 @@
 #pragma once
 
+#include "fmt/core.h"
 #include "utils/time.hpp"
 
 #include <cstdio>
-#include <fmt/format.h>
 #include <map>
 #include <string>
 #include <string_view>
@@ -12,8 +12,8 @@ namespace uranus::log {
 // Formatter 日志格式化前端接口
 class Formatter {
 public:
-    Formatter()                                                         = default;
-    virtual ~Formatter()                                                = default;
+    Formatter()          = default;
+    virtual ~Formatter() = default;
 
     virtual auto Format(std::string_view msg) -> std::string            = 0;
     virtual void WithFields(std::map<std::string, std::string> &fields) = 0;
@@ -32,18 +32,19 @@ public:
 
     auto Format(std::string_view msg) -> std::string override {
         std::string retData{};
-        std::sprintf(retData.data(),
-                     "%s [%s] %s:%d :: ",
-                     utils::CurrentDay().data(),
-                     level_.data(),
-                     __FILE__,
-                     __LINE__);
+        fmt::format_to(retData.data(),
+                       "{} [{}] {}:{} :: ",
+                       utils::CurrentDay().data(),
+                       level_.data(),
+                       __FILE__,
+                       __LINE__);
+
         if (!data_.empty()) {
-            for (const auto &i : data_) {
-                std::sprintf(retData.data(), "%s%s:%s,", retData.data(), i.first.data(), i.second.data());
+            for (const auto &it : data_) {
+                fmt::format_to(retData.data(), "{}{}:{},", retData.data(), it.first.data(), it.second.data());
             }
         }
-        std::sprintf(retData.data(), "%s%s\n", retData.data(), msg.data());
+        fmt::format_to(retData.data(), "{}{}\n", retData.data(), msg.data());
         return retData;
     }
 

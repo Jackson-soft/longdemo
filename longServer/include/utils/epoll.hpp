@@ -12,8 +12,7 @@
 namespace uranus::utils {
 // Reactor 模式
 // 消息循环的epoll实现
-class Epoller : public EventLoop
-{
+class Epoller : public EventLoop {
 public:
     // 委托构造
     Epoller() : Epoller(0) {}
@@ -32,6 +31,7 @@ public:
 
     auto addEvent(int fd) -> int override {
         struct epoll_event event {};
+
         std::memset(&event, 0, sizeof(event));
         event.data.fd = fd;
         event.events  = EPOLLIN | EPOLLET;
@@ -40,6 +40,7 @@ public:
 
     auto delEvent(int fd) -> int override {
         struct epoll_event event {};
+
         std::memset(&event, 0, sizeof(event));
         event.data.fd = fd;
         return ::epoll_ctl(epoll_, EPOLL_CTL_DEL, fd, &event);
@@ -47,6 +48,7 @@ public:
 
     auto modEvent(int fd) -> int override {
         struct epoll_event event {};
+
         std::memset(&event, 0, sizeof(event));
         event.data.fd = fd;
         return ::epoll_ctl(epoll_, EPOLL_CTL_MOD, fd, &event);

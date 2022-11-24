@@ -34,7 +34,7 @@ public:
             }
         }
 
-        int  free = pool_.size();
+        int free = pool_.size();
 
         auto conn = pool_.front();
         pool_.pop_front();
@@ -51,11 +51,11 @@ public:
     }
 
 private:
-    ConnectPool()                                        = default;
-    ~ConnectPool()                                       = default;
+    ConnectPool()  = default;
+    ~ConnectPool() = default;
 
-    ConnectPool(const ConnectPool &)                     = delete;
-    auto operator=(const ConnectPool &) -> ConnectPool & = delete;
+    ConnectPool(const ConnectPool &)                     = default;
+    auto operator=(const ConnectPool &) -> ConnectPool & = default;
 
     auto creatConn() {
         auto conn = std::make_shared<T>();
@@ -66,7 +66,7 @@ private:
     std::string                    connect_;      // 连接
     int                            maxIdle_{0};   // 最大空闲数
     int                            maxConn_{10};  // 最大连接数
-    int                            numOpen_{0};   //打开的连接数
+    int                            numOpen_{0};   // 打开的连接数
     std::condition_variable        condition_;
     std::once_flag                 flag_;
     std::deque<std::shared_ptr<T>> pool_;

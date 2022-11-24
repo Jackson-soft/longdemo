@@ -16,8 +16,7 @@
 #include <vector>
 
 namespace uranus::utils {
-class ThreadPool : public Noncopyable
-{
+class ThreadPool : public Noncopyable {
 public:
     using Task = std::function<void()>;
 
@@ -48,7 +47,7 @@ public:
         }
     }
 
-    //提交任务到队列
+    // 提交任务到队列
     template<typename F, typename... Args>
     auto AddTask(F &&f, Args &&...args) -> std::future<std::result_of_t<F(Args...)>> {
         if (!running_.load()) {
@@ -67,7 +66,7 @@ public:
     }
 
 private:
-    //任务分发
+    // 任务分发
     void dispatch() {
         while (running_.load()) {
             std::unique_lock<std::mutex> tLock(mutex_);
@@ -75,16 +74,16 @@ private:
                 return !tasks_.Empty();
             });
             Task task{std::move(tasks_.Front())};
-            tasks_.Pop();  //删掉队列的头元素
+            tasks_.Pop();  // 删掉队列的头元素
             task();
         }
     }
 
-    SyncQueue<Task>                           tasks_{};        //任务队列
-    std::vector<std::shared_ptr<std::thread>> threads_;        //线程对象
-    std::uint32_t                             threadNum_;      //线程数
-    std::mutex                                mutex_;          //锁
-    std::condition_variable                   condition_;      //条件变量
-    std::atomic_bool                          running_{true};  //是否在运行
+    SyncQueue<Task>                           tasks_{};        // 任务队列
+    std::vector<std::shared_ptr<std::thread>> threads_;        // 线程对象
+    std::uint32_t                             threadNum_;      // 线程数
+    std::mutex                                mutex_;          // 锁
+    std::condition_variable                   condition_;      // 条件变量
+    std::atomic_bool                          running_{true};  // 是否在运行
 };
 }  // namespace uranus::utils

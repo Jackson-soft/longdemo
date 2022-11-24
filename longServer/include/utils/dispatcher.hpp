@@ -7,13 +7,12 @@
 
 namespace uranus::utils {
 // 消息分发器
-class Dispatcher
-{
+class Dispatcher {
 public:
     using PBCallBack = std::function<void(const std::shared_ptr<google::protobuf::Message> &message)>;
 
-    Dispatcher()     = default;
-    ~Dispatcher()    = default;
+    Dispatcher()  = default;
+    ~Dispatcher() = default;
 
     static auto Get() -> std::shared_ptr<Dispatcher> {
         static std::shared_ptr<Dispatcher> instance = std::make_shared<Dispatcher>();

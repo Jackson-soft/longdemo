@@ -24,13 +24,13 @@ public:
         delete fbt;
     }
 
-    //单例实例
+    // 单例实例
     static auto Get() -> std::shared_ptr<Logger> {
         static auto logger = std::make_shared<Logger>();
         return logger;
     }
 
-    //初始化，只需要调一次
+    // 初始化，只需要调一次
     auto Set(const LogLevel &lvl, std::unique_ptr<Formatter> fmt, std::unique_ptr<Backend> backend) -> bool {
         std::lock_guard<std::mutex> locker(mutex_);
         level_ = lvl;
@@ -39,7 +39,7 @@ public:
         return true;
     }
 
-    //日志输出对外接口
+    // 日志输出对外接口
     void InfoLn(std::string_view msg) {
         return outPut(LogLevel::INFO, msg);
     }
@@ -54,7 +54,7 @@ public:
     }
 
 private:
-    //输出
+    // 输出
     void outPut(LogLevel lvl, std::string_view msg) {
         std::lock_guard<std::mutex> locker(mutex_);
         if (lvl >= level_) {
@@ -64,9 +64,9 @@ private:
 
     std::mutex                 mutex_;
     LogLevel                   level_;
-    std::unique_ptr<Formatter> formatter_;  //格式化前端
-    std::unique_ptr<Backend>   backend_;    //输出后端
-    std::queue<std::string>    buffer_;     //环型缓存
+    std::unique_ptr<Formatter> formatter_;  // 格式化前端
+    std::unique_ptr<Backend>   backend_;    // 输出后端
+    std::queue<std::string>    buffer_;     // 环型缓存
 };
 
 #define LOG_INFO Logger::Get()::InfoLn()

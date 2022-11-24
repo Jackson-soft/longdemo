@@ -1,10 +1,10 @@
 #pragma once
 
-#include "net/socket.hpp"
-#include "utils/noncopyable.hpp"
+#include "net/tcp_socket.hpp"
 
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -13,27 +13,31 @@
 // 连接器
 namespace uranus::net {
 // 连接器类
-class Dialer : utils::Noncopyable, std::enable_shared_from_this<Dialer> {
+class TCPDialer : public std::enable_shared_from_this<TCPDialer> {
 public:
-    Dialer() = default;
+    TCPDialer() = default;
 
-    ~Dialer() {
+    ~TCPDialer() {
         Close();
     }
 
     // 连接到网络地址
-    auto Dial(std::string_view network, std::string_view ip, const unsigned short port) -> bool {
-        if (network.empty() || ip.empty() || port <= 0) {
+    auto Dial(std::string_view host, const std::uint16_t port) -> bool {
+        if (host.empty() || port <= 0) {
             return false;
         }
-        remoteAddr_ = ip;
+        remoteAddr_ = host;
 
-        if (!socket_.NewSocket(network)) {
+        socket_ = std::make_unique<net::TCPConn>();
+
+        if (!socket_->Open()) {
             return false;
         }
 
-        return socket_.Connect(ip, port);
+        return socket_->Connect(host, port);
     }
+
+    void Run() {}
 
     auto Read() -> int {
         return 0;
@@ -44,21 +48,21 @@ public:
     }
 
     auto SetKeepAlive(bool on) -> bool {
-        return socket_.SetKeeplive(on);
+        return socket_->SetKeeplive(on);
     }
 
     void Close() {
-        socket_.Close();
+        socket_->Close();
     }
 
     auto Shutdown() -> bool {
-        return socket_.ShutDown();
+        return socket_->ShutDown();
     }
 
 private:
     // Socket对象
-    net::Socket                socket_;
-    std::chrono::duration<int> timeout_;
+    std::unique_ptr<net::TCPConn> socket_;
+    std::chrono::duration<int>    timeout_;
     // 客户端地址
     std::string localAddr_;
     // 远程地址

@@ -15,9 +15,7 @@ public:
         }
     };
 
-    BinaryTree() {
-        root = nullptr;
-    }
+    BinaryTree() = default;
 
     ~BinaryTree() {
         root = nullptr;
@@ -25,8 +23,8 @@ public:
 
     // 压入
     void Push(T t) {
-        TreeNode *tn = new TreeNode();
-        tn->data     = t;
+        auto *tn = new TreeNode();
+        tn->data = t;
         if (root == nullptr) {
             root = tn;
         }
@@ -50,5 +48,5 @@ private:
         }
     }
 
-    TreeNode *root;
+    TreeNode *root{nullptr};
 };

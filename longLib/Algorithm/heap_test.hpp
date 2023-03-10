@@ -30,7 +30,7 @@ TEST_CASE("test heap") {
     }
     std::cout << std::endl;
     std::cout << "==========" << std::endl;
-    MinHeap<int> minH;
+    MaxHeap<int> minH;
     minH.Push(3);
     minH.Push(4);
     minH.Push(8);

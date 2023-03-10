@@ -1,21 +1,26 @@
 #pragma once
-//二叉堆
+// 二叉堆
 #include <vector>
 
-template <typename T>
-class BinaryHeap
-{
+template<typename T>
+class BinaryHeap {
 public:
-	BinaryHeap() {}
-	explicit BinaryHeap(int nSize) {}
-	~BinaryHeap() {}
+    BinaryHeap() = default;
 
-	bool Empty() { return mArray.empty(); }
-	void Push(const T &x) {}
-	void DeleteMin() {}
+    explicit BinaryHeap(int nSize) {}
 
-	void MakeEmpty() {}
+    ~BinaryHeap() = default;
+
+    auto Empty() -> bool {
+        return mArray.empty();
+    }
+
+    void Push(const T &x) {}
+
+    void DeleteMin() {}
+
+    void MakeEmpty() {}
 
 private:
-	std::vector<T> mArray;
+    std::vector<T> mArray;
 };

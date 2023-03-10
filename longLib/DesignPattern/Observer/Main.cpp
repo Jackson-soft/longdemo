@@ -1,12 +1,11 @@
-#include <iostream>
-
 #include "ConcreteObserver.hpp"
 #include "ConcreteSubject.hpp"
 #include "Observer.hpp"
 #include "Subject.hpp"
 
-int main()
-{
+#include <iostream>
+
+auto main() -> int {
     ConcreteObeserver *B = new ConcreteObeserver("B");
     ConcreteObeserver *C = new ConcreteObeserver("C");
 

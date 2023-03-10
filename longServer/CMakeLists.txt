@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
 
 # 项目信息
-project(longServer LANGUAGES CXX)
+project(longServer
+    LANGUAGES CXX
+)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+# list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 find_package(Boost REQUIRED COMPONENTS)
 find_package(fmt REQUIRED)
@@ -19,20 +21,20 @@ add_executable(${PROJECT_NAME} ${DIR_SRCS})
 
 target_include_directories(
     ${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDES}
-                            ${fmt_INCLUDES} ${protobuf_INCLUDES})
+    ${fmt_INCLUDES} ${protobuf_INCLUDES})
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES} ${fmt_LIBRARIES}
-                            ${protobuf_LIBRARIES})
+    ${protobuf_LIBRARIES})
 
 set(unit_test my_test)
 add_executable(${unit_test} test/main.cpp)
 target_include_directories(
     ${unit_test} PRIVATE ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDES}
-                         ${fmt_INCLUDES} ${catch2_INCLUDES})
+    ${fmt_INCLUDES} ${catch2_INCLUDES})
 target_link_libraries(
     ${unit_test}
     PRIVATE ${catch2_LIBS} ${Boost_LIBRARIES} ${fmt_LIBRARIES}
-            ${libpqxx_LIBRARIES} ${MySQL_LIBRARIES})
+    ${libpqxx_LIBRARIES} ${MySQL_LIBRARIES})
 
 enable_testing()
 

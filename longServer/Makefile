@@ -7,7 +7,7 @@ build:
 	cmake --build build --config Release -j 4
 
 install:
-	conan install . -if build -b missing -u
+	conan install . -of build -b missing -u
 
 clean:
 	rm -rf build

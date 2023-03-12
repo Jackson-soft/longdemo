@@ -21,19 +21,19 @@ public:
         mArray.shrink_to_fit();
     }
 
-    bool Empty() {
+    auto Empty() -> bool {
         return mArray.empty();
     }
 
-    size_t Size() {
+    auto Size() -> size_t {
         return mArray.size();
     }
 
-    T &operator[](int i) {
+    auto operator[](int i) -> T & {
         return mArray[i];
     }
 
-    bool Push(const T &elem) {
+    auto Push(const T &elem) -> bool {
         std::unique_lock<std::shared_mutex> lock(mMutex);
         mArray.emplace_back(elem);
         up(mArray.size() - 1);
@@ -41,7 +41,7 @@ public:
     }
 
     // 移除最顶堆元素
-    T Pop() {
+    auto Pop() -> T {
         // 共享读锁
         std::shared_lock<std::shared_mutex> lock(mMutex);
         if (!mArray.empty()) {
@@ -59,7 +59,8 @@ public:
 private:
     // 上浮
     void up(int index) {
-        int n, p;
+        int n{0};
+        int p{0};
         while (index > 0) {
             n = index % 2;
             if (n == 0) {
@@ -92,7 +93,6 @@ private:
         }
     }
 
-private:
     std::vector<T>            mArray;
     mutable std::shared_mutex mMutex;
 };

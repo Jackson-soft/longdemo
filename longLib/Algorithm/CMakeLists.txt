@@ -4,17 +4,17 @@ project(test
     LANGUAGES CXX
 )
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 Include(FetchContent)
 
 FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v3.3.2 # or a later release
-    )
+    GIT_TAG v3.3.2)
 
 FetchContent_MakeAvailable(Catch2)
-
-# find_package(Catch2 REQUIRED)
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE Catch2::Catch2WithMain)

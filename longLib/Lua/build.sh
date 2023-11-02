@@ -1,1 +1,1 @@
-clang++ -std=c++17 -fPIC -shared -o luaLib.so luaLib.cpp
+clang++ -std=c++20 -fPIC -shared -o luaLib.so luaLib.cpp
